@@ -43,19 +43,31 @@ function getPlayerActivities($playerID) {
     if ($results[0]['last_updated']) {
       $token = $results[0]['playerProviderToken'];
       $dtLastUpdated = $results[0]['last_updated'];
+      $dtLastActivity = $results[0]['last_activity'];
+      if (!$dtLastActivity) {
+        $dtLastActivity = $dtLastUpdated;
+      }
 
       // time to get new activities
       $tNow = strtotime($dtNow);
       $tLastUpdated = strtotime($dtLastUpdated);
       $nUpdatedSecondsAgo = abs($tNow - $tLastUpdated);
+
       if ($nUpdatedSecondsAgo > UPDATE_SECS) {
+        $tLastActivity = strtotime($dtLastActivity);
+
         // get from provider
         $adapter = new Pest('https://www.strava.com/api/v3');
         $service = new REST($token, $adapter);
 
         $client = new Client($service);
-        $activities = $client->getAthleteActivities(null, $tLastUpdated);
+        $activities = $client->getAthleteActivities(null, $tLastActivity);
 
+        if (sizeof($activities)) {
+          // last entry is most recent when calling with 'after' date
+          $dtLastActivity = $activities[sizeof($activities)-1]['start_date'];
+          updatePlayerLastActivityInDB($playerID, $dtLastActivity);
+        }
         addPlayerActivitiesToDB($playerID, $activities);
       }
     }
