@@ -17,7 +17,7 @@ function getPlayerFromDBByToken($token) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('SELECT id, avatar, firstname, lastname, email, last_activity, last_updated FROM players where playerProviderToken = "' . $token . '"');
+  $result = $db->query('SELECT id, avatar, firstname, lastname, email, first_activity_allowed, last_activity_allowed, last_activity, last_updated FROM players where playerProviderToken = "' . $token . '"');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -32,7 +32,7 @@ function getPlayerFromDB($playerID) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('SELECT id, avatar, firstname, lastname, email, last_activity, last_updated, playerProviderToken FROM players where id = ' . $playerID);
+  $result = $db->query('SELECT id, avatar, firstname, lastname, email, first_activity_allowed, last_activity_allowed, last_activity, last_updated, playerProviderToken FROM players where id = ' . $playerID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
