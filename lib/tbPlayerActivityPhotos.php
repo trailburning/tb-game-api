@@ -17,7 +17,7 @@ function getPlayerActivityPhotos($playerID, $activityID) {
         $service = new REST($token, $adapter);
 
         $client = new Client($service);
-        $activityPhotos = $client->getActivityPhotos($activityID, $size = 2048, $photo_sources = 'true');
+        $activityPhotos = $client->getActivityPhotos($activityID, $size = 640, $photo_sources = 'true');
 
         $results = $activityPhotos;
     } catch(Exception $e) {
