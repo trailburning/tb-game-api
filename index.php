@@ -20,6 +20,11 @@ $app = new \Slim\App;
 $app->get('/game/{gameID}', function (Request $request, Response $response) {
     $gameID = $request->getAttribute('gameID');
     $jsonResponse = getGameFromDB($gameID);
+
+    // use UTC date
+    date_default_timezone_set("UTC");
+    $dtNow = date('Y-m-d H:i:s', time());
+    $jsonResponse[0]['game_now'] = $dtNow;
     // add player data
     $jsonResponse[0]['players'] = getGamePlayersFromDB($gameID);
 
