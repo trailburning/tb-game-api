@@ -4,10 +4,6 @@ include 'vendor/autoload.php';
 use Strava\API\OAuth;
 use Strava\API\Exception;
 
-//echo strtotime('now');
-$unixtime = strtotime('2016-12-17T00:00:00Z');
-echo $unixtime . '<br/>';
-
 try {
   $options = array(
       'clientId'     => 15175,

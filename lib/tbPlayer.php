@@ -6,18 +6,18 @@ use Strava\API\Client;
 use Strava\API\Exception;
 use Strava\API\Service\REST;
 
-function addPlayerToDB($avatar, $firstname, $lastname, $email, $providerID, $providerToken) {
+function addPlayerToDB($avatar, $firstname, $lastname, $email, $city, $country, $providerID, $providerToken) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('INSERT INTO players (avatar, firstname, lastname, email, playerProviderID, playerProviderToken) VALUES ("' . $avatar . '", "' . $firstname . '", "' . $lastname . '", "' . $email. '", "' . $providerID . '", "' . $providerToken . '")');
+  $result = $db->query('INSERT INTO players (avatar, firstname, lastname, email, city, country, playerProviderID, playerProviderToken) VALUES ("' . $avatar . '", "' . $firstname . '", "' . $lastname . '", "' . $email. '", "' . $city . '", "' . $country. '", "' . $providerID . '", "' . $providerToken . '")');
 }
 
 function getPlayerFromDBByToken($token) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('SELECT id, avatar, firstname, lastname, email, first_activity_allowed, last_activity_allowed, last_activity, last_updated FROM players where playerProviderToken = "' . $token . '"');
+  $result = $db->query('SELECT id, avatar, firstname, lastname, email, last_activity, last_updated FROM players where playerProviderToken = "' . $token . '"');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -32,7 +32,7 @@ function getPlayerFromDB($playerID) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('SELECT id, avatar, firstname, lastname, email, first_activity_allowed, last_activity_allowed, last_activity, last_updated, playerProviderToken FROM players where id = ' . $playerID);
+  $result = $db->query('SELECT id, avatar, firstname, lastname, email, last_activity, last_updated, playerProviderToken FROM players where id = ' . $playerID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -67,7 +67,7 @@ function getPlayer($token) {
     $client = new Client($service);
     $activities = $client->getAthlete();
 
-    addPlayerToDB($activities['profile'], $activities['firstname'], $activities['lastname'], $activities['email'], $activities['id'], $token);
+    addPlayerToDB($activities['profile'], $activities['firstname'], $activities['lastname'], $activities['email'], $activities['city'], $activities['country'], $activities['id'], $token);
 
     $results = getPlayerFromDB($token);
   }
