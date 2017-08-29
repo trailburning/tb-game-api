@@ -9,15 +9,17 @@ use Strava\API\Service\REST;
 function addPlayerToDB($avatar, $firstname, $lastname, $email, $city, $country, $providerID, $providerToken) {
   require_once 'lib/mysql.php';
 
+  $dtNow = date('Y-m-d H:i:s', time());
+
   $db = connect_db();
-  $result = $db->query('INSERT INTO players (avatar, firstname, lastname, email, city, country, playerProviderID, playerProviderToken) VALUES ("' . $avatar . '", "' . $firstname . '", "' . $lastname . '", "' . $email. '", "' . $city . '", "' . $country. '", "' . $providerID . '", "' . $providerToken . '")');
+  $result = $db->query('INSERT INTO players (created, avatar, firstname, lastname, email, city, country, playerProviderID, playerProviderToken) VALUES ("' . $dtNow . '", "' . $avatar . '", "' . $firstname . '", "' . $lastname . '", "' . $email. '", "' . $city . '", "' . $country. '", "' . $providerID . '", "' . $providerToken . '")');
 }
 
 function getPlayerFromDBByToken($token) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('SELECT id, avatar, firstname, lastname, email, last_activity, last_updated FROM players where playerProviderToken = "' . $token . '"');
+  $result = $db->query('SELECT id, created, avatar, firstname, lastname, email, last_activity, last_updated FROM players where playerProviderToken = "' . $token . '"');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -69,7 +71,7 @@ function getPlayer($token) {
 
     addPlayerToDB($activities['profile'], $activities['firstname'], $activities['lastname'], $activities['email'], $activities['city'], $activities['country'], $activities['id'], $token);
 
-    $results = getPlayerFromDB($token);
+    $results = getPlayerFromDBByToken($token);
   }
 
   return $results;
