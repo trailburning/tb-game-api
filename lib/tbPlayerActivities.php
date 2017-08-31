@@ -6,7 +6,7 @@ use Strava\API\Client;
 use Strava\API\Exception;
 use Strava\API\Service\REST;
 
-const UPDATE_SECS = 180;
+const UPDATE_SECS = 60;
 
 function getPlayerActivitiesFromDB($playerID, $dtFirstActivityAllowed, $dtLastActivityAllowed, $activityType) {
   require_once 'lib/mysql.php';

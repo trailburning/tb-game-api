@@ -23,8 +23,16 @@ $app->get('/game/{gameID}', function (Request $request, Response $response) {
 
     // use UTC date
     date_default_timezone_set("UTC");
-    $dtNow = date('Y-m-d H:i:s', time());
+
+    $dtNow = date('Y-m-dTH:i:s.000Z', time());
     $jsonResponse[0]['game_now'] = $dtNow;
+
+    // format dates as UTC
+    $dtStartDate = new DateTime($jsonResponse[0]['game_start']);
+    $jsonResponse[0]['game_start'] = $dtStartDate->format('Y-m-dTH:i:s.000Z');
+    $dtEndDate = new DateTime($jsonResponse[0]['game_end']);
+    $jsonResponse[0]['game_end'] = $dtEndDate->format('Y-m-dTH:i:s.000Z');
+
     // add player data
     $jsonResponse[0]['players'] = getGamePlayersFromDB($gameID);
 
