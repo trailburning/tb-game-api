@@ -17,9 +17,13 @@ require 'vendor/autoload.php';
 
 $app = new \Slim\App;
 
-$app->get('/game/{gameID}', function (Request $request, Response $response) {
-    $gameID = $request->getAttribute('gameID');
+$app->get('/game/{gameHashID}', function (Request $request, Response $response) {
+    $hashids = new Hashids\Hashids('mountainrush', 10);
+    $hashGameID = $request->getAttribute('gameHashID');
+    $gameID = $hashids->decode($hashGameID)[0];
+
     $jsonResponse = getGameFromDB($gameID);
+    $jsonResponse[0]['id'] = $hashGameID;
 
     // use UTC date
     date_default_timezone_set("UTC");
@@ -48,18 +52,27 @@ $app->get('/player/{token}', function (Request $request, Response $response) {
     return $response->withJSON($jsonResponse);
 });
 
-$app->get('/game/{gameID}/player/{playerID}/activities', function (Request $request, Response $response) {
-    $gameID = $request->getAttribute('gameID');
+$app->get('/game/{gameHashID}/player/{playerHashID}/activities', function (Request $request, Response $response) {
+    $hashids = new Hashids\Hashids('mountainrush', 10);
+
+    $hashGameID = $request->getAttribute('gameHashID');
+    $gameID = $hashids->decode($hashGameID)[0];
+
     $gameResults = getGameFromDB($gameID);
 
-    $playerID = $request->getAttribute('playerID');
+    $hashPlayerID = $request->getAttribute('playerHashID');
+    $playerID = $hashids->decode($hashPlayerID)[0];
     $jsonResponse = getPlayerActivities($playerID, $gameResults[0]['game_start'], $gameResults[0]['game_end'], $gameResults[0]['type']);
     
     return $response->withJSON($jsonResponse);
 });
 
-$app->get('/player/{playerID}/activity/{activityID}/photos', function (Request $request, Response $response) {
-    $playerID = $request->getAttribute('playerID');
+$app->get('/player/{playerHashID}/activity/{activityID}/photos', function (Request $request, Response $response) {
+    $hashids = new Hashids\Hashids('mountainrush', 10);
+  
+    $hashPlayerID = $request->getAttribute('playerHashID');
+    $playerID = $hashids->decode($hashPlayerID)[0];
+
     $activityID = $request->getAttribute('activityID');
     $jsonResponse = getPlayerActivityPhotos($playerID, $activityID);
     
