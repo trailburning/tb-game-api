@@ -46,9 +46,17 @@ $app->get('/game/{gameHashID}', function (Request $request, Response $response) 
 });
 
 $app->get('/player/{token}', function (Request $request, Response $response) {
+    $hashids = new Hashids\Hashids('mountainrush', 10);
+  
     $token = $request->getAttribute('token');
     $jsonResponse = getPlayer($token);
-    
+
+    // add game data
+    $jsonResponse[0]['games'] = getGamesByPlayerFromDB($jsonResponse[0]['id']);
+
+    $hashID = $hashids->encode($jsonResponse[0]['id']);
+    $jsonResponse[0]['id'] = $hashID;
+
     return $response->withJSON($jsonResponse);
 });
 
