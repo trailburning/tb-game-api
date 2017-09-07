@@ -60,6 +60,22 @@ $app->get('/player/{token}', function (Request $request, Response $response) {
     return $response->withJSON($jsonResponse);
 });
 
+$app->get('/player/{token}/update', function (Request $request, Response $response) {
+    $hashids = new Hashids\Hashids('mountainrush', 10);
+  
+    $token = $request->getAttribute('token');
+    $jsonResponse = updatePlayer($token);
+    $jsonResponse = getPlayer($token);
+
+    // add game data
+    $jsonResponse[0]['games'] = getGamesByPlayerFromDB($jsonResponse[0]['id']);
+
+    $hashID = $hashids->encode($jsonResponse[0]['id']);
+    $jsonResponse[0]['id'] = $hashID;
+
+    return $response->withJSON($jsonResponse);
+});
+
 $app->get('/game/{gameHashID}/player/{playerHashID}/activities', function (Request $request, Response $response) {
     $hashids = new Hashids\Hashids('mountainrush', 10);
 

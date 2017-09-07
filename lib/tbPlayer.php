@@ -19,7 +19,7 @@ function getPlayerFromDBByToken($token) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('SELECT id, created, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players where playerProviderToken = "' . $token . '"');
+  $result = $db->query('SELECT id, created, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE playerProviderToken = "' . $token . '"');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -59,6 +59,27 @@ function updatePlayerLastActivityInDB($playerID, $dtLastActivity) {
   $result = $db->query('update players set last_activity = "' . $dtLastActivity . '" where id = ' . $playerID);
 }
 
+function updatePlayerDetailsInDB($playerID, $avatar, $firstname, $lastname, $email, $city, $country) {
+  require_once 'lib/mysql.php';
+
+  $db = connect_db();
+  $result = $db->query('update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'" where id = ' . $playerID);
+}
+
+function updatePlayer($token) {
+  $results = getPlayerFromDBByToken($token);
+  if (count($results) != 0) {
+    // get from provider
+    $adapter = new Pest('https://www.strava.com/api/v3');
+    $service = new REST($token, $adapter);
+
+    $client = new Client($service);
+    $activities = $client->getAthlete();
+
+    updatePlayerDetailsInDB($results[0]['id'], $activities['profile'], $activities['firstname'], $activities['lastname'], $activities['email'], $activities['city'], $activities['country']);
+  }
+}
+
 function getPlayer($token) {
   $results = getPlayerFromDBByToken($token);
   if (count($results) == 0) {
@@ -72,7 +93,7 @@ function getPlayer($token) {
     addPlayerToDB($activities['profile'], $activities['firstname'], $activities['lastname'], $activities['email'], $activities['city'], $activities['country'], $activities['id'], $token);
 
     $results = getPlayerFromDBByToken($token);
-  }
+ }
 
   return $results;
 }
