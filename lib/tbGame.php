@@ -6,6 +6,30 @@ use Strava\API\Client;
 use Strava\API\Exception;
 use Strava\API\Service\REST;
 
+function addGameToDB($name, $ascent, $type, $gameStart, $gameEnd, $journeyID, $mountain3DName) {
+  require_once 'lib/mysql.php';
+
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $ret = null;
+
+  // use UTC date
+  date_default_timezone_set("UTC");
+  $dtNow = date('Y-m-d H:i:s', time());
+
+  $db = connect_db();
+  if ($db->query('INSERT INTO games (created, name, ascent, type, game_start, game_end, journeyID, mountain3DName) VALUES ("' . $dtNow . '", "' . $name . '", ' . $ascent . ', "' . $type . '", "' . $gameStart . '", "' . $gameEnd . '", "' . $journeyID . '", "' . $mountain3DName . '")') === TRUE) {
+    $lastInsertID = $db->insert_id;
+
+    $hashID = $hashids->encode($lastInsertID);
+
+    $result = $db->query('UPDATE games SET hashid = "' . $hashID . '" WHERE id = ' . $db->insert_id);
+
+    $ret = getGameFromDB($lastInsertID);
+  }
+  return $ret;
+}
+
 function getGamePlayersFromDB($gameID) {
   require_once 'lib/mysql.php';
 

@@ -45,6 +45,15 @@ $app->get('/game/{gameHashID}', function (Request $request, Response $response) 
     return $gameJSON;
 });
 
+$app->post('/game', function (Request $request, Response $response) {
+  $json = $request->getBody();
+  $data = json_decode($json, true);
+
+  $jsonResponse = addGameToDB($data['name'], $data['ascent'], $data['type'], $data['gameStart'], $data['gameEnd'], $data['journeyID'], $data['mountain3DName']);
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->get('/player/{token}', function (Request $request, Response $response) {
     $hashids = new Hashids\Hashids('mountainrush', 10);
   
@@ -58,6 +67,15 @@ $app->get('/player/{token}', function (Request $request, Response $response) {
     $jsonResponse[0]['id'] = $hashID;
 
     return $response->withJSON($jsonResponse);
+});
+
+$app->post('/player', function (Request $request, Response $response) {
+  $json = $request->getBody();
+  $data = json_decode($json, true);
+
+  $jsonResponse = addPlayerToDB($data['avatar'], $data['firstname'], $data['lastname'], $data['email'], $data['city'], $data['country'], '', '');
+
+  return $response->withJSON($jsonResponse);
 });
 
 $app->get('/player/{token}/update', function (Request $request, Response $response) {
