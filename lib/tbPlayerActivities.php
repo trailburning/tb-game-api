@@ -60,11 +60,13 @@ function getPlayerActivities($playerID, $startDate, $endDate, $activityType) {
     $tLastUpdated = strtotime($dtLastUpdated);
     $nUpdatedSecondsAgo = abs($tNow - $tLastUpdated);
 
-    if ($nUpdatedSecondsAgo > UPDATE_SECS) {
-      $tLastActivity = strtotime($dtLastActivity);
-      $tFirstActivityAllowed = strtotime($dtFirstActivityAllowed);
-      $tLastActivityAllowed = strtotime($dtLastActivityAllowed);
+    $tLastActivity = strtotime($dtLastActivity);
+    $tFirstActivityAllowed = strtotime($dtFirstActivityAllowed);
+    $tLastActivityAllowed = strtotime($dtLastActivityAllowed);
 
+    // check if we're now past when first activity is allowed and we haven't updated recently
+    if ($tNow > $tFirstActivityAllowed && $nUpdatedSecondsAgo > UPDATE_SECS) {
+      // only if the last recorded activity is before the last allowed
       if ($tLastActivity < $tLastActivityAllowed) {
         // get from provider
         $adapter = new Pest('https://www.strava.com/api/v3');
