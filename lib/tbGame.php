@@ -55,6 +55,10 @@ function getGamesByPlayerFromDB($playerID) {
 
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
+  // use UTC date
+  date_default_timezone_set("UTC");
+  $dtNow = new DateTime("now");
+
   $db = connect_db();
   $result = $db->query('SELECT gamePlayers.game, games.name, games.ascent, games.type, games.game_start, games.game_end FROM gamePlayers join games on gamePlayers.game = games.id where player = ' . $playerID . ' order by games.game_end desc');
   $rows = array();
@@ -62,6 +66,17 @@ function getGamesByPlayerFromDB($playerID) {
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
     $hashID = $hashids->encode($row['game']);
     $row['game'] = $hashID;
+
+    // format dates as UTC
+    $dtStartDate = new DateTime($row['game_start']);
+    $row['game_start'] = $dtStartDate->format('Y-m-d\TH:i:s.000\Z');
+    $dtEndDate = new DateTime($row['game_end']);
+    $row['game_end'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
+
+    $row['active'] = false;
+    if ($dtStartDate < $dtNow && $dtEndDate > $dtNow) {
+      $row['active'] = true;
+    }
 
     $rows[$index] = $row;
     $index++;
