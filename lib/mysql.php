@@ -14,6 +14,7 @@ function connect_db() {
 */  
 
   $connection = new mysqli($server, $user, $pass, $database);
+  mysqli_set_charset($connection, 'utf8');
 
   return $connection;
 }
