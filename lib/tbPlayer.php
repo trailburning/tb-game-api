@@ -79,7 +79,7 @@ function updatePlayerDetailsInDB($playerID, $avatar, $firstname, $lastname, $ema
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'" where id = ' . $playerID);
+  $result = $db->query('update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'", city = "' . $city . '", country = "' . $country . '" where id = ' . $playerID);
 }
 
 function updatePlayer($token) {

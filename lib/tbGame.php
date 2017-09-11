@@ -30,6 +30,13 @@ function addGameToDB($name, $ascent, $type, $gameStart, $gameEnd, $journeyID, $m
   return $ret;
 }
 
+function updateaGameInDB($gameID, $name) {
+  require_once 'lib/mysql.php';
+
+  $db = connect_db();
+  $result = $db->query('update games set name = "' . $name . '" where id = ' . $gameID);
+}
+
 function getGamePlayersFromDB($gameID) {
   require_once 'lib/mysql.php';
 
