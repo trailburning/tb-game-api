@@ -94,7 +94,7 @@ $app->get('/player/{token}/update', function (Request $request, Response $respon
     return $response->withJSON($jsonResponse);
 });
 
-$app->get('/game/{gameHashID}/player/{playerHashID}/activities', function (Request $request, Response $response) {
+$app->get('/game/{gameHashID}/player/{playerHashID}/progress', function (Request $request, Response $response) {
     $hashids = new Hashids\Hashids('mountainrush', 10);
 
     $hashGameID = $request->getAttribute('gameHashID');
@@ -104,8 +104,27 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/activities', function (Reque
 
     $hashPlayerID = $request->getAttribute('playerHashID');
     $playerID = $hashids->decode($hashPlayerID)[0];
-    $jsonResponse = getPlayerActivities($playerID, $gameResults[0]['game_start'], $gameResults[0]['game_end'], $gameResults[0]['type']);
-    
+    $arrPlayerActivities = getPlayerActivities($playerID, $gameResults[0]['game_start'], $gameResults[0]['game_end'], $gameResults[0]['type']);
+
+    $nElevationGain = 0;
+    foreach ($arrPlayerActivities as $activity) {
+      $nElevationGain += $activity['total_elevation_gain'];
+    }
+    // 1st activity is the most recent
+    if (count($arrPlayerActivities)) {
+      $dtLastActivity = $arrPlayerActivities[0]['start_date'];
+    }
+
+    // has player reached or exceeded the ascent goal?
+    if ($nElevationGain >= $gameResults[0]['ascent']) {
+      setPlayerGameAscentCompleteInDB($gameID, $playerID, $dtLastActivity);
+    }
+
+    $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
+    $jsonResponse = $gamePlayerResults;
+
+    $jsonResponse[0]['activities'] = $arrPlayerActivities;
+
     return $response->withJSON($jsonResponse);
 });
 

@@ -30,11 +30,33 @@ function addGameToDB($name, $ascent, $type, $gameStart, $gameEnd, $journeyID, $m
   return $ret;
 }
 
-function updateaGameInDB($gameID, $name) {
+function updateGameInDB($gameID, $name) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('update games set name = "' . $name . '" where id = ' . $gameID);
+  $result = $db->query('UPDATE games SET name = "' . $name . '" where id = ' . $gameID);
+}
+
+function setPlayerGameAscentCompleteInDB($gameID, $playerID, $ascentCompleteActivityDate) {
+  // only set once
+  $db = connect_db();
+  $result = $db->query('SELECT ascentCompleted FROM gamePlayers where game = ' . $gameID . ' and player = ' . $playerID);
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    if (!$row['ascentCompleted']) {
+      $db->query('UPDATE gamePlayers SET ascentCompleted = "' . $ascentCompleteActivityDate . '" where game = ' . $gameID . ' and player = ' . $playerID);
+    }
+  }
+}
+
+function setPlayerGameDistanceCompleteInDB($gameID, $playerID, $distanceCompleteActivityDate) {
+  // only set once
+  $db = connect_db();
+  $result = $db->query('SELECT distanceCompleted FROM gamePlayers where game = ' . $gameID . ' and player = ' . $playerID);
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    if (!$row['distanceCompleted']) {
+      $db->query('UPDATE gamePlayers SET distanceCompleted = "' . $distanceCompleteActivityDate . '" where game = ' . $gameID . ' and player = ' . $playerID);
+    }
+  }
 }
 
 function getGamePlayersFromDB($gameID) {
@@ -43,7 +65,7 @@ function getGamePlayersFromDB($gameID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = connect_db();
-  $result = $db->query('SELECT players.id, avatar, firstname, lastname, city, country FROM gamePlayers join players on gamePlayers.player = players.id where game = ' . $gameID);
+  $result = $db->query('SELECT players.id, avatar, firstname, lastname, city, country FROM gamePlayers JOIN players ON gamePlayers.player = players.id WHERE game = ' . $gameID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -97,6 +119,21 @@ function getGameFromDB($gameID) {
 
   $db = connect_db();
   $result = $db->query('SELECT id, name, ascent, type, game_start, game_end, journeyID, mountain3DName FROM games where id = ' . $gameID);
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
+function getGamePlayerFromDB($gameID, $playerID) {
+  require_once 'lib/mysql.php';
+
+  $db = connect_db();
+  $result = $db->query('SELECT ascentCompleted, distanceCompleted FROM gamePlayers where game = ' . $gameID . ' and player = ' . $playerID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {

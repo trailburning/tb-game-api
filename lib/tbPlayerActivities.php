@@ -11,6 +11,9 @@ const UPDATE_SECS = 60;
 function getPlayerActivitiesFromDB($playerID, $dtFirstActivityAllowed, $dtLastActivityAllowed, $activityType) {
   require_once 'lib/mysql.php';
 
+  // use UTC date
+  date_default_timezone_set("UTC");
+
   $db = connect_db();
   $result = $db->query('SELECT activity, type, distance, total_elevation_gain, start_date FROM playerActivities where player = ' . $playerID . ' and start_date > "' . $dtFirstActivityAllowed . '" and start_date < "' . $dtLastActivityAllowed . '" order by start_date desc ');
   $rows = array();
@@ -18,6 +21,10 @@ function getPlayerActivitiesFromDB($playerID, $dtFirstActivityAllowed, $dtLastAc
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
     // only get activities of the correct type
     if ($row['type'] == $activityType) {
+      // format as UTC
+      $dtStartDate = new DateTime($row['start_date']);
+      $row['start_date'] = $dtStartDate->format('Y-m-d\TH:i:s.000\Z');
+
       $rows[$index] = $row;
       $index++;
     }
