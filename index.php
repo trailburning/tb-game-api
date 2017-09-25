@@ -18,74 +18,86 @@ require 'vendor/autoload.php';
 
 $app = new \Slim\App;
 
-$app->get('/socialimage', function (Request $request, Response $response) {
+$app->get('/game/{gameHashID}/socialimage', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+  $hashGameID = $request->getAttribute('gameHashID');
+  $gameID = $hashids->decode($hashGameID)[0];
+
+  $jsonResponse = getGameFromDB($gameID);
+
+  $strJourneyID = $jsonResponse[0]['journeyID'];
+  $strMountain = $jsonResponse[0]['name'];
+  $strRegion = strtolower($jsonResponse[0]['region']);
+  $strAscent = $jsonResponse[0]['ascent'] . 'm';
+  $strChallenge = strtolower($jsonResponse[0]['type']) . ' challenge';
+
   $builder = new UrlBuilder("tbassets2.imgix.net");
 
   // bottom left data
-  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed Demi,Bold", "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 64, "txt64" => 'Matterhorn');
+  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed Demi,Bold", "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 55, "txt64" => $strMountain);
   $txtMountain = $builder->createURL("~text", $params);
 
-  $params = array("w" => 600, "txtfont64" => "Avenir Next Regular", "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 32, "txt64" => 'switzerland');
+  $params = array("w" => 600, "txtfont64" => "Avenir Next Regular", "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 27, "txt64" => $strRegion);
   $txtCountry = $builder->createURL("~text", $params);
 
-  $params = array("w" => 600, "h" => 168, "markx" => 46, "marky" => 38, "mark64" => $txtMountain,
-  "bx" => 46, "by" => 104, "bm" => 'normal', "blend64" => $txtCountry);
-  $leftData = $builder->createURL("images/brands/mountainrush/bg_text.png", $params);
+  $params = array("w" => 600, "h" => 168, "markx" => 46, "marky" => 24, "mark64" => $txtMountain,
+  "bx" => 46, "by" => 90, "bm" => 'normal', "blend64" => $txtCountry);
+  $leftData = $builder->createURL("images/brands/mountainrush/social/bg_text2.png", $params);
 
   // bottom right data
-  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed Demi,Bold", "txtalign" => 'right', "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 64, "txt64" => '2459m');
+  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed Demi,Bold", "txtalign" => 'right', "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 55, "txt64" => $strAscent);
   $txtAscent = $builder->createURL("~text", $params);
 
-  $params = array("w" => 600, "txtfont64" => "Avenir Next Regular", "txtalign" => 'right', "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 32, "txt64" => 'run challenge');
+  $params = array("w" => 600, "txtfont64" => "Avenir Next Regular", "txtalign" => 'right', "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 27, "txt64" => $strChallenge);
   $txtDetail = $builder->createURL("~text", $params);
 
-  $params = array("w" => 600, "h" => 168, "markx" => -46, "marky" => 38, "mark64" => $txtAscent,
-  "bx" => -46, "by" => 104, "bm" => 'normal', "blend64" => $txtDetail);
-  $rightData = $builder->createURL("images/brands/mountainrush/bg_text.png", $params);
+  $params = array("w" => 600, "h" => 168, "markx" => -46, "marky" => 24, "mark64" => $txtAscent,
+  "bx" => -46, "by" => 90, "bm" => 'normal', "blend64" => $txtDetail);
+  $rightData = $builder->createURL("images/brands/mountainrush/social/bg_text2.png", $params);
 
   // bottom data
-  $params = array("w" => 1200, "h" => 168, "markx" => 0, "marky" => 0, "mark64" => $leftData,
+  $params = array("w" => 1200, "h" => 150, "markx" => 0, "marky" => 0, "mark64" => $leftData,
   "bx" => 600, "by" => 0, "bm" => 'normal', "blend64" => $rightData);
-  $bottomImg = $builder->createURL("images/brands/mountainrush/bg_blank.png", $params);
+  $bottomImg = $builder->createURL("images/brands/mountainrush/social/bg_blank2.png", $params);
 
-  // top data
-  $params = array("w" => 1200, "h" => 168);
-  $topImg = $builder->createURL("images/brands/mountainrush/bg_blank.png", $params);
+  // overlay
+  $params = array("w" => 1200, "h" => 630);
+  $overlayImg = $builder->createURL("images/brands/mountainrush/social/overlay.png", $params);
 
   // final image
-  $params = array("w" => 1200, "h" => 630, "q" => 80, "markx" => 0, "marky" => 0, "mark64" => $topImg,
-  "bx" => 0, "by" => 462, "bm" => 'normal', "blend64" => $bottomImg);
-  $finalImg = $builder->createURL("images/brands/mountainrush/test2.jpg", $params);
+  $params = array("w" => 1200, "h" => 630, "q" => 80, "markx" => 0, "marky" => 480, "mark64" => $bottomImg,
+  "bw" => 1200, "bh" => 630, "bm" => 'normal', "blend64" => $overlayImg);
+  $finalImg = $builder->createURL("images/brands/mountainrush/social/games/" . $strJourneyID . ".jpg", $params);
 
   echo $finalImg;
 });
 
 $app->get('/game/{gameHashID}', function (Request $request, Response $response) {
-    $hashids = new Hashids\Hashids('mountainrush', 10);
-    $hashGameID = $request->getAttribute('gameHashID');
-    $gameID = $hashids->decode($hashGameID)[0];
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+  $hashGameID = $request->getAttribute('gameHashID');
+  $gameID = $hashids->decode($hashGameID)[0];
 
-    $jsonResponse = getGameFromDB($gameID);
-    $jsonResponse[0]['id'] = $hashGameID;
+  $jsonResponse = getGameFromDB($gameID);
+  $jsonResponse[0]['id'] = $hashGameID;
 
-    // use UTC date
-    date_default_timezone_set("UTC");
+  // use UTC date
+  date_default_timezone_set("UTC");
 
-    $dtNow = date('Y-m-d\TH:i:s.000\Z', time());
-    $jsonResponse[0]['game_now'] = $dtNow;
+  $dtNow = date('Y-m-d\TH:i:s.000\Z', time());
+  $jsonResponse[0]['game_now'] = $dtNow;
 
-    // format dates as UTC
-    $dtStartDate = new DateTime($jsonResponse[0]['game_start']);
-    $jsonResponse[0]['game_start'] = $dtStartDate->format('Y-m-d\TH:i:s.000\Z');
-    $dtEndDate = new DateTime($jsonResponse[0]['game_end']);
-    $jsonResponse[0]['game_end'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
+  // format dates as UTC
+  $dtStartDate = new DateTime($jsonResponse[0]['game_start']);
+  $jsonResponse[0]['game_start'] = $dtStartDate->format('Y-m-d\TH:i:s.000\Z');
+  $dtEndDate = new DateTime($jsonResponse[0]['game_end']);
+  $jsonResponse[0]['game_end'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
 
-    // add player data
-    $jsonResponse[0]['players'] = getGamePlayersFromDB($gameID);
+  // add player data
+  $jsonResponse[0]['players'] = getGamePlayersFromDB($gameID);
 
-    $gameJSON = $response->withJSON($jsonResponse);
+  $gameJSON = $response->withJSON($jsonResponse);
 
-    return $gameJSON;
+  return $gameJSON;
 });
 
 $app->post('/game', function (Request $request, Response $response) {
