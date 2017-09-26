@@ -6,6 +6,10 @@ use Strava\API\Client;
 use Strava\API\Exception;
 use Strava\API\Service\REST;
 
+const STATE_GAME_OVER = 'complete';
+const STATE_GAME_ACTIVE = 'active';
+const STATE_GAME_PENDING = 'pending';
+
 function addGameToDB($name, $ascent, $type, $gameStart, $gameEnd, $journeyID, $mountain3DName) {
   require_once 'lib/mysql.php';
 
@@ -102,9 +106,13 @@ function getGamesByPlayerFromDB($playerID) {
     $dtEndDate = new DateTime($row['game_end']);
     $row['game_end'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
 
-    $row['active'] = false;
+    $row['game_state'] = STATE_GAME_OVER;
     if ($dtStartDate < $dtNow && $dtEndDate > $dtNow) {
-      $row['active'] = true;
+      $row['game_state'] = STATE_GAME_ACTIVE;
+    }
+
+    if ($dtStartDate > $dtNow) {
+      $row['game_state'] = STATE_GAME_PENDING;
     }
 
     $rows[$index] = $row;
