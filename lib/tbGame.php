@@ -63,6 +63,13 @@ function setPlayerGameDistanceCompleteInDB($gameID, $playerID, $distanceComplete
   }
 }
 
+function setPlayerGameMediaCaptureInDB($gameID, $playerID) {
+  // only set once
+  $db = connect_db();
+
+  $result = $db->query('UPDATE gamePlayers SET bMediaCaptured = true WHERE game = ' . $gameID . ' and player = ' . $playerID);
+}
+
 function getGamePlayersFromDB($gameID) {
   require_once 'lib/mysql.php';
 
@@ -141,7 +148,7 @@ function getGamePlayerFromDB($gameID, $playerID) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('SELECT ascentCompleted, distanceCompleted FROM gamePlayers where game = ' . $gameID . ' and player = ' . $playerID);
+  $result = $db->query('SELECT bMediaCaptured, ascentCompleted, distanceCompleted FROM gamePlayers where game = ' . $gameID . ' and player = ' . $playerID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -150,4 +157,25 @@ function getGamePlayerFromDB($gameID, $playerID) {
   }
 
   return $rows;
+}
+
+function getGamePlayerActivityPhotos($gameID, $playerID, $activityID) {
+  // first find last update date
+  $results = getPlayerFromDB($playerID);
+  if (count($results) != 0) {
+    $token = $results[0]['playerProviderToken'];
+
+    try {
+      $adapter = new Pest('https://www.strava.com/api/v3');
+      $service = new REST($token, $adapter);
+
+      $client = new Client($service);
+      $activityPhotos = $client->getActivityPhotos($activityID, $size = 640, $photo_sources = 'true');
+
+      $results = $activityPhotos;
+    } catch(Exception $e) {
+      echo json_encode($e->getMessage());
+    }
+  }  
+  return $results;
 }

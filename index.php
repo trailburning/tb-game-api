@@ -12,7 +12,6 @@ use Imgix\UrlBuilder;
 include "lib/tbGame.php";
 include "lib/tbPlayer.php";
 include "lib/tbPlayerActivities.php";
-include "lib/tbPlayerActivityPhotos.php";
 
 require 'vendor/autoload.php';
 
@@ -183,15 +182,22 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/progress', function (Request
     return $response->withJSON($jsonResponse);
 });
 
-$app->get('/player/{playerHashID}/activity/{activityID}/photos', function (Request $request, Response $response) {
+$app->get('/game/{gameHashID}/player/{playerHashID}/activity/{activityID}/photos', function (Request $request, Response $response) {
     $hashids = new Hashids\Hashids('mountainrush', 10);
+
+    $hashGameID = $request->getAttribute('gameHashID');
+    $gameID = $hashids->decode($hashGameID)[0];
   
     $hashPlayerID = $request->getAttribute('playerHashID');
     $playerID = $hashids->decode($hashPlayerID)[0];
 
     $activityID = $request->getAttribute('activityID');
-    $jsonResponse = getPlayerActivityPhotos($playerID, $activityID);
-    
+    $jsonResponse = getGamePlayerActivityPhotos($gameID, $playerID, $activityID);
+    // do we have media?
+    if (count($jsonResponse)) {
+      // store that we have media
+      setPlayerGameMediaCaptureInDB($gameID, $playerID);
+    }
     return $response->withJSON($jsonResponse);
 });
 
