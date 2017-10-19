@@ -9,6 +9,7 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use Imgix\UrlBuilder;
 
+include "lib/tbEmail.php";
 include "lib/tbGame.php";
 include "lib/tbPlayer.php";
 include "lib/tbPlayerActivities.php";
@@ -19,6 +20,12 @@ $app = new \Slim\App;
 
 define('CLIENT_ID', 15175);
 define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
+
+$app->get('/worker', function (Request $request, Response $response) {
+  $result = sendEmail('Mountain Rush - Player Activity', 'Player Activity', 'This is some activity..');
+
+  print_r($result);
+});
 
 $app->get('/strava/subscribe', function (Request $request, Response $response) {
   $url = 'https://api.strava.com/api/v3/push_subscriptions';
@@ -66,9 +73,7 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
   $json = $request->getBody();
   $data = json_decode($json, true); 
 
-//  echo $data['subscription_id'];
-  $body = $json;
-  mail('mallbeury@mac.com', 'Strava Test', $body);
+  $result = sendEmail('Mountain Rush - Player Activity', 'Player Activity', 'Player - ' . $data['owner_id']);
 
   header("HTTP/1.1 200 OK");
 
