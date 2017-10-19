@@ -17,6 +17,64 @@ require 'vendor/autoload.php';
 
 $app = new \Slim\App;
 
+define('CLIENT_ID', 15175);
+define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
+
+$app->get('/strava/subscribe', function (Request $request, Response $response) {
+  $url = 'https://api.strava.com/api/v3/push_subscriptions';
+
+  $fields = array(
+    'client_id' => CLIENT_ID,
+    'client_secret' => CLIENT_SECRET,
+    'object_type' => 'activity',
+    'aspect_type' => 'create',
+    'callback_url' => 'http://mountainrush.trailburning.com/tb-game-api/strava/callback',
+    'verify_token' => 'STRAVA'
+  );
+
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch,CURLOPT_POST, count($fields));
+  curl_setopt($ch,CURLOPT_POSTFIELDS, http_build_query($fields));
+  curl_exec($ch);
+  curl_close($ch);
+});
+
+$app->get('/strava/getsubscriptions', function (Request $request, Response $response) {
+  $url = 'https://api.strava.com/api/v3/push_subscriptions?client_id=' . CLIENT_ID . '&client_secret=' . CLIENT_SECRET;
+
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_exec($ch);
+  curl_close($ch);
+});
+
+$app->get('/strava/callback', function (Request $request, Response $response) {
+  // STRAVA GET to veriy  callback endpoint
+  $allGetVars = $request->getQueryParams();
+
+  if ($allGetVars['hub_verify_token'] == 'STRAVA') {
+    header("HTTP/1.1 200 OK");
+    $data = array('hub.challenge' => $allGetVars['hub_challenge']);
+
+    return $response->withJSON($data);
+  }
+});
+
+$app->post('/strava/callback', function (Request $request, Response $response) {
+  // STRAVA POST to send update
+  $json = $request->getBody();
+  $data = json_decode($json, true); 
+
+//  echo $data['subscription_id'];
+  $body = $json;
+  mail('mallbeury@mac.com', 'Strava Test', $body);
+
+  header("HTTP/1.1 200 OK");
+
+  return;
+});
+
 $app->get('/game/{gameHashID}/socialimage', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
   $hashGameID = $request->getAttribute('gameHashID');
