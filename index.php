@@ -22,7 +22,7 @@ define('CLIENT_ID', 15175);
 define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
 
 $app->get('/worker', function (Request $request, Response $response) {
-  $result = sendEmail('Mountain Rush - Player Activity', 'Player Activity', 'This is some activity..');
+  $result = sendEmail('Mountain Rush - Player Activity', 'mallbeury@mac.com', 'Matt Allbeury', 'Player Activity', 'This is some activity..');
 
   print_r($result);
 });
@@ -73,7 +73,25 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
   $json = $request->getBody();
   $data = json_decode($json, true); 
 
-  $result = sendEmail('Mountain Rush - Player Activity', 'Player Activity', 'Player - ' . $data['owner_id']);
+  // look for user
+  $jsonUserResponse = getPlayerFromDBByProviderID($data['owner_id']);
+  if (count($jsonUserResponse)) {
+    // look for games
+    $jsonGamesResponse = getGamesByPlayerFromDB($jsonUserResponse[0]['id']);
+    if (count($jsonGamesResponse)) {
+      // look for active game
+      foreach ($jsonGamesResponse as $game) {
+        if ($game['game_state'] == STATE_GAME_ACTIVE) {
+          $strGame = '<a href="http://mountainrush.trailburning.com/game/' . $game['game'] . '">' . $game['name'] . '</a>';
+          $strMsg = $jsonUserResponse[0]['firstname'] . ' ' . $jsonUserResponse[0]['lastname'] . ' has progressed in the ' . $strGame . ' challenge!';
+
+//          $result = sendEmail('Mountain Rush - Player Activity', $jsonUserResponse[0]['email'], $jsonUserResponse[0]['firstname'] . ' ' . $jsonUserResponse[0]['lastname'], 'Player Activity', $strMsg);
+
+          $result = sendEmail('Mountain Rush - Player Activity', 'mallbeury@mac.com', 'Matt Allbeury', 'Player Activity', $strMsg);
+        }
+      }
+    }
+  }
 
   header("HTTP/1.1 200 OK");
 

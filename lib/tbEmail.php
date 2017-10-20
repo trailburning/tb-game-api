@@ -1,5 +1,5 @@
 <?php
-function sendEmail($strSubject, $strMsgTitle, $strMsgContent) {
+function sendEmail($strSubject, $strToEmail, $strToName, $strMsgTitle, $strMsgContent) {
   try {
     $mandrill = new Mandrill('kRr66_sxVLQJwehdLnakqg');
 
@@ -22,8 +22,8 @@ function sendEmail($strSubject, $strMsgTitle, $strMsgContent) {
       'from_name' => 'Mountain Rush',
       'to' => array(
         array(
-          'email' => 'mallbeury@mac.com',
-          'name' => 'Matty',
+          'email' => $strToEmail,
+          'name' => $strToName,
           'type' => 'to'
         )
       ),

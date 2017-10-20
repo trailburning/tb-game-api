@@ -46,6 +46,21 @@ function getPlayerFromDBByToken($token) {
   return $rows;
 }
 
+function getPlayerFromDBByProviderID($providerID) {
+  require_once 'lib/mysql.php';
+
+  $db = connect_db();
+  $result = $db->query('SELECT id, created, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE playerProviderID = "' . $providerID . '"');
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
 function getPlayerFromDB($playerID) {
   require_once 'lib/mysql.php';
 
