@@ -1,10 +1,18 @@
 <?php
-function sendEmail($strSubject, $strToEmail, $strToName, $strMsgTitle, $strMsgContent) {
+function sendEmail($strJourneyID, $strSubject, $strToEmail, $strToName, $strWelcome, $strMsgTitle, $strMsgContent) {
   try {
     $mandrill = new Mandrill('kRr66_sxVLQJwehdLnakqg');
 
     $template_name = 'TB Member EDM';
     $template_content = array(
+      array(
+        'name' => 'msg_image',
+        'content' => '<img src="http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $strJourneyID . '_682x274.jpg" width="682" alt="Play Mountain Rush">'
+      ),
+      array(
+        'name' => 'msg_welcome',
+        'content' => $strWelcome
+      ),
       array(
         'name' => 'msg_title',
         'content' => $strMsgTitle

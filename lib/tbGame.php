@@ -100,7 +100,7 @@ function getGamesByPlayerFromDB($playerID) {
   $dtNow = new DateTime("now");
 
   $db = connect_db();
-  $result = $db->query('SELECT gamePlayers.game, games.name, games.ascent, games.type, games.game_start, games.game_end FROM gamePlayers join games on gamePlayers.game = games.id where player = ' . $playerID . ' order by games.game_end desc');
+  $result = $db->query('SELECT gamePlayers.game, games.name, games.ascent, games.type, games.game_start, games.game_end, games.journeyID FROM gamePlayers join games on gamePlayers.game = games.id where player = ' . $playerID . ' order by games.game_end desc');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {

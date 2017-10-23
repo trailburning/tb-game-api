@@ -7,9 +7,9 @@ header('Content-Type: application/json');
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use Imgix\UrlBuilder;
 
 include "lib/tbEmail.php";
+include "lib/tbImgix.php";
 include "lib/tbGame.php";
 include "lib/tbPlayer.php";
 include "lib/tbPlayerActivities.php";
@@ -22,7 +22,7 @@ define('CLIENT_ID', 15175);
 define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
 
 $app->get('/worker', function (Request $request, Response $response) {
-  $result = sendEmail('Mountain Rush - Player Activity', 'mallbeury@mac.com', 'Matt Allbeury', 'Player Activity', 'This is some activity..');
+  $result = sendEmail('59a180c711b0c944854494', 'Mountain Rush - Player Activity', 'mallbeury@mac.com', 'Matt Allbeury', 'challenge', 'Player Activity', 'This is some activity..');
 
   print_r($result);
 });
@@ -82,12 +82,12 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
       // look for active game
       foreach ($jsonGamesResponse as $game) {
         if ($game['game_state'] == STATE_GAME_ACTIVE) {
+          $strWelcome = $game['name'] . ' challenge';
           $strGame = '<a href="http://mountainrush.trailburning.com/game/' . $game['game'] . '">' . $game['name'] . '</a>';
           $strMsg = $jsonUserResponse[0]['firstname'] . ' ' . $jsonUserResponse[0]['lastname'] . ' has progressed in the ' . $strGame . ' challenge!';
 
-//          $result = sendEmail('Mountain Rush - Player Activity', $jsonUserResponse[0]['email'], $jsonUserResponse[0]['firstname'] . ' ' . $jsonUserResponse[0]['lastname'], 'Player Activity', $strMsg);
-
-          $result = sendEmail('Mountain Rush - Player Activity', 'mallbeury@mac.com', 'Matt Allbeury', 'Player Activity', $strMsg);
+//          $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity', $jsonUserResponse[0]['email'], $jsonUserResponse[0]['firstname'] . ' ' . $jsonUserResponse[0]['lastname'], $strWelcome, 'Player Activity', $strMsg);
+          $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity', 'mallbeury@mac.com', 'Matt Allbeury', $strWelcome, 'Player Activity', $strMsg);
         }
       }
     }
@@ -111,45 +111,7 @@ $app->get('/game/{gameHashID}/socialimage', function (Request $request, Response
   $strAscent = $jsonResponse[0]['ascent'] . 'm';
   $strChallenge = strtolower($jsonResponse[0]['type']) . ' challenge';
 
-  $builder = new UrlBuilder("tbassets2.imgix.net");
-
-  // bottom left data
-  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed Demi,Bold", "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 55, "txt64" => $strMountain);
-  $txtMountain = $builder->createURL("~text", $params);
-
-  $params = array("w" => 600, "txtfont64" => "Avenir Next Regular", "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 27, "txt64" => $strRegion);
-  $txtCountry = $builder->createURL("~text", $params);
-
-  $params = array("w" => 600, "h" => 168, "markx" => 46, "marky" => 24, "mark64" => $txtMountain,
-  "bx" => 46, "by" => 90, "bm" => 'normal', "blend64" => $txtCountry);
-  $leftData = $builder->createURL("images/brands/mountainrush/social/bg_text2.png", $params);
-
-  // bottom right data
-  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed Demi,Bold", "txtalign" => 'right', "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 55, "txt64" => $strAscent);
-  $txtAscent = $builder->createURL("~text", $params);
-
-  $params = array("w" => 600, "txtfont64" => "Avenir Next Regular", "txtalign" => 'right', "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 27, "txt64" => $strChallenge);
-  $txtDetail = $builder->createURL("~text", $params);
-
-  $params = array("w" => 600, "h" => 168, "markx" => -46, "marky" => 24, "mark64" => $txtAscent,
-  "bx" => -46, "by" => 90, "bm" => 'normal', "blend64" => $txtDetail);
-  $rightData = $builder->createURL("images/brands/mountainrush/social/bg_text2.png", $params);
-
-  // bottom data
-  $params = array("w" => 1200, "h" => 150, "markx" => 0, "marky" => 0, "mark64" => $leftData,
-  "bx" => 600, "by" => 0, "bm" => 'normal', "blend64" => $rightData);
-  $bottomImg = $builder->createURL("images/brands/mountainrush/social/bg_blank2.png", $params);
-
-  // overlay
-  $params = array("w" => 1200, "h" => 630);
-  $overlayImg = $builder->createURL("images/brands/mountainrush/social/overlay.png", $params);
-
-  // final image
-  $params = array("w" => 1200, "h" => 630, "q" => 80, "markx" => 0, "marky" => 480, "mark64" => $bottomImg,
-  "bw" => 1200, "bh" => 630, "bm" => 'normal', "blend64" => $overlayImg);
-  $finalImg = $builder->createURL("images/brands/mountainrush/social/games/" . $strJourneyID . ".jpg", $params);
-
-  echo $finalImg;
+  echo buildSocialGameImage($strJourneyID, $strMountain, $strRegion, $strAscent, $strChallenge);
 });
 
 $app->get('/game/{gameHashID}', function (Request $request, Response $response) {
