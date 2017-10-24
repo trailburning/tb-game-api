@@ -41,10 +41,10 @@ function updateGameInDB($gameID, $name) {
   $result = $db->query('UPDATE games SET name = "' . $name . '" where id = ' . $gameID);
 }
 
-function setPlayerGameActivityInDB($gameID, $playerID, $bActivity) {
+function setPlayerGameActivityInDB($gameID, $playerID, $activity) {
   // only set once
   $db = connect_db();
-  $db->query('UPDATE gamePlayers SET bActivity = ' . $bActivity . ' where game = ' . $gameID . ' and player = ' . $playerID);
+  $db->query('UPDATE gamePlayers SET latest_activity = ' . $activity . ' where game = ' . $gameID . ' and player = ' . $playerID);
 }
 
 function setPlayerGameAscentCompleteInDB($gameID, $playerID, $ascentCompleteActivityDate) {
@@ -139,7 +139,8 @@ function getPlayerActivtyByGameFromDB($gameID) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('SELECT player FROM gamePlayers WHERE game = ' . $gameID . ' and bActivity = 1');
+  $result = $db->query('SELECT gamePlayers.latest_activity, players.id, avatar, firstname, lastname, city, country, playerProviderToken FROM gamePlayers JOIN players ON gamePlayers.player = players.id WHERE game = ' . $gameID . ' and latest_activity != 0');
+//  $result = $db->query('SELECT player, latest_activity FROM gamePlayers WHERE game = ' . $gameID . ' and latest_activity != 0');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {

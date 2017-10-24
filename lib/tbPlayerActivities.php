@@ -47,6 +47,18 @@ function addPlayerActivitiesToDB($playerID, $jsonActivities) {
   }
 }
 
+function getPlayerActivity($token, $activityID) {
+  // get from provider
+  $adapter = new Pest('https://www.strava.com/api/v3');
+  $service = new REST($token, $adapter);
+
+  $client = new Client($service);
+
+  $activity = $client->getActivity($activityID);
+
+  return $activity;
+}
+
 function getPlayerActivities($playerID, $startDate, $endDate, $activityType) {
   date_default_timezone_set("UTC");
   $dtNow = date('Y-m-d H:i:s', time());

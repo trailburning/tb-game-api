@@ -37,22 +37,30 @@ $app->get('/worker', function (Request $request, Response $response) {
         if (count($jsonPlayerActivityResponse)) {
           // go through all active game players
           foreach ($jsonPlayerActivityResponse as $activePlayer) {
-            // reset activity
-            setPlayerGameActivityInDB($gameID, $activePlayer['player'], 0);
-            // get all game players
-            $jsonPlayersResponse = getGamePlayersFromDB($gameID);
-            if (count($jsonPlayersResponse)) {
-              $strWelcome = $game['name'] . ' challenge';
-              $strGame = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';
-              foreach ($jsonPlayersResponse as $player) {
-                $playerID = $hashids->decode($player['id'])[0];
-                $strMsg = $player['firstname'] . ' ' . $player['lastname'] . ' has progressed in the ' . $strGame . ' challenge!';
-                // player is same player with activity so change msg
-                if ($playerID == $activePlayer['player']) {
-                  $strMsg = 'You have progressed in the ' . $strGame . ' challenge!';
+            // check the activity type matches the game type
+            $activity = getPlayerActivity($activePlayer['playerProviderToken'], $activePlayer['latest_activity']);
+            if ($activity) {
+              if ($activity['type'] == $game['type']) {
+                // reset activity
+                setPlayerGameActivityInDB($gameID, $activePlayer['id'], 0);
+                // get all game players
+                $jsonPlayersResponse = getGamePlayersFromDB($gameID);
+                if (count($jsonPlayersResponse)) {
+                  $strWelcome = $game['name'] . ' challenge';
+                  $strGame = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';
+                  foreach ($jsonPlayersResponse as $player) {
+                    $playerID = $hashids->decode($player['id'])[0];
+                    $strMsg = $player['firstname'] . ' ' . $player['lastname'] . ' has progressed in the ' . $strGame . ' challenge!';
+                    // player is same player with activity so change msg
+                    if ($playerID == $activePlayer['id']) {
+                      $strMsg = 'You have progressed in the ' . $strGame . ' challenge!';
+                    }
+                    // now send an email
+//                    $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity', $jsonUserResponse[0]['email'], $jsonUserResponse[0]['firstname'] . ' ' . $jsonUserResponse[0]['lastname'], $strWelcome, 'Player Activity', $strMsg);
+
+                    $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity', 'mallbeury@mac.com', 'Matt Allbeury', $strWelcome, 'Player Activity', $strMsg);
+                  }
                 }
-//          $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity', $jsonUserResponse[0]['email'], $jsonUserResponse[0]['firstname'] . ' ' . $jsonUserResponse[0]['lastname'], $strWelcome, 'Player Activity', $strMsg);
-                $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity', 'mallbeury@mac.com', 'Matt Allbeury', $strWelcome, 'Player Activity', $strMsg);
               }
             }
           }
@@ -127,7 +135,7 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
           if (count($gamePlayerResults)) {
             if (is_null($gamePlayerResults[0]['ascentCompleted'])) {
               // update that player has logged an activity
-              setPlayerGameActivityInDB($gameID, $playerID, 1);
+              setPlayerGameActivityInDB($gameID, $playerID, $data['object_id']);
             }
           }
         }
