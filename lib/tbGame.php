@@ -41,6 +41,12 @@ function updateGameInDB($gameID, $name) {
   $result = $db->query('UPDATE games SET name = "' . $name . '" where id = ' . $gameID);
 }
 
+function setPlayerGameActivityInDB($gameID, $playerID, $bActivity) {
+  // only set once
+  $db = connect_db();
+  $db->query('UPDATE gamePlayers SET bActivity = ' . $bActivity . ' where game = ' . $gameID . ' and player = ' . $playerID);
+}
+
 function setPlayerGameAscentCompleteInDB($gameID, $playerID, $ascentCompleteActivityDate) {
   // only set once
   $db = connect_db();
@@ -83,6 +89,60 @@ function getGamePlayersFromDB($gameID) {
     $hashID = $hashids->encode($row['id']);
     $row['id'] = $hashID;
 
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
+function getGamesFromDB() {
+  require_once 'lib/mysql.php';
+
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  // use UTC date
+  date_default_timezone_set("UTC");
+  $dtNow = new DateTime("now");
+
+  $db = connect_db();
+  $result = $db->query('SELECT id, name, ascent, type, game_start, game_end, journeyID FROM games order by game_end desc');
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $hashID = $hashids->encode($row['id']);
+    $row['id'] = $hashID;
+
+    // format dates as UTC
+    $dtStartDate = new DateTime($row['game_start']);
+    $row['game_start'] = $dtStartDate->format('Y-m-d\TH:i:s.000\Z');
+    $dtEndDate = new DateTime($row['game_end']);
+    $row['game_end'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
+
+    $row['game_state'] = STATE_GAME_OVER;
+    if ($dtStartDate < $dtNow && $dtEndDate > $dtNow) {
+      $row['game_state'] = STATE_GAME_ACTIVE;
+    }
+
+    if ($dtStartDate > $dtNow) {
+      $row['game_state'] = STATE_GAME_PENDING;
+    }
+
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
+function getPlayerActivtyByGameFromDB($gameID) {
+  require_once 'lib/mysql.php';
+
+  $db = connect_db();
+  $result = $db->query('SELECT player FROM gamePlayers WHERE game = ' . $gameID . ' and bActivity = 1');
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
     $rows[$index] = $row;
     $index++;
   }
