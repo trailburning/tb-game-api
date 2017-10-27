@@ -6,7 +6,6 @@ use Strava\API\Client;
 use Strava\API\Exception;
 use Strava\API\Service\REST;
 
-
 function addPlayerToDB($avatar, $firstname, $lastname, $email, $city, $country, $providerID, $providerToken) {
   require_once 'lib/mysql.php';
 

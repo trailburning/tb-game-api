@@ -6,7 +6,7 @@ require_once('vendor/autoload.php');
 
 $hashids = new Hashids\Hashids('mountainrush', 10);
 
-$id = $hashids->encode(16);
+$id = $hashids->encode(18);
 
 var_dump($id);
 exit;

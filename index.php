@@ -40,25 +40,29 @@ $app->get('/worker', function (Request $request, Response $response) {
             // check the activity type matches the game type
             $activity = getPlayerActivity($activePlayer['playerProviderToken'], $activePlayer['latest_activity']);
             if ($activity) {
+              // reset activity
+              setPlayerGameActivityInDB($gameID, $activePlayer['id'], 0);
               if ($activity['type'] == $game['type']) {
-                // reset activity
-                setPlayerGameActivityInDB($gameID, $activePlayer['id'], 0);
                 // get all game players
                 $jsonPlayersResponse = getGamePlayersFromDB($gameID);
                 if (count($jsonPlayersResponse)) {
                   $strWelcome = $game['name'] . ' challenge';
                   $strGame = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';
                   foreach ($jsonPlayersResponse as $player) {
-                    $playerID = $hashids->decode($player['id'])[0];
-                    $strMsg = $player['firstname'] . ' ' . $player['lastname'] . ' has progressed in the ' . $strGame . ' challenge!';
-                    // player is same player with activity so change msg
-                    if ($playerID == $activePlayer['id']) {
-                      $strMsg = 'You have progressed in the ' . $strGame . ' challenge!';
-                    }
-                    // now send an email
-//                    $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity', $jsonUserResponse[0]['email'], $jsonUserResponse[0]['firstname'] . ' ' . $jsonUserResponse[0]['lastname'], $strWelcome, 'Player Activity', $strMsg);
+                    if ($player['game_notifications']) {
+                      $playerID = $hashids->decode($player['id'])[0];
+                      $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has progressed in the ' . $strGame . ' challenge!';
+                      // player is same player with activity so change msg
+                      if ($playerID == $activePlayer['id']) {
+                        $strMsg = 'You have progressed in the ' . $strGame . ' challenge!';
+                      }
 
-                    $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity', 'mallbeury@mac.com', 'Matt Allbeury', $strWelcome, 'Player Activity', $strMsg);
+                      // now send an email
+                      $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strWelcome, 'Player Activity', $strMsg);
+
+                      // MLA - test email
+                      $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strWelcome, 'Player Activity', $strMsg);
+                    }
                   }
                 }
               }
