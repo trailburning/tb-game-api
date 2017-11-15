@@ -154,17 +154,21 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
 $app->get('/game/{gameHashID}/socialimage', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
   $hashGameID = $request->getAttribute('gameHashID');
-  $gameID = $hashids->decode($hashGameID)[0];
-
-  $jsonResponse = getGameFromDB($gameID);
-
-  $strJourneyID = $jsonResponse[0]['journeyID'];
-  $strMountain = $jsonResponse[0]['name'];
-  $strRegion = strtolower($jsonResponse[0]['region']);
-  $strAscent = $jsonResponse[0]['ascent'] . 'm';
-  $strChallenge = strtolower($jsonResponse[0]['type']) . ' challenge';
-
-  echo buildSocialGameImage($strJourneyID, $strMountain, $strRegion, $strAscent, $strChallenge);
+  
+  $arrGameID = $hashids->decode($hashGameID);
+  if (count($arrGameID)) {
+    $arrResponse = getGameFromDB($arrGameID[0]);
+    if (count($arrResponse)) {
+      $paramaObj = (object) [
+        'journeyID' => $arrResponse[0]['journeyID'],
+        'mountain' => $arrResponse[0]['name'],
+        'region' => strtolower($arrResponse[0]['region']),
+        'ascent' => $arrResponse[0]['ascent'] . 'm',
+        'challenge' => strtolower($arrResponse[0]['type']) . ' challenge'
+      ];
+      echo buildSocialGameImage($paramaObj);
+    }
+  }
 });
 
 $app->get('/game/{gameHashID}', function (Request $request, Response $response) {

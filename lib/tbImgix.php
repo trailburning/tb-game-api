@@ -1,14 +1,14 @@
 <?php
 use Imgix\UrlBuilder;
 
-function buildSocialGameImage($strJourneyID, $strMountain, $strRegion, $strAscent, $strChallenge) {
+function buildSocialGameImage($paramaObj) {
   $builder = new UrlBuilder("tbassets2.imgix.net");
 
   // bottom left data
-  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed Demi,Bold", "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 55, "txt64" => $strMountain);
+  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed Demi,Bold", "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 55, "txt64" => $paramaObj->mountain);
   $txtMountain = $builder->createURL("~text", $params);
 
-  $params = array("w" => 600, "txtfont64" => "Avenir Next Regular", "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 27, "txt64" => $strRegion);
+  $params = array("w" => 600, "txtfont64" => "Avenir Next Regular", "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 27, "txt64" => $paramaObj->region);
   $txtCountry = $builder->createURL("~text", $params);
 
   $params = array("w" => 600, "h" => 168, "markx" => 46, "marky" => 24, "mark64" => $txtMountain,
@@ -16,10 +16,10 @@ function buildSocialGameImage($strJourneyID, $strMountain, $strRegion, $strAscen
   $leftData = $builder->createURL("images/brands/mountainrush/social/bg_text2.png", $params);
 
   // bottom right data
-  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed Demi,Bold", "txtalign" => 'right', "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 55, "txt64" => $strAscent);
+  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed Demi,Bold", "txtalign" => 'right', "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 55, "txt64" => $paramaObj->ascent);
   $txtAscent = $builder->createURL("~text", $params);
 
-  $params = array("w" => 600, "txtfont64" => "Avenir Next Regular", "txtalign" => 'right', "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 27, "txt64" => $strChallenge);
+  $params = array("w" => 600, "txtfont64" => "Avenir Next Regular", "txtalign" => 'right', "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 27, "txt64" => $paramaObj->challenge);
   $txtDetail = $builder->createURL("~text", $params);
 
   $params = array("w" => 600, "h" => 168, "markx" => -46, "marky" => 24, "mark64" => $txtAscent,
@@ -38,7 +38,7 @@ function buildSocialGameImage($strJourneyID, $strMountain, $strRegion, $strAscen
   // final image
   $params = array("w" => 1200, "h" => 630, "q" => 80, "markx" => 0, "marky" => 480, "mark64" => $bottomImg,
   "bw" => 1200, "bh" => 630, "bm" => 'normal', "blend64" => $overlayImg);
-  $finalImg = $builder->createURL("images/brands/mountainrush/social/games/" . $strJourneyID . ".jpg", $params);
+  $finalImg = $builder->createURL("images/brands/mountainrush/social/games/" . $paramaObj->journeyID . ".jpg", $params);
 
   return $finalImg;
 }
