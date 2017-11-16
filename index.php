@@ -24,51 +24,6 @@ define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
 const GAME_PLAYER_PLAYING_STATE = 0;
 const GAME_PLAYER_SUMMITED_STATE = 1;
 
-function sendActivityEmail($game, $player, $activePlayer) {
-  $hashids = new Hashids\Hashids('mountainrush', 10);
-
-  $playerID = $hashids->decode($player['id'])[0];
-
-  $strWelcome = $game['name'] . ' challenge';
-  $strGame = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';
-
-  $strTitle = 'Player Activity';
-  $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has progressed in the ' . $strGame . ' challenge!';
-  // player is same player with activity so change msg
-  if ($playerID == $activePlayer['id']) {
-    $strMsg = 'You have progressed in the ' . $strGame . ' challenge!';
-  }
-
-  // now send an email
-  $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strWelcome, $strTitle, $strMsg);
-
-  // MLA - test email
-  $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strWelcome, $strTitle, $strMsg);
-}
-
-function sendSummitEmail($game, $player, $activePlayer) {
-  $hashids = new Hashids\Hashids('mountainrush', 10);
-
-  $playerID = $hashids->decode($player['id'])[0];
-
-  $strWelcome = $game['name'] . ' challenge';
-  $strGame = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';
-
-  $strTitle = 'Player Summited!';
-  $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has summited the ' . $strGame . ' and completed the challenge!';
-  // player is same player with activity so change msg
-  if ($playerID == $activePlayer['id']) {
-    $strTitle = 'Congratulations ' . $activePlayer['firstname'] . '!';
-    $strMsg = 'You have summited the ' . $strGame . ' and completed the challenge!';
-  }
-
-  // now send an email
-  $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Summited!', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strWelcome, $strTitle, $strMsg);
-
-  // MLA - test email
-  $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Summited! DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strWelcome, $strTitle, $strMsg);
-}
-
 function getPlayerGameProgress($playerID, $gameID) {
   $gameResults = getGameFromDB($gameID);
 
