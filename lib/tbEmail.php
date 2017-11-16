@@ -23,8 +23,6 @@ function sendEmail($strJourneyID, $strSubject, $strToEmail, $strToName, $strWelc
       )
     );
     $message = array(
-      'html' => '<p>Example HTML content</p>',
-      'text' => 'Example text content',
       'subject' => $strSubject,
       'from_email' => 'hello@trailburning.com',
       'from_name' => 'Mountain Rush',

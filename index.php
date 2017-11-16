@@ -21,6 +21,75 @@ $app = new \Slim\App;
 define('CLIENT_ID', 15175);
 define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
 
+const GAME_PLAYER_PLAYING_STATE = 0;
+const GAME_PLAYER_SUMMITED_STATE = 1;
+
+function sendActivityEmail($game, $player, $activePlayer) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $playerID = $hashids->decode($player['id'])[0];
+
+  $strWelcome = $game['name'] . ' challenge';
+  $strGame = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';
+
+  $strTitle = 'Player Activity';
+  $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has progressed in the ' . $strGame . ' challenge!';
+  // player is same player with activity so change msg
+  if ($playerID == $activePlayer['id']) {
+    $strMsg = 'You have progressed in the ' . $strGame . ' challenge!';
+  }
+
+  // now send an email
+  $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strWelcome, $strTitle, $strMsg);
+
+  // MLA - test email
+  $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strWelcome, $strTitle, $strMsg);
+}
+
+function sendSummitEmail($game, $player, $activePlayer) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $playerID = $hashids->decode($player['id'])[0];
+
+  $strWelcome = $game['name'] . ' challenge';
+  $strGame = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';
+
+  $strTitle = 'Player Summited!';
+  $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has summited the ' . $strGame . ' and completed the challenge!';
+  // player is same player with activity so change msg
+  if ($playerID == $activePlayer['id']) {
+    $strTitle = 'Congratulations ' . $activePlayer['firstname'] . '!';
+    $strMsg = 'You have summited the ' . $strGame . ' and completed the challenge!';
+  }
+
+  // now send an email
+  $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Summited!', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strWelcome, $strTitle, $strMsg);
+
+  // MLA - test email
+  $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Summited! DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strWelcome, $strTitle, $strMsg);
+}
+
+function getPlayerGameProgress($playerID, $gameID) {
+  $gameResults = getGameFromDB($gameID);
+
+  $arrPlayerActivities = getPlayerActivities($playerID, $gameResults[0]['game_start'], $gameResults[0]['game_end'], $gameResults[0]['type']);
+
+  $nElevationGain = 0;
+  foreach ($arrPlayerActivities as $activity) {
+    $nElevationGain += $activity['total_elevation_gain'];
+  }
+  // 1st activity is the most recent
+  if (count($arrPlayerActivities)) {
+    $dtLastActivity = $arrPlayerActivities[0]['start_date'];
+  }
+
+  // has player reached or exceeded the ascent goal?
+  if ($nElevationGain >= $gameResults[0]['ascent']) {
+    setPlayerGameAscentCompleteInDB($gameID, $playerID, $dtLastActivity);
+  }
+  return $arrPlayerActivities;
+}
+
 $app->get('/worker', function (Request $request, Response $response) {
   // process game activity
   $hashids = new Hashids\Hashids('mountainrush', 10);
@@ -46,22 +115,25 @@ $app->get('/worker', function (Request $request, Response $response) {
                 // get all game players
                 $jsonPlayersResponse = getGamePlayersFromDB($gameID);
                 if (count($jsonPlayersResponse)) {
-                  $strWelcome = $game['name'] . ' challenge';
-                  $strGame = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';
+                  $bActivePlayerSummited = false;
+                  // get latest activities to update plyer progress
+                  getPlayerGameProgress($activePlayer['id'], $gameID);
+                  // get player game details
+                  $gamePlayerResults = getGamePlayerFromDB($gameID, $activePlayer['id']);
+                  if (count($gamePlayerResults)) {
+                    if (!is_null($gamePlayerResults[0]['ascentCompleted'])) {
+                      $bActivePlayerSummited = true;
+                    }
+                  }
+
                   foreach ($jsonPlayersResponse as $player) {
                     if ($player['game_notifications']) {
-                      $playerID = $hashids->decode($player['id'])[0];
-                      $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has progressed in the ' . $strGame . ' challenge!';
-                      // player is same player with activity so change msg
-                      if ($playerID == $activePlayer['id']) {
-                        $strMsg = 'You have progressed in the ' . $strGame . ' challenge!';
+                      sendActivityEmail($game, $player, $activePlayer);
+                      // has player summited and not already been processed?
+                      if ($bActivePlayerSummited && $activePlayer['state'] == GAME_PLAYER_PLAYING_STATE) {
+                        setPlayerGameStateInDB($gameID, $activePlayer['id'], GAME_PLAYER_SUMMITED_STATE);
+                        sendSummitEmail($game, $player, $activePlayer);
                       }
-
-                      // now send an email
-                      $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strWelcome, 'Player Activity', $strMsg);
-
-                      // MLA - test email
-                      $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strWelcome, 'Player Activity', $strMsg);
                     }
                   }
                 }
@@ -254,27 +326,14 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/progress', function (Request
     $hashGameID = $request->getAttribute('gameHashID');
     $gameID = $hashids->decode($hashGameID)[0];
 
-    $gameResults = getGameFromDB($gameID);
-
     $hashPlayerID = $request->getAttribute('playerHashID');
     $playerID = $hashids->decode($hashPlayerID)[0];
-    $arrPlayerActivities = getPlayerActivities($playerID, $gameResults[0]['game_start'], $gameResults[0]['game_end'], $gameResults[0]['type']);
 
-    $nElevationGain = 0;
-    foreach ($arrPlayerActivities as $activity) {
-      $nElevationGain += $activity['total_elevation_gain'];
-    }
-    // 1st activity is the most recent
-    if (count($arrPlayerActivities)) {
-      $dtLastActivity = $arrPlayerActivities[0]['start_date'];
-    }
-
-    // has player reached or exceeded the ascent goal?
-    if ($nElevationGain >= $gameResults[0]['ascent']) {
-      setPlayerGameAscentCompleteInDB($gameID, $playerID, $dtLastActivity);
-    }
-
+    // get latest activities
+    $arrPlayerActivities = getPlayerGameProgress($playerID, $gameID);
+    // get player game details
     $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
+
     $jsonResponse = $gamePlayerResults;
 
     $jsonResponse[0]['activities'] = $arrPlayerActivities;
