@@ -27,7 +27,19 @@ const GAME_PLAYER_SUMMITED_STATE = 1;
 function getPlayerGameProgress($playerID, $gameID) {
   $gameResults = getGameFromDB($gameID);
 
-  $arrPlayerActivities = getPlayerActivities($playerID, $gameResults[0]['game_start'], $gameResults[0]['game_end'], $gameResults[0]['type']);
+  $dtActivityStartDate = $gameResults[0]['game_start'];
+  $dtActivityEndDate = $gameResults[0]['game_end'];
+
+  // get player game details
+  $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
+  if (count($gamePlayerResults)) {
+    if (!is_null($gamePlayerResults[0]['ascentCompleted'])) {
+      // use ascent date rather game end date
+      $dtActivityEndDate = $gamePlayerResults[0]['ascentCompleted'];
+    }
+  }
+
+  $arrPlayerActivities = getPlayerActivities($playerID, $dtActivityStartDate, $dtActivityEndDate, $gameResults[0]['type']);
 
   $nElevationGain = 0;
   foreach ($arrPlayerActivities as $activity) {
@@ -71,7 +83,7 @@ $app->get('/worker', function (Request $request, Response $response) {
                 $jsonPlayersResponse = getGamePlayersFromDB($gameID);
                 if (count($jsonPlayersResponse)) {
                   $bActivePlayerSummited = false;
-                  // get latest activities to update plyer progress
+                  // get latest activities to update player progress
                   getPlayerGameProgress($activePlayer['id'], $gameID);
                   // get player game details
                   $gamePlayerResults = getGamePlayerFromDB($gameID, $activePlayer['id']);

@@ -15,7 +15,7 @@ function getPlayerActivitiesFromDB($playerID, $dtFirstActivityAllowed, $dtLastAc
   date_default_timezone_set("UTC");
 
   $db = connect_db();
-  $result = $db->query('SELECT activity, type, distance, total_elevation_gain, start_date FROM playerActivities where player = ' . $playerID . ' and start_date > "' . $dtFirstActivityAllowed . '" and start_date < "' . $dtLastActivityAllowed . '" order by start_date desc ');
+  $result = $db->query('SELECT activity, type, distance, total_elevation_gain, start_date FROM playerActivities where player = ' . $playerID . ' and start_date >= "' . $dtFirstActivityAllowed . '" and start_date <= "' . $dtLastActivityAllowed . '" order by start_date desc ');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
