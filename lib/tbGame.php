@@ -112,7 +112,7 @@ function getGamesFromDB() {
   $dtNow = new DateTime("now");
 
   $db = connect_db();
-  $result = $db->query('SELECT id, name, ascent, type, game_start, game_end, journeyID FROM games order by game_end desc');
+  $result = $db->query('SELECT id, name, ascent, season, type, game_start, game_end, journeyID FROM games order by game_end desc');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -199,7 +199,7 @@ function getGameFromDB($gameID) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('SELECT id, name, region, ascent, type, game_start, game_end, journeyID, mountain3DName FROM games where id = ' . $gameID);
+  $result = $db->query('SELECT id, name, region, ascent, season, type, game_start, game_end, journeyID, mountain3DName FROM games where id = ' . $gameID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
