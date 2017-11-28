@@ -162,29 +162,33 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
   $json = $request->getBody();
   $data = json_decode($json, true); 
 
-  // look for user
-  $jsonUserResponse = getPlayerFromDBByProviderID($data['owner_id']);
-  if (count($jsonUserResponse)) {
-    $playerID = $jsonUserResponse[0]['id'];
-    // look for games
-    $jsonGamesResponse = getGamesByPlayerFromDB($playerID);
-    if (count($jsonGamesResponse)) {
-      // look for active game
-      foreach ($jsonGamesResponse as $game) {
-        if ($game['game_state'] == STATE_GAME_ACTIVE) {
-          $gameID = $hashids->decode($game['game'])[0];
-          // ensure player has not already completed the game
-          $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
-          if (count($gamePlayerResults)) {
-            if (is_null($gamePlayerResults[0]['ascentCompleted'])) {
-              // update that player has logged an activity
-              setPlayerGameActivityInDB($gameID, $playerID, $data['object_id']);
+  // only want new activities
+  if ($data['object_type'] == 'activity' && $data['aspect_type'] == 'create') {
+    // look for user
+    $jsonUserResponse = getPlayerFromDBByProviderID($data['owner_id']);
+    if (count($jsonUserResponse)) {
+      $playerID = $jsonUserResponse[0]['id'];
+      // look for games
+      $jsonGamesResponse = getGamesByPlayerFromDB($playerID);
+      if (count($jsonGamesResponse)) {
+        // look for active game
+        foreach ($jsonGamesResponse as $game) {
+          if ($game['game_state'] == STATE_GAME_ACTIVE) {
+            $gameID = $hashids->decode($game['game'])[0];
+            // ensure player has not already completed the game
+            $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
+            if (count($gamePlayerResults)) {
+              if (is_null($gamePlayerResults[0]['ascentCompleted'])) {
+                // update that player has logged an activity
+                setPlayerGameActivityInDB($gameID, $playerID, $data['object_id']);
+              }
             }
           }
         }
       }
     }
   }
+
   header("HTTP/1.1 200 OK");
 
   return;
