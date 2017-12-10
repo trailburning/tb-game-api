@@ -73,11 +73,12 @@ $app->get('/worker', function (Request $request, Response $response) {
         if (count($jsonPlayerActivityResponse)) {
           // go through all active game players
           foreach ($jsonPlayerActivityResponse as $activePlayer) {
-            // check the activity type matches the game type
+            // check the activity exists
             $activity = getPlayerActivity($activePlayer['playerProviderToken'], $activePlayer['latest_activity']);
             if ($activity) {
               // reset activity
               setPlayerGameActivityInDB($gameID, $activePlayer['id'], 0);
+              // check activity type matches game type
               if ($activity['type'] == $game['type']) {
                 // get all game players
                 $jsonPlayersResponse = getGamePlayersFromDB($gameID);

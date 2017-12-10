@@ -6,13 +6,14 @@ function sendActivityEmail($game, $player, $activePlayer) {
   $hashActivePlayerID = $hashids->encode($activePlayer['id']);
 
   $strWelcome = $game['name'] . ' challenge';
-  $strGame = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '/player/' . $hashActivePlayerID . '">' . $game['name'] . '</a>';
+  $strGameURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';
+  $strPlayerURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '/player/' . $hashActivePlayerID . '">here</a>';
 
   $strTitle = 'Player Activity';
-  $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has progressed in the ' . $strGame . ' challenge!';
+  $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has progressed in the ' . $strGameURL . ' challenge!<br/><br/>Check ' . $activePlayer['firstname'] . '\'s progress ' . $strPlayerURL . '.';
   // player is same player with activity so change msg
   if ($playerID == $activePlayer['id']) {
-    $strMsg = 'You have progressed in the ' . $strGame . ' challenge!';
+    $strMsg = 'You have progressed in the ' . $strGameURL . ' challenge!<br/><br/>Check your progress ' . $strPlayerURL . '.';
   }
 
   // now send an email
