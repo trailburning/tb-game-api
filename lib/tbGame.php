@@ -218,10 +218,11 @@ function getGamePlayerFromDB($gameID, $playerID) {
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
-    // format date as UTC
-    $dtAscentCompleted = new DateTime($row['ascentCompleted']);
-    $row['ascentCompleted'] = $dtAscentCompleted->format('Y-m-d\TH:i:s.000\Z');
-
+    if ($row['ascentCompleted']) {
+      // format date as UTC
+      $dtAscentCompleted = new DateTime($row['ascentCompleted']);
+      $row['ascentCompleted'] = $dtAscentCompleted->format('Y-m-d\TH:i:s.000\Z');
+    }
     $rows[$index] = $row;
     $index++;
   }
