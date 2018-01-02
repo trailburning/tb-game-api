@@ -231,11 +231,12 @@ function getGamePlayerFromDB($gameID, $playerID) {
 }
 
 function getGamePlayerActivityPhotos($gameID, $playerID, $activityID) {
+  $ret = [];
+
   // first find last update date
   $results = getPlayerFromDB($playerID);
   if (count($results) != 0) {
     $token = $results[0]['playerProviderToken'];
-
     try {
       $adapter = new Pest('https://www.strava.com/api/v3');
       $service = new REST($token, $adapter);
@@ -243,10 +244,9 @@ function getGamePlayerActivityPhotos($gameID, $playerID, $activityID) {
       $client = new Client($service);
       $activityPhotos = $client->getActivityPhotos($activityID, $size = 640, $photo_sources = 'true');
 
-      $results = $activityPhotos;
-    } catch(Exception $e) {
-      echo json_encode($e->getMessage());
+      $ret = $activityPhotos;
+    } catch(\Exception $e) {
     }
   }  
-  return $results;
+  return $ret;
 }
