@@ -48,15 +48,19 @@ function addPlayerActivitiesToDB($playerID, $jsonActivities) {
 }
 
 function getPlayerActivity($token, $activityID) {
-  // get from provider
-  $adapter = new Pest('https://www.strava.com/api/v3');
-  $service = new REST($token, $adapter);
+  $ret = [];
 
-  $client = new Client($service);
+  try {
+    // get from provider
+    $adapter = new Pest('https://www.strava.com/api/v3');
+    $service = new REST($token, $adapter);
 
-  $activity = $client->getActivity($activityID);
+    $client = new Client($service);
 
-  return $activity;
+    $ret = $client->getActivity($activityID);
+  } catch(\Exception $e) {
+  }
+  return $ret;
 }
 
 function getPlayerActivities($playerID, $startDate, $endDate, $activityType) {
