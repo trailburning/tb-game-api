@@ -88,7 +88,7 @@ function getGamePlayersFromDB($gameID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = connect_db();
-  $result = $db->query('SELECT players.id, avatar, firstname, lastname, email, city, country, game_notifications FROM gamePlayers JOIN players ON gamePlayers.player = players.id WHERE game = ' . $gameID);
+  $result = $db->query('SELECT players.id, avatar, firstname, lastname, email, city, country, game_notifications, playerProviderID FROM gamePlayers JOIN players ON gamePlayers.player = players.id WHERE game = ' . $gameID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
