@@ -215,6 +215,28 @@ $app->get('/game/{gameHashID}/socialimage', function (Request $request, Response
   }
 });
 
+$app->get('/game/{gameHashID}/socialimage/progress/{progressHashPercent}', function (Request $request, Response $response) {
+
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+  $hashGameID = $request->getAttribute('gameHashID');
+
+  $progressHashPercent = $request->getAttribute('progressHashPercent');
+  $arrGameID = $hashids->decode($hashGameID);
+  if (count($arrGameID)) {
+    $arrResponse = getGameFromDB($arrGameID[0]);  
+    if (count($arrResponse)) {
+      $paramaObj = (object) [
+        'journeyID' => $arrResponse[0]['journeyID'],
+        'mountain' => $arrResponse[0]['name'],
+        'region' => strtolower($arrResponse[0]['region']),
+        'ascent' => $arrResponse[0]['ascent'] . 'm',
+        'challenge' => strtolower($arrResponse[0]['type']) . ' challenge - ' . $hashids->decode($progressHashPercent)[0]
+      ];
+      echo buildSocialGameImage($paramaObj);
+    }
+  }
+});
+
 $app->get('/game/{gameHashID}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
   $hashGameID = $request->getAttribute('gameHashID');
