@@ -97,7 +97,7 @@ function getPlayerActivities($playerID, $startDate, $endDate, $activityType) {
 
         $client = new Client($service);
         // before, after
-        $activities = $client->getAthleteActivities(null, $tFirstActivityAllowed);
+        $activities = $client->getAthleteActivities(null, $tFirstActivityAllowed, 1, 100);
         if (sizeof($activities)) {
           // last entry is most recent when calling with 'after' date
           $dtLastActivity = $activities[sizeof($activities)-1]['start_date'];
