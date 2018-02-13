@@ -9,8 +9,6 @@ use Strava\API\Service\REST;
 function addPlayerToDB($avatar, $firstname, $lastname, $email, $city, $country, $providerID, $providerToken) {
   require_once 'lib/mysql.php';
 
-  $hashids = new Hashids\Hashids('mountainrush', 10);
-
   $ret = null;
 
   // use UTC date
@@ -18,12 +16,8 @@ function addPlayerToDB($avatar, $firstname, $lastname, $email, $city, $country, 
   $dtNow = date('Y-m-d H:i:s', time());
 
   $db = connect_db();
-  if ($db->query('INSERT INTO players (created, avatar, firstname, lastname, email, city, country, playerProviderID, playerProviderToken) VALUES ("' . $dtNow . '", "' . $avatar . '", "' . $firstname . '", "' . $lastname . '", "' . $email. '", "' . $city . '", "' . $country. '", "' . $providerID . '", "' . $providerToken . '")') === TRUE) {
+  if ($db->query('INSERT INTO players (created, avatar, firstname, lastname, email, city, country, game_notifications, playerProviderID, playerProviderToken) VALUES ("' . $dtNow . '", "' . $avatar . '", "' . $firstname . '", "' . $lastname . '", "' . $email. '", "' . $city . '", "' . $country. '", 1, "' . $providerID . '", "' . $providerToken . '")') === TRUE) {
     $lastInsertID = $db->insert_id;
-
-    $hashID = $hashids->encode($lastInsertID);
-
-    $result = $db->query('UPDATE players SET hashid = "' . $hashID . '" WHERE id = ' . $db->insert_id);
 
     $ret = getPlayerFromDB($lastInsertID);
   }
