@@ -13,8 +13,6 @@ const STATE_GAME_PENDING = 'pending';
 function addGameToDB($season, $type, $gameStart, $gameEnd, $levelID) {
   require_once 'lib/mysql.php';
 
-  $hashids = new Hashids\Hashids('mountainrush', 10);
-
   $ret = null;
 
   // use UTC date
@@ -24,10 +22,6 @@ function addGameToDB($season, $type, $gameStart, $gameEnd, $levelID) {
   $db = connect_db();
   if ($db->query('INSERT INTO games (created, season, type, game_start, game_end, levelID) VALUES ("' . $dtNow . '", ' . $season . ', "' . $type . '", "' . $gameStart . '", "' . $gameEnd . '", ' . $levelID . ')') === TRUE) {
     $lastInsertID = $db->insert_id;
-
-    $hashID = $hashids->encode($lastInsertID);
-
-    $result = $db->query('UPDATE games SET hashid = "' . $hashID . '" WHERE id = ' . $db->insert_id);
 
     $ret = getGameFromDB($lastInsertID);
   }
