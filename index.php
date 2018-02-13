@@ -269,7 +269,7 @@ $app->post('/game', function (Request $request, Response $response) {
   $json = $request->getBody();
   $data = json_decode($json, true);
 
-  $jsonResponse = addGameToDB($data['name'], $data['ascent'], $data['type'], $data['gameStart'], $data['gameEnd'], $data['journeyID'], $data['mountain3DName']);
+  $jsonResponse = addGameToDB($data['season'], $data['type'], $data['gameStart'], $data['gameEnd'], $data['levelID']);
 
   return $response->withJSON($jsonResponse);
 });
