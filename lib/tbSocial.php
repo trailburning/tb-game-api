@@ -42,3 +42,36 @@ function buildSocialGameImage($paramaObj) {
 
   return $finalImg;
 }
+
+function generateGameSocialImage($gameID) {
+  $ret = '';
+
+  $arrResponse = getGameFromDB($gameID);
+  if (count($arrResponse)) {
+    $paramaObj = (object) [
+      'journeyID' => $arrResponse[0]['journeyID'],
+      'mountain' => $arrResponse[0]['name'],
+      'region' => strtolower($arrResponse[0]['region']),
+      'ascent' => $arrResponse[0]['ascent'] . 'm',
+      'challenge' => strtolower($arrResponse[0]['type']) . ' challenge'
+    ];
+    $ret = buildSocialGameImage($paramaObj);
+  }
+  return $ret;
+}
+
+function generateGameProgressSocialImage($gameID, $progressPercent) {
+  $ret = '';
+
+  $arrResponse = getGameFromDB($gameID);
+  if (count($arrResponse)) {
+    $paramaObj = (object) [
+      'journeyID' => $arrResponse[0]['journeyID'],
+      'mountain' => $arrResponse[0]['name'],
+      'region' => strtolower($arrResponse[0]['region']),
+      'ascent' => $arrResponse[0]['ascent'] . 'm',
+      'challenge' => strtolower($arrResponse[0]['type']) . ' challenge - ' . $progressPercent
+    ];
+    echo buildSocialGameImage($paramaObj);
+  }
+}

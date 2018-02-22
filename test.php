@@ -3,7 +3,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 include "lib/tbEmail.php";
-include "lib/tbImgix.php";
+include "lib/tbSocial.php";
 include "lib/tbGame.php";
 include "lib/tbPlayer.php";
 include "lib/tbPlayerActivities.php";

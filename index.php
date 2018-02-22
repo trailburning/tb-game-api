@@ -9,10 +9,13 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 include "lib/tbEmail.php";
-include "lib/tbImgix.php";
+include "lib/tbSocial.php";
 include "lib/tbGame.php";
 include "lib/tbPlayer.php";
 include "lib/tbPlayerActivities.php";
+include "lib/tbWorker.php";
+include "lib/tbFundraising.php";
+include "lib/tbHelper.php";
 
 require 'vendor/autoload.php';
 
@@ -24,94 +27,9 @@ define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
 const GAME_PLAYER_PLAYING_STATE = 0;
 const GAME_PLAYER_SUMMITED_STATE = 1;
 
-function getPlayerGameProgress($playerID, $gameID) {
-  $gameResults = getGameFromDB($gameID);
-
-  $dtActivityStartDate = $gameResults[0]['game_start'];
-  $dtActivityEndDate = $gameResults[0]['game_end'];
-
-  // get player game details
-  $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
-  if (count($gamePlayerResults)) {
-    if (!is_null($gamePlayerResults[0]['ascentCompleted'])) {
-      // use ascent date rather game end date
-      $dtActivityEndDate = $gamePlayerResults[0]['ascentCompleted'];
-    }
-  }
-
-  $arrPlayerActivities = getPlayerActivities($playerID, $dtActivityStartDate, $dtActivityEndDate, $gameResults[0]['type']);
-
-  $nElevationGain = 0;
-  foreach ($arrPlayerActivities as $activity) {
-    $nElevationGain += $activity['total_elevation_gain'];
-  }
-  // 1st activity is the most recent
-  if (count($arrPlayerActivities)) {
-    $dtLastActivity = $arrPlayerActivities[0]['start_date'];
-  }
-
-  // has player reached or exceeded the ascent goal?
-  if ($nElevationGain >= $gameResults[0]['ascent']) {
-    setPlayerGameAscentCompleteInDB($gameID, $playerID, $dtLastActivity);
-  }
-  return $arrPlayerActivities;
-}
-
 $app->get('/worker', function (Request $request, Response $response) {
   // process game activity
-  $hashids = new Hashids\Hashids('mountainrush', 10);
-
-  // get all games
-  $jsonGamesResponse = getGamesFromDB();
-  if (count($jsonGamesResponse)) {
-    foreach ($jsonGamesResponse as $game) {
-      // look for active games
-      if ($game['game_state'] == STATE_GAME_ACTIVE) {
-        $gameID = $hashids->decode($game['id'])[0];
-        // look for player activity in game
-        $jsonPlayerActivityResponse = getPlayerActivtyByGameFromDB($gameID);
-        if (count($jsonPlayerActivityResponse)) {
-          // go through all active game players
-          foreach ($jsonPlayerActivityResponse as $activePlayer) {
-            // check the activity exists
-            $activity = getPlayerActivity($activePlayer['playerProviderToken'], $activePlayer['latest_activity']);
-            if ($activity) {
-              // reset activity
-              setPlayerGameActivityInDB($gameID, $activePlayer['id'], 0);
-              // check activity type matches game type
-              if ($activity['type'] == $game['type']) {
-                // get all game players
-                $jsonPlayersResponse = getGamePlayersFromDB($gameID);
-                if (count($jsonPlayersResponse)) {
-                  $bActivePlayerSummited = false;
-                  // get latest activities to update player progress
-                  getPlayerGameProgress($activePlayer['id'], $gameID);
-                  // get player game details
-                  $gamePlayerResults = getGamePlayerFromDB($gameID, $activePlayer['id']);
-                  if (count($gamePlayerResults)) {
-                    if (!is_null($gamePlayerResults[0]['ascentCompleted'])) {
-                      $bActivePlayerSummited = true;
-                    }
-                  }
-
-                  foreach ($jsonPlayersResponse as $player) {
-                    if ($player['game_notifications']) {
-                      sendActivityEmail($game, $player, $activePlayer);
-                      // has player summited and not already been processed?
-                      if ($bActivePlayerSummited && $activePlayer['state'] == GAME_PLAYER_PLAYING_STATE) {
-                        setPlayerGameStateInDB($gameID, $activePlayer['id'], GAME_PLAYER_SUMMITED_STATE);
-                        sendSummitEmail($game, $player, $activePlayer);
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+  processActivity();
 });
 
 $app->get('/strava/subscribe', function (Request $request, Response $response) {
@@ -198,43 +116,17 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
 $app->get('/game/{gameHashID}/socialimage', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
   $hashGameID = $request->getAttribute('gameHashID');
-  
-  $arrGameID = $hashids->decode($hashGameID);
-  if (count($arrGameID)) {
-    $arrResponse = getGameFromDB($arrGameID[0]);
-    if (count($arrResponse)) {
-      $paramaObj = (object) [
-        'journeyID' => $arrResponse[0]['journeyID'],
-        'mountain' => $arrResponse[0]['name'],
-        'region' => strtolower($arrResponse[0]['region']),
-        'ascent' => $arrResponse[0]['ascent'] . 'm',
-        'challenge' => strtolower($arrResponse[0]['type']) . ' challenge'
-      ];
-      echo buildSocialGameImage($paramaObj);
-    }
-  }
+
+  echo generateGameSocialImage($hashids->decode($hashGameID)[0]);
 });
 
 $app->get('/game/{gameHashID}/socialimage/progress/{progressHashPercent}', function (Request $request, Response $response) {
 
   $hashids = new Hashids\Hashids('mountainrush', 10);
   $hashGameID = $request->getAttribute('gameHashID');
-
   $progressHashPercent = $request->getAttribute('progressHashPercent');
-  $arrGameID = $hashids->decode($hashGameID);
-  if (count($arrGameID)) {
-    $arrResponse = getGameFromDB($arrGameID[0]);  
-    if (count($arrResponse)) {
-      $paramaObj = (object) [
-        'journeyID' => $arrResponse[0]['journeyID'],
-        'mountain' => $arrResponse[0]['name'],
-        'region' => strtolower($arrResponse[0]['region']),
-        'ascent' => $arrResponse[0]['ascent'] . 'm',
-        'challenge' => strtolower($arrResponse[0]['type']) . ' challenge - ' . $hashids->decode($progressHashPercent)[0]
-      ];
-      echo buildSocialGameImage($paramaObj);
-    }
-  }
+
+  echo generateGameProgressSocialImage($hashids->decode($hashGameID)[0], $hashids->decode($progressHashPercent)[0]);
 });
 
 $app->get('/game/{gameHashID}', function (Request $request, Response $response) {
@@ -352,6 +244,77 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/activity/{activityID}/photos
       setPlayerGameMediaCaptureInDB($gameID, $playerID);
     }
     return $response->withJSON($jsonResponse);
+});
+
+$app->get('/fundraiser/{email}', function (Request $request, Response $response) {
+  $bExists = false;
+
+  if (getFundraisingPlayer($request->getAttribute('email'))) {
+    $bExists = true;
+  }
+
+  $jsonResponse = array('exists' => $bExists);
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->post('/fundraiser', function (Request $request, Response $response) {
+  $json = $request->getBody();
+  $data = json_decode($json, true); 
+
+  $paramaObj = (object) [
+    'email' => $data['email'],
+    'password' => $data['password'],
+    'firstname' => $data['firstname'],
+    'lastname' => $data['lastname'],
+    'title' => $data['title'],
+    'addressline1' => $data['addressline1'],
+    'addressline2' => $data['addressline2'],
+    'town' => $data['town'],
+    'state' => $data['state'],
+    'postcode' => $data['postcode'],
+    'country' => $data['country']
+  ];
+  $jsonResponse = createFundraisingPlayer($paramaObj);
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->post('/fundraiser/page', function (Request $request, Response $response) {
+  $json = $request->getBody();
+  $data = json_decode($json, true); 
+
+  $paramaObj = (object) [
+    'email' => $data['email'],
+    'password' => $data['password'],
+    'pageShortName' => $data['pageShortName'],
+    'pageTitle' => $data['pageTitle'],
+    'eventName' => $data['eventName'],
+    'charityID' => $data['charityID'],
+    'eventID' => $data['eventID'],
+    'targetAmount' => $data['targetAmount']
+  ];
+  $jsonResponse = createFundraisingPlayerPage($paramaObj);
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->get('/fundraiser/page/{pageShortName}', function (Request $request, Response $response) {
+  $jsonResponse = getFundraisingPage($request->getAttribute('pageShortName'));
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->get('/fundraiser/page/{pageShortName}/donations', function (Request $request, Response $response) {
+  $jsonResponse = getFundraisingPageDonations($request->getAttribute('pageShortName'));
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->get('/fundraiser/leaderboard/event/{eventID}', function (Request $request, Response $response) {
+  $jsonResponse = getFundraisingEventLeaderboard($request->getAttribute('eventID'));
+
+  return $response->withJSON($jsonResponse);
 });
 
 $app->run();
