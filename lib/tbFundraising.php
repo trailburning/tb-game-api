@@ -32,7 +32,7 @@ function createFundraisingPlayer($paramaObj) {
   $request->address->countyOrState = $paramaObj->state;
   $request->address->postcodeOrZipcode = $paramaObj->postcode;
   $request->address->country = $paramaObj->country;
-  $request->acceptTermsAndConditions = true;
+  $request->acceptTermsAndConditions = $paramaObj->acceptTerms;
   $response = $client->Account->Create($request);
 
   return $response;
@@ -52,8 +52,7 @@ function createFundraisingPlayerPage($paramaObj) {
   $registerPageRequest->justGivingOptIn = false;
   $registerPageRequest->charityOptIn = false;
   $registerPageRequest->charityFunded = false;
-
-  $registerPageRequest->images[0]->url = "http://tbassets2.imgix.net/images/brands/mountainrush/edm/5875843c37d99829635908_682x274.jpg";
+  $registerPageRequest->images[0]->url = $paramaObj->imageURL;
   $registerPageRequest->images[0]->caption = "";
   $registerPageRequest->images[0]->isDefault = true;
 

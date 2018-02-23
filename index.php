@@ -10,6 +10,7 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 include "lib/tbEmail.php";
 include "lib/tbSocial.php";
+include "lib/tbCampaign.php";
 include "lib/tbGame.php";
 include "lib/tbPlayer.php";
 include "lib/tbPlayerActivities.php";
@@ -185,7 +186,7 @@ $app->post('/player', function (Request $request, Response $response) {
   $json = $request->getBody();
   $data = json_decode($json, true);
 
-  $jsonResponse = addPlayerToDB($data['avatar'], $data['firstname'], $data['lastname'], $data['email'], $data['city'], $data['country'], '', '');
+  $jsonResponse = addPlayerToDB($data['campaign'], $data['avatar'], $data['firstname'], $data['lastname'], $data['email'], $data['city'], $data['country'], $data['providerID'], $data['providerToken']);
 
   return $response->withJSON($jsonResponse);
 });
@@ -273,30 +274,57 @@ $app->post('/fundraiser', function (Request $request, Response $response) {
     'town' => $data['town'],
     'state' => $data['state'],
     'postcode' => $data['postcode'],
-    'country' => $data['country']
+    'country' => $data['country'],
+    'acceptTerms' => $data['acceptTerms']
   ];
   $jsonResponse = createFundraisingPlayer($paramaObj);
 
   return $response->withJSON($jsonResponse);
 });
 
-$app->post('/fundraiser/page', function (Request $request, Response $response) {
+$app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{playerHashID}/page', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashCampaignID = $request->getAttribute('campaignHashID');
+  $hashGameID = $request->getAttribute('gameHashID');
+  $hashPlayerID = $request->getAttribute('playerHashID');
+
+  $campaignID = $hashids->decode($hashCampaignID)[0];
+  $gameID = $hashids->decode($hashGameID)[0];
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
   $json = $request->getBody();
   $data = json_decode($json, true); 
 
-  $paramaObj = (object) [
-    'email' => $data['email'],
-    'password' => $data['password'],
-    'pageShortName' => $data['pageShortName'],
-    'pageTitle' => $data['pageTitle'],
-    'eventName' => $data['eventName'],
-    'charityID' => $data['charityID'],
-    'eventID' => $data['eventID'],
-    'targetAmount' => $data['targetAmount']
-  ];
-  $jsonResponse = createFundraisingPlayerPage($paramaObj);
+  // get campaign
+  $jsonCampaign = getCampaignFromDB($campaignID);
+  if (count($jsonCampaign)) {
+    // get player game details
+    $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
+    if (count($gamePlayerResults)) {
+      $fundraisingPage = $hashGameID;
+      $fundraisingPageTitle = $jsonCampaign[0]['name'];
 
-  return $response->withJSON($jsonResponse);
+      // store fundraising page
+      setPlayerGameFundraisingPageInDB($gameID, $playerID, $fundraisingPage);
+
+      // now create on JG
+      $paramaObj = (object) [
+        'email' => $data['email'],
+        'password' => $data['password'],
+        'pageShortName' => $fundraisingPage,
+        'pageTitle' => $fundraisingPageTitle,
+        'eventName' => '',
+        'charityID' => $jsonCampaign[0]['fundraising_charity'],
+        'eventID' => $jsonCampaign[0]['fundraising_event'],
+        'targetAmount' => $data['targetAmount'],
+        'imageURL' => "http://tbassets2.imgix.net/images/brands/mountainrush/edm/5875843c37d99829635908_682x274.jpg"
+      ];
+      $jsonResponse = createFundraisingPlayerPage($paramaObj);
+
+      return $response->withJSON($jsonResponse);
+    }
+  }
 });
 
 $app->get('/fundraiser/page/{pageShortName}', function (Request $request, Response $response) {

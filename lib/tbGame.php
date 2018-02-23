@@ -40,6 +40,12 @@ function setPlayerGameActivityInDB($gameID, $playerID, $activity) {
   $db->query('UPDATE gamePlayers SET latest_activity = ' . $activity . ' where game = ' . $gameID . ' and player = ' . $playerID);
 }
 
+function setPlayerGameFundraisingPageInDB($gameID, $playerID, $fundraisingPage) {
+  // only set once
+  $db = connect_db();
+  $db->query('UPDATE gamePlayers SET fundraising_page = "' . $fundraisingPage . '" where game = ' . $gameID . ' and player = ' . $playerID);
+}
+
 function setPlayerGameAscentCompleteInDB($gameID, $playerID, $ascentCompleteActivityDate) {
   // only set once
   $db = connect_db();
