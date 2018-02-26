@@ -10,7 +10,7 @@ const STATE_GAME_OVER = 'complete';
 const STATE_GAME_ACTIVE = 'active';
 const STATE_GAME_PENDING = 'pending';
 
-function addGameToDB($season, $type, $gameStart, $gameEnd, $levelID) {
+function addGameToDB($campaignID, $season, $type, $gameStart, $gameEnd, $levelID) {
   require_once 'lib/mysql.php';
 
   $ret = null;
@@ -20,7 +20,7 @@ function addGameToDB($season, $type, $gameStart, $gameEnd, $levelID) {
   $dtNow = date('Y-m-d H:i:s', time());
 
   $db = connect_db();
-  if ($db->query('INSERT INTO games (created, season, type, game_start, game_end, levelID) VALUES ("' . $dtNow . '", ' . $season . ', "' . $type . '", "' . $gameStart . '", "' . $gameEnd . '", ' . $levelID . ')') === TRUE) {
+  if ($db->query('INSERT INTO games (created, campaignID, season, type, game_start, game_end, levelID) VALUES ("' . $dtNow . '", ' . $campaignID . ', ' . $season . ', "' . $type . '", "' . $gameStart . '", "' . $gameEnd . '", ' . $levelID . ')') === TRUE) {
     $lastInsertID = $db->insert_id;
 
     $ret = getGameFromDB($lastInsertID);
@@ -159,7 +159,7 @@ function getGamesByPlayerFromDB($playerID) {
   $dtNow = new DateTime("now");
 
   $db = connect_db();
-  $result = $db->query('SELECT gamePlayers.game, games.type, games.game_start, games.game_end, gameLevels.name, gameLevels.region, gameLevels.ascent FROM gamePlayers join games on gamePlayers.game = games.id join gameLevels on games.levelID = gameLevels.id where player = ' . $playerID . ' order by games.game_end desc');
+  $result = $db->query('SELECT gamePlayers.game, games.type, games.game_start, games.game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, campaigns.name as campaign_name, campaigns.shortname as campaign_shortname FROM gamePlayers join games on gamePlayers.game = games.id join gameLevels on games.levelID = gameLevels.id join campaigns on games.campaignID = campaigns.id where player = ' . $playerID . ' order by games.game_end desc');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -192,7 +192,7 @@ function getGameFromDB($gameID) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('SELECT games.id, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, gameLevels.mountain3DName FROM games JOIN gameLevels ON games.levelID = gameLevels.id where games.id = ' . $gameID);
+  $result = $db->query('SELECT games.id, campaignID, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, gameLevels.mountain3DName FROM games JOIN gameLevels ON games.levelID = gameLevels.id where games.id = ' . $gameID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {

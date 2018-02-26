@@ -7,14 +7,11 @@ define('FUNDRAISING_API_KEY', 'aca65145');
 define('FUNDRAISING_EMAIL', 'support@trailburning.com');
 define('FUNDRAISING_PASSWORD', 'helloworld');
 
-function getFundraisingPlayer($fundraisingPlayerEmail) {
-  $ret = false;
+function getFundraisingPlayer($fundraisingPlayerEmail, $fundraisingPlayerPassword) {  
+  $client = new JustGivingClient(FUNDRAISING_API_URL, FUNDRAISING_API_KEY, 1, $fundraisingPlayerEmail, $fundraisingPlayerPassword);
+  $response = $client->Account->AccountDetails();
 
-  $client = new JustGivingClient(FUNDRAISING_API_URL, FUNDRAISING_API_KEY, 1);
-  if($client->Account->IsEmailRegistered($fundraisingPlayerEmail)) {
-    $ret = true;
-  }
-  return $ret;
+  return $response;
 }
 
 function createFundraisingPlayer($paramaObj) {
@@ -55,7 +52,6 @@ function createFundraisingPlayerPage($paramaObj) {
   $registerPageRequest->images[0]->url = $paramaObj->imageURL;
   $registerPageRequest->images[0]->caption = "";
   $registerPageRequest->images[0]->isDefault = true;
-
   $response = $client->Page->Create($registerPageRequest);
 
   return $response;

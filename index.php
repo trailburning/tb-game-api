@@ -1,6 +1,6 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+//error_reporting(E_ALL);
+//ini_set('display_errors', 1);
 
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
@@ -162,7 +162,7 @@ $app->post('/game', function (Request $request, Response $response) {
   $json = $request->getBody();
   $data = json_decode($json, true);
 
-  $jsonResponse = addGameToDB($data['season'], $data['type'], $data['gameStart'], $data['gameEnd'], $data['levelID']);
+  $jsonResponse = addGameToDB($data['campaignID'], $data['season'], $data['type'], $data['gameStart'], $data['gameEnd'], $data['levelID']);
 
   return $response->withJSON($jsonResponse);
 });
@@ -247,16 +247,17 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/activity/{activityID}/photos
     return $response->withJSON($jsonResponse);
 });
 
-$app->get('/fundraiser/{email}', function (Request $request, Response $response) {
+$app->get('/fundraiser/{email}/{password}', function (Request $request, Response $response) {
   $bExists = false;
 
-  if (getFundraisingPlayer($request->getAttribute('email'))) {
+  if (getFundraisingPlayer($request->getAttribute('email'), $request->getAttribute('password'))) {
     $bExists = true;
   }
 
   $jsonResponse = array('exists' => $bExists);
 
   return $response->withJSON($jsonResponse);
+
 });
 
 $app->post('/fundraiser', function (Request $request, Response $response) {
@@ -312,7 +313,7 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
       $paramaObj = (object) [
         'email' => $data['email'],
         'password' => $data['password'],
-        'pageShortName' => $fundraisingPage,
+        'pageShortName' => $jsonCampaign[0]['shortname'] . '-' . $fundraisingPage,
         'pageTitle' => $fundraisingPageTitle,
         'eventName' => '',
         'charityID' => $jsonCampaign[0]['fundraising_charity'],
