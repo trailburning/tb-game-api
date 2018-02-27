@@ -28,6 +28,25 @@ function addGameToDB($campaignID, $season, $type, $gameStart, $gameEnd, $levelID
   return $ret;
 }
 
+function addPlayerGameInDB($gameID, $playerID) {
+  require_once 'lib/mysql.php';
+
+  $ret = null;
+
+  // only set once
+  $db = connect_db();
+
+  if ($result = $db->query('SELECT game, player FROM gamePlayers where game = ' . $gameID . ' and player = ' . $playerID)) {
+    // only add if not already added
+    if (!$result->num_rows) {
+      if ($db->query('INSERT INTO gamePlayers (game, player) VALUES (' . $gameID . ', ' . $playerID . ')') === TRUE) {
+        $ret = getGamePlayerFromDB($gameID, $playerID);
+      }
+    }
+  }
+  return $ret;
+}
+
 function setPlayerGameStateInDB($gameID, $playerID, $state) {
   // only set once
   $db = connect_db();
@@ -191,11 +210,16 @@ function getGamesByPlayerFromDB($playerID) {
 function getGameFromDB($gameID) {
   require_once 'lib/mysql.php';
 
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
   $db = connect_db();
   $result = $db->query('SELECT games.id, campaignID, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, gameLevels.mountain3DName FROM games JOIN gameLevels ON games.levelID = gameLevels.id where games.id = ' . $gameID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $hashID = $hashids->encode($row['id']);
+    $row['id'] = $hashID;
+
     $rows[$index] = $row;
     $index++;
   }
@@ -219,7 +243,6 @@ function getGamePlayerFromDB($gameID, $playerID) {
     $rows[$index] = $row;
     $index++;
   }
-
   return $rows;
 }
 

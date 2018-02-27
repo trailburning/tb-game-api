@@ -59,7 +59,7 @@ function createFundraisingPlayerPage($paramaObj) {
 
 function getFundraisingPage($pageShortName) {
   $client = new JustGivingClient(FUNDRAISING_API_URL, FUNDRAISING_API_KEY, 1);
-
+  
   $response = $client->Page->Retrieve($pageShortName);
 
   return $response;

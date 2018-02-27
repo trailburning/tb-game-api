@@ -34,7 +34,7 @@ sendActivityEmail($game, $player, $activePlayer);
 */
 $hashids = new Hashids\Hashids('mountainrush', 10);
 
-$id = $hashids->encode(30);
+$id = $hashids->encode(217);
 
 var_dump($id);
 exit;
