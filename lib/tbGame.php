@@ -36,14 +36,10 @@ function addPlayerGameInDB($gameID, $playerID) {
   // only set once
   $db = connect_db();
 
-  if ($result = $db->query('SELECT game, player FROM gamePlayers where game = ' . $gameID . ' and player = ' . $playerID)) {
-    // only add if not already added
-    if (!$result->num_rows) {
-      if ($db->query('INSERT INTO gamePlayers (game, player) VALUES (' . $gameID . ', ' . $playerID . ')') === TRUE) {
-        $ret = getGamePlayerFromDB($gameID, $playerID);
-      }
-    }
-  }
+  $db->query('INSERT INTO gamePlayers (game, player) VALUES (' . $gameID . ', ' . $playerID . ')');
+  
+  $ret = getGamePlayerFromDB($gameID, $playerID);
+
   return $ret;
 }
 
@@ -178,7 +174,7 @@ function getGamesByPlayerFromDB($playerID) {
   $dtNow = new DateTime("now");
 
   $db = connect_db();
-  $result = $db->query('SELECT gamePlayers.game, games.type, games.game_start, games.game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, campaigns.name as campaign_name, campaigns.shortname as campaign_shortname FROM gamePlayers join games on gamePlayers.game = games.id join gameLevels on games.levelID = gameLevels.id join campaigns on games.campaignID = campaigns.id where player = ' . $playerID . ' order by games.game_end desc');
+  $result = $db->query('SELECT gamePlayers.game, gamePlayers.fundraising_page, games.type, games.game_start, games.game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, campaigns.name as campaign_name, campaigns.fundraising_page as campaign_fundraising_page FROM gamePlayers join games on gamePlayers.game = games.id join gameLevels on games.levelID = gameLevels.id join campaigns on games.campaignID = campaigns.id where player = ' . $playerID . ' order by games.game_end desc');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -217,8 +213,8 @@ function getGameFromDB($gameID) {
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
-    $hashID = $hashids->encode($row['id']);
-    $row['id'] = $hashID;
+    $row['id'] = $hashids->encode($row['id']);
+    $row['campaignID'] = $hashids->encode($row['campaignID']);
 
     $rows[$index] = $row;
     $index++;

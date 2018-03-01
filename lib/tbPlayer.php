@@ -71,6 +71,26 @@ function getPlayerFromDB($playerID) {
   return $rows;
 }
 
+function getPlayersFromDBByCampaign($campaignID, $match) {
+  require_once 'lib/mysql.php';
+
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $db = connect_db();
+  $result = $db->query('SELECT players.id, players.firstname, players.lastname, games.id as gameID, games.type as game_type, gameLevels.name as level_name FROM players JOIN gamePlayers ON players.id = gamePlayers.player JOIN games ON gamePlayers.game = games.id  JOIN gameLevels ON games.levelID = gameLevels.id WHERE games.campaignID = ' . $campaignID . ' AND (LOWER(players.firstname) LIKE "%' . $match . '%" OR LOWER(players.lastname) like "%' . $match . '%")');
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $row['id'] = $hashids->encode($row['id']);
+    $row['gameID'] = $hashids->encode($row['gameID']);
+
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
 function updatePlayerLastUpdatedInDB($playerID, $dtLastUpdated) {
   require_once 'lib/mysql.php';
 

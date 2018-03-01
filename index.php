@@ -116,6 +116,7 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
 
 $app->get('/game/{gameHashID}/socialimage', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
+
   $hashGameID = $request->getAttribute('gameHashID');
 
   echo generateGameSocialImage($hashids->decode($hashGameID)[0]);
@@ -194,18 +195,30 @@ $app->post('/game/{gameHashID}/player/{playerHashID}', function (Request $reques
 });
 
 $app->get('/player/{token}', function (Request $request, Response $response) {
-    $hashids = new Hashids\Hashids('mountainrush', 10);
-  
-    $token = $request->getAttribute('token');
-    $jsonResponse = getPlayer($token);
+  $hashids = new Hashids\Hashids('mountainrush', 10);
 
+  $token = $request->getAttribute('token');
+  $jsonResponse = getPlayer($token);
+  if (count($jsonResponse)) {
     // add game data
     $jsonResponse[0]['games'] = getGamesByPlayerFromDB($jsonResponse[0]['id']);
 
-    $hashID = $hashids->encode($jsonResponse[0]['id']);
-    $jsonResponse[0]['id'] = $hashID;
+    $jsonResponse[0]['id'] = $hashids->encode($jsonResponse[0]['id']);
+    $jsonResponse[0]['referer_campaign'] = $hashids->encode($jsonResponse[0]['referer_campaign']);
 
     return $response->withJSON($jsonResponse);
+  }
+});
+
+$app->get('/campaign/{campaignHashID}/players/{match}', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashCampaignID = $request->getAttribute('campaignHashID');
+  $campaignID = $hashids->decode($hashCampaignID)[0];
+
+  $jsonResponse = getPlayersFromDBByCampaign($campaignID, $request->getAttribute('match'));
+
+  return $response->withJSON($jsonResponse);
 });
 
 $app->post('/player', function (Request $request, Response $response) {
