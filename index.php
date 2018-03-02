@@ -349,9 +349,6 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
       $fundraisingPage = $jsonCampaign[0]['shortname'] . '-' . $hashPlayerID . $hashGameID;
       $fundraisingPageTitle = $jsonCampaign[0]['name'];
 
-      // store fundraising page
-      setPlayerGameFundraisingPageInDB($gameID, $playerID, $fundraisingPage);
-
       // now create on JG
       $paramaObj = (object) [
         'email' => $data['email'],
@@ -365,6 +362,13 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
         'imageURL' => "http://tbassets2.imgix.net/images/brands/mountainrush/edm/5875843c37d99829635908_682x274.jpg"
       ];
       $jsonResponse = createFundraisingPlayerPage($paramaObj);
+
+      if ($jsonResponse) {
+        if ($jsonResponse->pageId) {
+          // store fundraising page
+          setPlayerGameFundraisingPageInDB($gameID, $playerID, $jsonResponse->pageId, $fundraisingPage);
+        }
+      }
 
       return $response->withJSON($jsonResponse);
     }

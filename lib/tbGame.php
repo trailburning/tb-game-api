@@ -55,10 +55,10 @@ function setPlayerGameActivityInDB($gameID, $playerID, $activity) {
   $db->query('UPDATE gamePlayers SET latest_activity = ' . $activity . ' where game = ' . $gameID . ' and player = ' . $playerID);
 }
 
-function setPlayerGameFundraisingPageInDB($gameID, $playerID, $fundraisingPage) {
+function setPlayerGameFundraisingPageInDB($gameID, $playerID, $fundraisingPageID, $fundraisingPage) {
   // only set once
   $db = connect_db();
-  $db->query('UPDATE gamePlayers SET fundraising_page = "' . $fundraisingPage . '" where game = ' . $gameID . ' and player = ' . $playerID);
+  $db->query('UPDATE gamePlayers SET fundraising_pageID = "' . $fundraisingPageID . '", fundraising_page = "' . $fundraisingPage . '" where game = ' . $gameID . ' and player = ' . $playerID);
 }
 
 function setPlayerGameAscentCompleteInDB($gameID, $playerID, $ascentCompleteActivityDate) {
@@ -174,7 +174,7 @@ function getGamesByPlayerFromDB($playerID) {
   $dtNow = new DateTime("now");
 
   $db = connect_db();
-  $result = $db->query('SELECT gamePlayers.game, gamePlayers.fundraising_page, games.type, games.game_start, games.game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, campaigns.name as campaign_name, campaigns.fundraising_page as campaign_fundraising_page FROM gamePlayers join games on gamePlayers.game = games.id join gameLevels on games.levelID = gameLevels.id join campaigns on games.campaignID = campaigns.id where player = ' . $playerID . ' order by games.game_end desc');
+  $result = $db->query('SELECT gamePlayers.game, gamePlayers.fundraising_pageID, gamePlayers.fundraising_page, games.type, games.game_start, games.game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, campaigns.name as campaign_name, campaigns.fundraising_page as campaign_fundraising_page FROM gamePlayers join games on gamePlayers.game = games.id join gameLevels on games.levelID = gameLevels.id join campaigns on games.campaignID = campaigns.id where player = ' . $playerID . ' order by games.game_end desc');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {

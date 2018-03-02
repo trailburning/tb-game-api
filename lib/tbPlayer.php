@@ -23,7 +23,26 @@ function addPlayerToDB($refererCampaignID, $avatar, $firstname, $lastname, $emai
 
     $ret = getPlayerFromDB($lastInsertID);
   }
+  else {
+    // insert failed so either the token or email has already been used.  Try getting player by email
+    $ret = getPlayerFromDBByEmail($email);
+  }
   return $ret;
+}
+
+function getPlayerFromDBByEmail($email) {
+  require_once 'lib/mysql.php';
+
+  $db = connect_db();
+  $result = $db->query('SELECT id, created, referer_campaign, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE email = "' . $email . '"');
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
 }
 
 function getPlayerFromDBByToken($token) {
@@ -77,7 +96,7 @@ function getPlayersFromDBByCampaign($campaignID, $match) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = connect_db();
-  $result = $db->query('SELECT players.id, players.firstname, players.lastname, games.id as gameID, games.type as game_type, gameLevels.name as level_name FROM players JOIN gamePlayers ON players.id = gamePlayers.player JOIN games ON gamePlayers.game = games.id  JOIN gameLevels ON games.levelID = gameLevels.id WHERE games.campaignID = ' . $campaignID . ' AND (LOWER(players.firstname) LIKE "%' . $match . '%" OR LOWER(players.lastname) like "%' . $match . '%")');
+  $result = $db->query('SELECT players.id, players.firstname, players.lastname, games.id as gameID, games.type as game_type, gameLevels.name as level_name FROM players JOIN gamePlayers ON players.id = gamePlayers.player JOIN games ON gamePlayers.game = games.id JOIN gameLevels ON games.levelID = gameLevels.id WHERE games.campaignID = ' . $campaignID . ' AND (LOWER(players.firstname) LIKE "%' . $match . '%" OR LOWER(players.lastname) like "%' . $match . '%") ORDER BY lastname');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
