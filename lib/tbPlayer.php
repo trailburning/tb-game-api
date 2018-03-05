@@ -59,7 +59,6 @@ function getPlayerFromDBByToken($clientID, $token) {
 }
 
 function getPlayerFromDBByProviderID($providerID) {
-  // 180305 mla - this needs clientID!
   require_once 'lib/mysql.php';
 
   $db = connect_db();
