@@ -6,9 +6,7 @@ use Strava\API\Client;
 use Strava\API\Exception;
 use Strava\API\Service\REST;
 
-define('DEF_CAMPAIGN', 1); // Mountain Rush
-
-function addPlayerToDB($refererCampaignID, $avatar, $firstname, $lastname, $email, $city, $country, $providerID, $providerToken) {
+function addPlayerToDB($clientID, $avatar, $firstname, $lastname, $email, $city, $country, $providerID, $providerToken) {
   require_once 'lib/mysql.php';
 
   $ret = null;
@@ -18,23 +16,23 @@ function addPlayerToDB($refererCampaignID, $avatar, $firstname, $lastname, $emai
   $dtNow = date('Y-m-d H:i:s', time());
 
   $db = connect_db();
-  if ($db->query('INSERT INTO players (created, referer_campaign, avatar, firstname, lastname, email, city, country, game_notifications, playerProviderID, playerProviderToken) VALUES ("' . $dtNow . '", ' . $refererCampaignID . ', "' . $avatar . '", "' . $firstname . '", "' . $lastname . '", "' . $email. '", "' . $city . '", "' . $country. '", 1, "' . $providerID . '", "' . $providerToken . '")') === TRUE) {
+  if ($db->query('INSERT INTO players (created, clientID, avatar, firstname, lastname, email, city, country, game_notifications, playerProviderID, playerProviderToken) VALUES ("' . $dtNow . '", ' . $clientID . ', "' . $avatar . '", "' . $firstname . '", "' . $lastname . '", "' . $email. '", "' . $city . '", "' . $country. '", 1, "' . $providerID . '", "' . $providerToken . '")') === TRUE) {
     $lastInsertID = $db->insert_id;
 
     $ret = getPlayerFromDB($lastInsertID);
   }
   else {
-    // insert failed so either the token or email has already been used.  Try getting player by email
-    $ret = getPlayerFromDBByEmail($email);
+    // insert failed so the email has already been used.
+    $ret = getPlayerFromDBByEmail($clientID, $email);
   }
   return $ret;
 }
 
-function getPlayerFromDBByEmail($email) {
+function getPlayerFromDBByEmail($clientID, $email) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('SELECT id, created, referer_campaign, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE email = "' . $email . '"');
+  $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE clientID = ' . $clientID . ' and email = "' . $email . '"');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -45,11 +43,11 @@ function getPlayerFromDBByEmail($email) {
   return $rows;
 }
 
-function getPlayerFromDBByToken($token) {
+function getPlayerFromDBByToken($clientID, $token) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('SELECT id, created, referer_campaign, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE playerProviderToken = "' . $token . '"');
+  $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE clientID = ' . $clientID . ' and playerProviderToken = "' . $token . '"');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -61,10 +59,11 @@ function getPlayerFromDBByToken($token) {
 }
 
 function getPlayerFromDBByProviderID($providerID) {
+  // 180305 mla - this needs clientID!
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('SELECT id, created, referer_campaign, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE playerProviderID = "' . $providerID . '"');
+  $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE playerProviderID = "' . $providerID . '"');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -79,7 +78,7 @@ function getPlayerFromDB($playerID) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('SELECT id, referer_campaign, avatar, firstname, lastname, email, last_activity, last_updated, playerProviderToken FROM players where id = ' . $playerID);
+  $result = $db->query('SELECT id, clientID, avatar, firstname, lastname, email, last_activity, last_updated, playerProviderToken FROM players where id = ' . $playerID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -96,7 +95,7 @@ function getPlayersFromDBByCampaign($campaignID, $match) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = connect_db();
-  $result = $db->query('SELECT players.id, players.firstname, players.lastname, games.id as gameID, games.type as game_type, gameLevels.name as level_name FROM players JOIN gamePlayers ON players.id = gamePlayers.player JOIN games ON gamePlayers.game = games.id JOIN gameLevels ON games.levelID = gameLevels.id WHERE games.campaignID = ' . $campaignID . ' AND (LOWER(players.firstname) LIKE "%' . $match . '%" OR LOWER(players.lastname) like "%' . $match . '%") ORDER BY lastname');
+  $result = $db->query('SELECT players.id, players.firstname, players.lastname, games.id as gameID, games.type as game_type, games.game_start, games.game_end, gameLevels.name as level_name FROM players JOIN gamePlayers ON players.id = gamePlayers.player JOIN games ON gamePlayers.game = games.id JOIN gameLevels ON games.levelID = gameLevels.id WHERE games.campaignID = ' . $campaignID . ' AND (LOWER(players.firstname) LIKE "%' . $match . '%" OR LOWER(players.lastname) like "%' . $match . '%") ORDER BY lastname, games.game_start DESC');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -131,8 +130,8 @@ function updatePlayerDetailsInDB($playerID, $avatar, $firstname, $lastname, $ema
   $result = $db->query('update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'", city = "' . $city . '", country = "' . $country . '" where id = ' . $playerID);
 }
 
-function updatePlayer($token) {
-  $results = getPlayerFromDBByToken($token);
+function updatePlayer($clientID, $token) {
+  $results = getPlayerFromDBByToken($clientID, $token);
   if (count($results) != 0) {
     // get from provider
     $adapter = new Pest('https://www.strava.com/api/v3');
@@ -145,8 +144,8 @@ function updatePlayer($token) {
   }
 }
 
-function getPlayer($token) {
-  $results = getPlayerFromDBByToken($token);
+function getPlayer($clientID, $token) {
+  $results = getPlayerFromDBByToken($clientID, $token);
   if (count($results) == 0) {
     // get from provider
     $adapter = new Pest('https://www.strava.com/api/v3');
@@ -155,10 +154,9 @@ function getPlayer($token) {
     $client = new Client($service);
     $athlete = $client->getAthlete();
 
-    addPlayerToDB(DEF_CAMPAIGN, $athlete['profile'], $athlete['firstname'], $athlete['lastname'], $athlete['email'], $athlete['city'], $athlete['country'], $athlete['id'], $token);
+    addPlayerToDB($clientID, $athlete['profile'], $athlete['firstname'], $athlete['lastname'], $athlete['email'], $athlete['city'], $athlete['country'], $athlete['id'], $token);
 
     $results = getPlayerFromDBByToken($token);
- }
-
+  }
   return $results;
 }

@@ -194,17 +194,19 @@ $app->post('/game/{gameHashID}/player/{playerHashID}', function (Request $reques
   return $response->withJSON($jsonResponse);
 });
 
-$app->get('/player/{token}', function (Request $request, Response $response) {
+$app->get('/client/{clientHashID}/player/{token}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
+  $hashClientID = $request->getAttribute('clientHashID');
+  $clientID = $hashids->decode($hashClientID)[0];
+
   $token = $request->getAttribute('token');
-  $jsonResponse = getPlayer($token);
+  $jsonResponse = getPlayer($clientID, $token);
   if (count($jsonResponse)) {
     // add game data
     $jsonResponse[0]['games'] = getGamesByPlayerFromDB($jsonResponse[0]['id']);
-
     $jsonResponse[0]['id'] = $hashids->encode($jsonResponse[0]['id']);
-    $jsonResponse[0]['referer_campaign'] = $hashids->encode($jsonResponse[0]['referer_campaign']);
+    $jsonResponse[0]['clientID'] = $hashids->encode($jsonResponse[0]['clientID']);
 
     return $response->withJSON($jsonResponse);
   }
@@ -227,49 +229,57 @@ $app->post('/player', function (Request $request, Response $response) {
   $json = $request->getBody();
   $data = json_decode($json, true);
 
-  $hashCampaignID = $data['campaignID'];
-  $campaignID = $hashids->decode($hashCampaignID)[0];
+  $hashClientID = $data['clientID'];
+  $clientID = $hashids->decode($hashClientID)[0];
 
-  $jsonResponse = addPlayerToDB($campaignID, $data['avatar'], $data['firstname'], $data['lastname'], $data['email'], $data['city'], $data['country'], $data['providerID'], $data['providerToken']);
+  $jsonResponse = addPlayerToDB($clientID, $data['avatar'], $data['firstname'], $data['lastname'], $data['email'], $data['city'], $data['country'], $data['providerID'], $data['providerToken']);
+
+  $jsonResponse[0]['id'] = $hashids->encode($jsonResponse[0]['id']);
+  $jsonResponse[0]['clientID'] = $hashids->encode($jsonResponse[0]['clientID']);
 
   return $response->withJSON($jsonResponse);
 });
 
-$app->get('/player/{token}/update', function (Request $request, Response $response) {
-    $hashids = new Hashids\Hashids('mountainrush', 10);
+$app->get('/client/{clientHashID}/player/{token}/update', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashClientID = $request->getAttribute('clientHashID');
+  $clientID = $hashids->decode($hashClientID)[0];
   
-    $token = $request->getAttribute('token');
-    $jsonResponse = updatePlayer($token);
-    $jsonResponse = getPlayer($token);
+  $token = $request->getAttribute('token');
 
-    // add game data
-    $jsonResponse[0]['games'] = getGamesByPlayerFromDB($jsonResponse[0]['id']);
+  $jsonResponse = updatePlayer($clientID, $token);
+  $jsonResponse = getPlayer($clientID, $token);
 
-    $hashID = $hashids->encode($jsonResponse[0]['id']);
-    $jsonResponse[0]['id'] = $hashID;
+  // add game data
+  $jsonResponse[0]['games'] = getGamesByPlayerFromDB($jsonResponse[0]['id']);
 
-    return $response->withJSON($jsonResponse);
+  $hashID = $hashids->encode($jsonResponse[0]['id']);
+  $jsonResponse[0]['id'] = $hashID;
+
+  return $response->withJSON($jsonResponse);
 });
 
 $app->get('/game/{gameHashID}/player/{playerHashID}/progress', function (Request $request, Response $response) {
-    $hashids = new Hashids\Hashids('mountainrush', 10);
+  $hashids = new Hashids\Hashids('mountainrush', 10);
 
-    $hashGameID = $request->getAttribute('gameHashID');
-    $gameID = $hashids->decode($hashGameID)[0];
+  $hashGameID = $request->getAttribute('gameHashID');
+  $gameID = $hashids->decode($hashGameID)[0];
 
-    $hashPlayerID = $request->getAttribute('playerHashID');
-    $playerID = $hashids->decode($hashPlayerID)[0];
+  $hashPlayerID = $request->getAttribute('playerHashID');
+  $playerID = $hashids->decode($hashPlayerID)[0];
 
-    // get latest activities
-    $arrPlayerActivities = getPlayerGameProgress($playerID, $gameID);
-    // get player game details
-    $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
+  // get latest activities
+  $arrPlayerActivities = getPlayerGameProgress($playerID, $gameID);
 
-    $jsonResponse = $gamePlayerResults;
+  // get player game details
+  $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
 
-    $jsonResponse[0]['activities'] = $arrPlayerActivities;
+  $jsonResponse = $gamePlayerResults;
 
-    return $response->withJSON($jsonResponse);
+  $jsonResponse[0]['activities'] = $arrPlayerActivities;
+
+  return $response->withJSON($jsonResponse);
 });
 
 $app->get('/game/{gameHashID}/player/{playerHashID}/activity/{activityID}/photos', function (Request $request, Response $response) {
