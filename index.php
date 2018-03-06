@@ -303,6 +303,17 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/activity/{activityID}/photos
     return $response->withJSON($jsonResponse);
 });
 
+$app->get('/campaign/{campaignHashID}', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashCampaignID = $request->getAttribute('campaignHashID');
+  $campaignID = $hashids->decode($hashCampaignID)[0];
+
+  $jsonResponse = getCampaignFromDB($campaignID);
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->get('/fundraiser/user/{email}/{password}', function (Request $request, Response $response) {
   $bExists = false;
 
