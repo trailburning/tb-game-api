@@ -45,7 +45,6 @@ function createFundraisingPlayerPage($paramaObj) {
   $registerPageRequest->charityId = $paramaObj->charityID;
   $registerPageRequest->eventId = $paramaObj->eventID;
   $registerPageRequest->targetAmount = $paramaObj->targetAmount;
-  $registerPageRequest->eventDate = "/Date(1235764800000)/";
   $registerPageRequest->justGivingOptIn = false;
   $registerPageRequest->charityOptIn = false;
   $registerPageRequest->charityFunded = false;
