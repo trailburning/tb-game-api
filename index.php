@@ -140,7 +140,6 @@ $app->get('/game/{gameHashID}', function (Request $request, Response $response) 
   $gameID = $hashids->decode($hashGameID)[0];
 
   $jsonResponse = getGameFromDB($gameID);
-  $jsonResponse[0]['id'] = $hashGameID;
 
   // use UTC date
   date_default_timezone_set("UTC");
@@ -156,6 +155,19 @@ $app->get('/game/{gameHashID}', function (Request $request, Response $response) 
 
   // add player data
   $jsonResponse[0]['players'] = getGamePlayersFromDB($gameID);
+
+  $gameJSON = $response->withJSON($jsonResponse);
+
+  return $gameJSON;
+});
+
+$app->get('/game/{gameHashID}/campaign', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashGameID = $request->getAttribute('gameHashID');
+  $gameID = $hashids->decode($hashGameID)[0];
+
+  $jsonResponse = getCampaignByGameFromDB($gameID);
 
   $gameJSON = $response->withJSON($jsonResponse);
 
