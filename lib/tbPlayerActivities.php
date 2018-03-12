@@ -36,13 +36,14 @@ function getPlayerActivitiesFromDB($playerID, $dtFirstActivityAllowed, $dtLastAc
 function addPlayerActivitiesToDB($playerID, $jsonActivities) {
   require_once 'lib/mysql.php';
 
-  $db = connect_db();
-
-  foreach($jsonActivities as $activity) {
-    // first check we don't already have the activity
-    $result = $db->query('SELECT player, activity FROM playerActivities where player = ' . $playerID . ' and activity = ' . $activity['id']);
-    if (!$result->num_rows) {
-      $result = $db->query('INSERT INTO playerActivities (player, activity, type, distance, total_elevation_gain, start_date) VALUES (' . $playerID . ', ' . $activity['id'] . ', "' . $activity['type'] . '", ' . $activity['distance'] . ', ' . $activity['total_elevation_gain'] . ', "' . $activity['start_date'] . '")');
+  if ($jsonActivities) {
+    $db = connect_db();
+    foreach($jsonActivities as $activity) {
+      // first check we don't already have the activity
+      $result = $db->query('SELECT player, activity FROM playerActivities where player = ' . $playerID . ' and activity = ' . $activity['id']);
+      if (!$result->num_rows) {
+        $result = $db->query('INSERT INTO playerActivities (player, activity, type, distance, total_elevation_gain, start_date) VALUES (' . $playerID . ', ' . $activity['id'] . ', "' . $activity['type'] . '", ' . $activity['distance'] . ', ' . $activity['total_elevation_gain'] . ', "' . $activity['start_date'] . '")');
+      }
     }
   }
 }
@@ -64,6 +65,8 @@ function getPlayerActivity($token, $activityID) {
 }
 
 function getPlayerActivities($playerID, $startDate, $endDate, $activityType) {
+  $ret = [];
+
   date_default_timezone_set("UTC");
   $dtNow = date('Y-m-d H:i:s', time());
 
@@ -91,13 +94,18 @@ function getPlayerActivities($playerID, $startDate, $endDate, $activityType) {
     if ($tNow > $tFirstActivityAllowed && $nUpdatedSecondsAgo > UPDATE_SECS) {
       // only if the last recorded activity is before the last allowed
       if ($tLastActivity < $tLastActivityAllowed) {
-        // get from provider
-        $adapter = new Pest('https://www.strava.com/api/v3');
-        $service = new REST($token, $adapter);
+        $activities = null;
+        try {
+          // get from provider
+          $adapter = new Pest('https://www.strava.com/api/v3');
+          $service = new REST($token, $adapter);
 
-        $client = new Client($service);
-        // before, after
-        $activities = $client->getAthleteActivities(null, $tFirstActivityAllowed, 1, 100);
+          $client = new Client($service);
+          // before, after
+          $activities = $client->getAthleteActivities(null, $tFirstActivityAllowed, 1, 100);
+        } catch(\Exception $e) {
+        }
+
         if (sizeof($activities)) {
           // last entry is most recent when calling with 'after' date
           $dtLastActivity = $activities[sizeof($activities)-1]['start_date'];
@@ -106,13 +114,11 @@ function getPlayerActivities($playerID, $startDate, $endDate, $activityType) {
         addPlayerActivitiesToDB($playerID, $activities);
       }
     }
-
     $dtLastUpdated = $dtNow;
     // store last updated
     updatePlayerLastUpdatedInDB($playerID, $dtLastUpdated);
 
-    $results = getPlayerActivitiesFromDB($playerID, $dtFirstActivityAllowed, $dtLastActivityAllowed, $activityType);
+    $ret = getPlayerActivitiesFromDB($playerID, $dtFirstActivityAllowed, $dtLastActivityAllowed, $activityType);
   }  
-
-  return $results;
+  return $ret;
 }

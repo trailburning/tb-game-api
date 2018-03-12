@@ -18,11 +18,11 @@ function addPlayerToDB($clientID, $avatar, $firstname, $lastname, $email, $city,
   $db = connect_db();
   if ($db->query('INSERT INTO players (created, clientID, avatar, firstname, lastname, email, city, country, game_notifications, playerProviderID, playerProviderToken) VALUES ("' . $dtNow . '", ' . $clientID . ', "' . $avatar . '", "' . $firstname . '", "' . $lastname . '", "' . $email. '", "' . $city . '", "' . $country. '", 1, "' . $providerID . '", "' . $providerToken . '")') === TRUE) {
     $lastInsertID = $db->insert_id;
-
     $ret = getPlayerFromDB($lastInsertID);
   }
   else {
-    // insert failed so the email has already been used.
+    // insert failed so the email has already been used, let's try an update
+    updatePlayerDetailsInDB($avatar, $firstname, $lastname, $email, $city, $country, $providerToken);
     $ret = getPlayerFromDBByEmail($clientID, $email);
   }
   return $ret;
@@ -33,6 +33,7 @@ function getPlayerFromDBByEmail($clientID, $email) {
 
   $db = connect_db();
   $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE clientID = ' . $clientID . ' and email = "' . $email . '"');
+
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -122,11 +123,11 @@ function updatePlayerLastActivityInDB($playerID, $dtLastActivity) {
   $result = $db->query('update players set last_activity = "' . $dtLastActivity . '" where id = ' . $playerID);
 }
 
-function updatePlayerDetailsInDB($playerID, $avatar, $firstname, $lastname, $email, $city, $country) {
+function updatePlayerDetailsInDB($avatar, $firstname, $lastname, $email, $city, $country, $token) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'", city = "' . $city . '", country = "' . $country . '" where id = ' . $playerID);
+  $result = $db->query('update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where email = "' . $email . '"');
 }
 
 function updatePlayer($clientID, $token) {
@@ -139,7 +140,7 @@ function updatePlayer($clientID, $token) {
     $client = new Client($service);
     $activities = $client->getAthlete();
 
-    updatePlayerDetailsInDB($results[0]['id'], $activities['profile'], $activities['firstname'], $activities['lastname'], $activities['email'], $activities['city'], $activities['country']);
+    updatePlayerDetailsInDB($activities['profile'], $activities['firstname'], $activities['lastname'], $activities['email'], $activities['city'], $activities['country'], $token);
   }
 }
 
@@ -155,7 +156,7 @@ function getPlayer($clientID, $token) {
 
     addPlayerToDB($clientID, $athlete['profile'], $athlete['firstname'], $athlete['lastname'], $athlete['email'], $athlete['city'], $athlete['country'], $athlete['id'], $token);
 
-    $results = getPlayerFromDBByToken($token);
+    $results = getPlayerFromDBByToken($clientID, $token);
   }
   return $results;
 }
