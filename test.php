@@ -13,7 +13,9 @@ require_once('vendor/autoload.php');
 $game = array(
   'id' => 'yKerNk4mwM',
   'name' => 'Monte Pelmo',
-  'journeyID' => '59d4ad31a276a319404809'
+  'journeyID' => '59d4ad31a276a319404809',
+//  'email_template' => 'TB Member EDM'
+  'email_template' => 'MR Game - WWF'
 );
 
 $player = array(
@@ -32,9 +34,13 @@ $activePlayer = array(
 
 sendActivityEmail($game, $player, $activePlayer);
 */
+
 $hashids = new Hashids\Hashids('mountainrush', 10);
 
-$id = $hashids->encode(217);
-
+$id = $hashids->encode(2);
 var_dump($id);
+
+$id = $hashids->decode('djJrbPlYlX')[0];
+var_dump($id);
+
 exit;

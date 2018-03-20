@@ -120,7 +120,7 @@ function getGamesFromDB() {
   $dtNow = new DateTime("now");
 
   $db = connect_db();
-  $result = $db->query('SELECT games.id, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, gameLevels.mountain3DName FROM games JOIN gameLevels ON games.levelID = gameLevels.id order by game_end desc');
+  $result = $db->query('SELECT games.id, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, gameLevels.mountain3DName, campaigns.email_template FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id order by game_end desc');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {

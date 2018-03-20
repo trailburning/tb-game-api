@@ -17,10 +17,10 @@ function sendActivityEmail($game, $player, $activePlayer) {
   }
 
   // now send an email
-  $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strWelcome, $strTitle, $strMsg);
+  $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Player Activity', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strWelcome, $strTitle, $strMsg);
 
   // MLA - test email
-  $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Activity DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strWelcome, $strTitle, $strMsg);
+  $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Player Activity DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strWelcome, $strTitle, $strMsg);
 }
 
 function sendSummitEmail($game, $player, $activePlayer) {
@@ -41,17 +41,16 @@ function sendSummitEmail($game, $player, $activePlayer) {
   }
 
   // now send an email
-  $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Summited!', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strWelcome, $strTitle, $strMsg);
+  $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Player Summited!', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strWelcome, $strTitle, $strMsg);
 
   // MLA - test email
-  $result = sendEmail($game['journeyID'], 'Mountain Rush - Player Summited! DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strWelcome, $strTitle, $strMsg);
+  $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Player Summited! DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strWelcome, $strTitle, $strMsg);
 }
 
-function sendEmail($strJourneyID, $strSubject, $strToEmail, $strToName, $strWelcome, $strMsgTitle, $strMsgContent) {
+function sendEmail($strEmailTemplate, $strJourneyID, $strSubject, $strToEmail, $strToName, $strWelcome, $strMsgTitle, $strMsgContent) {
   try {
     $mandrill = new Mandrill('kRr66_sxVLQJwehdLnakqg');
 
-    $template_name = 'TB Member EDM';
     $template_content = array(
       array(
         'name' => 'msg_image',
@@ -86,7 +85,7 @@ function sendEmail($strJourneyID, $strSubject, $strToEmail, $strToName, $strWelc
     $async = false;
     $ip_pool = '';
     $send_at = '';
-    $result = $mandrill->messages->sendTemplate($template_name, $template_content, $message, $async, $ip_pool, $send_at);
+    $result = $mandrill->messages->sendTemplate($strEmailTemplate, $template_content, $message, $async, $ip_pool, $send_at);
 
     return $result;
   } catch(Mandrill_Error $e) {
