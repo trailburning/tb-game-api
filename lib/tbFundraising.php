@@ -7,7 +7,7 @@ define('FUNDRAISING_API_KEY', 'aca65145');
 define('FUNDRAISING_EMAIL', 'support@trailburning.com');
 define('FUNDRAISING_PASSWORD', 'helloworld');
 
-function getFundraisingPlayer($fundraisingPlayerEmail, $fundraisingPlayerPassword) {  
+function getFundraisingPlayer($fundraisingPlayerEmail, $fundraisingPlayerPassword) {
   $client = new JustGivingClient(FUNDRAISING_API_URL, FUNDRAISING_API_KEY, 1, $fundraisingPlayerEmail, $fundraisingPlayerPassword);
   $response = $client->Account->AccountDetails();
 

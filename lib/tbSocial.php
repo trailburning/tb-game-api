@@ -35,6 +35,16 @@ function buildSocialGameImage($paramaObj) {
   $params = array("w" => 1200, "h" => 630);
   $overlayImg = $builder->createURL("images/brands/mountainrush/social/overlay.png", $params);
 
+  // do we want to add progress?
+  if ($paramaObj->progress) {
+    // progress
+    $params = array("w" => 1200, "txtfont64" => "Avenir Next Condensed Demi,Bold", "txtalign" => 'right', "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 55, "txt64" => $paramaObj->progress);
+    $txtProgress = $builder->createURL("~text", $params);
+
+    $params = array("w" => 1200, "h" => 630, "markx" => -46, "marky" => 46, "mark64" => $txtProgress);
+    $overlayImg = $builder->createURL("images/brands/mountainrush/social/overlay.png", $params);
+  }
+
   // final image
   $params = array("w" => 1200, "h" => 630, "q" => 80, "markx" => 0, "marky" => 480, "mark64" => $bottomImg,
   "bw" => 1200, "bh" => 630, "bm" => 'normal', "blend64" => $overlayImg);
@@ -53,14 +63,15 @@ function generateGameSocialImage($gameID) {
       'mountain' => $arrResponse[0]['name'],
       'region' => strtolower($arrResponse[0]['region']),
       'ascent' => $arrResponse[0]['ascent'] . 'm',
-      'challenge' => strtolower($arrResponse[0]['type']) . ' challenge'
+      'challenge' => strtolower($arrResponse[0]['type']) . ' challenge',
+      'progress' => 0
     ];
     $ret = buildSocialGameImage($paramaObj);
   }
   return $ret;
 }
 
-function generateGameProgressSocialImage($gameID, $progressPercent) {
+function generateGameProgressSocialImage($gameID, $progress) {
   $ret = '';
 
   $arrResponse = getGameFromDB($gameID);
@@ -70,7 +81,8 @@ function generateGameProgressSocialImage($gameID, $progressPercent) {
       'mountain' => $arrResponse[0]['name'],
       'region' => strtolower($arrResponse[0]['region']),
       'ascent' => $arrResponse[0]['ascent'] . 'm',
-      'challenge' => strtolower($arrResponse[0]['type']) . ' challenge - ' . $progressPercent
+      'challenge' => strtolower($arrResponse[0]['type']) . ' challenge ',
+      'progress' => $progress
     ];
     echo buildSocialGameImage($paramaObj);
   }

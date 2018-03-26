@@ -124,13 +124,14 @@ $app->get('/game/{gameHashID}/socialimage', function (Request $request, Response
   echo generateGameSocialImage($hashids->decode($hashGameID)[0]);
 });
 
-$app->get('/game/{gameHashID}/socialimage/progress/{progressHashPercent}', function (Request $request, Response $response) {
+$app->get('/game/{gameHashID}/socialimage/progress/{progressHash}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $hashGameID = $request->getAttribute('gameHashID');
-  $progressHashPercent = $request->getAttribute('progressHashPercent');
+  $progressHash = $request->getAttribute('progressHash');
 
-  echo generateGameProgressSocialImage($hashids->decode($hashGameID)[0], $hashids->decode($progressHashPercent)[0]);
+  $strProgress = '£' . $hashids->decode($progressHash)[0];
+  echo generateGameProgressSocialImage($hashids->decode($hashGameID)[0], $strProgress);
 });
 
 $app->get('/game/{gameHashID}', function (Request $request, Response $response) {
@@ -415,8 +416,21 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
   }
 });
 
-$app->get('/fundraiser/page/{pageShortName}', function (Request $request, Response $response) {
+$app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/page/{pageShortName}', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashGameID = $request->getAttribute('gameHashID');
+  $hashPlayerID = $request->getAttribute('playerHashID');
+
+  $gameID = $hashids->decode($hashGameID)[0];
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
   $jsonResponse = getFundraisingPage($request->getAttribute('pageShortName'));
+
+  // update fundraising info in DB
+  if ($jsonResponse) {
+    setPlayerGameFundraisingRaisedInDB($gameID, $playerID, $jsonResponse->totalRaisedOnline, $jsonResponse->currencyCode);
+  }
 
   return $response->withJSON($jsonResponse);
 });
