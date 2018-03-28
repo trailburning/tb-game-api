@@ -16,7 +16,7 @@ function buildSocialGameImage($paramaObj) {
   $leftData = $builder->createURL("images/brands/mountainrush/social/bg_text2.png", $params);
 
   // bottom right data
-  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed Demi,Bold", "txtalign" => 'right', "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 55, "txt64" => $paramaObj->ascent);
+  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed Demi,Bold", "txtalign" => 'right', "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 55, "txt64" => $paramaObj->ascent . 'm');
   $txtAscent = $builder->createURL("~text", $params);
 
   $params = array("w" => 600, "txtfont64" => "Avenir Next Regular", "txtalign" => 'right', "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 27, "txt64" => $paramaObj->challenge);
@@ -53,6 +53,32 @@ function buildSocialGameImage($paramaObj) {
   return $finalImg;
 }
 
+function buildSocialGameProgressImage($paramaObj) {
+  $builder = new UrlBuilder("tbassets2.imgix.net");
+
+  // bottom left data
+  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed,Bold", "txtclr" => '474747', "txtpad" => 0, "txtsize" => 60, "txt64" => $paramaObj->ascent . 'm');
+  $txtMountain = $builder->createURL("~text", $params);
+
+  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed,Medium", "txtclr" => '474747', "txtpad" => 0, "txtsize" => 45, "txt64" => strtoupper($paramaObj->mountain . ' ' . $paramaObj->type));
+  $txtCountry = $builder->createURL("~text", $params);
+
+  $params = array("w" => 654, "h" => 107, "markx" => 46, "marky" => 14, "mark64" => $txtMountain,
+  "bx" => 244, "by" => 29, "bm" => 'normal', "blend64" => $txtCountry);
+  $leftData = $builder->createURL("images/brands/mountainrush/social/wwf/bg_text.png", $params);
+
+  // progress
+  $params = array("w" => 228, "h" => 100, "txtfont64" => "Avenir Next Condensed,Bold", "txtalign" => 'center', "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 72, "txt64" => $paramaObj->progress);
+  $txtProgress = $builder->createURL("~text", $params);
+
+  // final image
+  $params = array("w" => 1200, "h" => 630, "q" => 80, "markx" => 0, "marky" => 523, "mark64" => $leftData,
+  "bw" => 228, "bh" => 100, "bx" => 578, "by" => 246, "bm" => 'normal', "blend64" => $txtProgress);
+  $finalImg = $builder->createURL("images/brands/mountainrush/social/wwf/CFYW_Gorilla.png", $params);
+
+  return $finalImg;
+}
+
 function generateGameSocialImage($gameID) {
   $ret = '';
 
@@ -62,7 +88,7 @@ function generateGameSocialImage($gameID) {
       'journeyID' => $arrResponse[0]['journeyID'],
       'mountain' => $arrResponse[0]['name'],
       'region' => strtolower($arrResponse[0]['region']),
-      'ascent' => $arrResponse[0]['ascent'] . 'm',
+      'ascent' => $arrResponse[0]['ascent'],
       'challenge' => strtolower($arrResponse[0]['type']) . ' challenge',
       'progress' => 0
     ];
@@ -80,10 +106,18 @@ function generateGameProgressSocialImage($gameID, $progress) {
       'journeyID' => $arrResponse[0]['journeyID'],
       'mountain' => $arrResponse[0]['name'],
       'region' => strtolower($arrResponse[0]['region']),
-      'ascent' => $arrResponse[0]['ascent'] . 'm',
+      'ascent' => $arrResponse[0]['ascent'],
+      'type' => $arrResponse[0]['type'],
       'challenge' => strtolower($arrResponse[0]['type']) . ' challenge ',
       'progress' => $progress
     ];
-    echo buildSocialGameImage($paramaObj);
+
+    if ($progress) {
+      // 180328 MLA - temp until we can build images based on a template system
+      echo buildSocialGameProgressImage($paramaObj);
+    }
+    else {
+      echo buildSocialGameImage($paramaObj);
+    }
   }
 }

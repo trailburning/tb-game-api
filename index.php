@@ -124,13 +124,12 @@ $app->get('/game/{gameHashID}/socialimage', function (Request $request, Response
   echo generateGameSocialImage($hashids->decode($hashGameID)[0]);
 });
 
-$app->get('/game/{gameHashID}/socialimage/progress/{progressHash}', function (Request $request, Response $response) {
+$app->get('/game/{gameHashID}/socialimage/progress/{progress}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $hashGameID = $request->getAttribute('gameHashID');
-  $progressHash = $request->getAttribute('progressHash');
 
-  $strProgress = '£' . $hashids->decode($progressHash)[0];
+  $strProgress = '£ ' . $request->getAttribute('progress');
   echo generateGameProgressSocialImage($hashids->decode($hashGameID)[0], $strProgress);
 });
 
