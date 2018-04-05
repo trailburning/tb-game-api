@@ -246,16 +246,16 @@ class CurlWrapper
 	private function SetCredentials($ch, $base64Credentials = "", $contentType="application/json")
 	{		
     // 180221 MLA - add headers for JG staging testing
+    // 180405 MLA - remove headers for JG production
 		if($base64Credentials != null && $base64Credentials != "")
 		{			
-//			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: '.$contentType, 'Accept: '.$contentType, 'Authorize: Basic '.$base64Credentials, 'Authorization: Basic '.$base64Credentials ));
-
-      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: '.$contentType, 'Accept: '.$contentType, 'Authorize: Basic '.$base64Credentials, 'Authorization: Basic '.$base64Credentials, 'JG-ACCESS-TOKEN: F3B538DB-C11A-4988-BC7D-8D76A298BAA0'));
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: '.$contentType, 'Accept: '.$contentType, 'Authorize: Basic '.$base64Credentials, 'Authorization: Basic '.$base64Credentials ));
+//      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: '.$contentType, 'Accept: '.$contentType, 'Authorize: Basic '.$base64Credentials, 'Authorization: Basic '.$base64Credentials, 'JG-ACCESS-TOKEN: F3B538DB-C11A-4988-BC7D-8D76A298BAA0'));
 		}
 		else
 		{
-//			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: '.$contentType, 'Accept: '.$contentType));
-      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: '.$contentType, 'Accept: '.$contentType, 'JG-ACCESS-TOKEN: F3B538DB-C11A-4988-BC7D-8D76A298BAA0'));
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: '.$contentType, 'Accept: '.$contentType));
+//      curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: '.$contentType, 'Accept: '.$contentType, 'JG-ACCESS-TOKEN: F3B538DB-C11A-4988-BC7D-8D76A298BAA0'));
 		}
 	}
 }

@@ -2,7 +2,8 @@
 include_once 'JustGiving/JustGivingClient.php';
 include_once 'JustGiving/ApiClients/Model/CreateAccountRequest.php';
 
-define('FUNDRAISING_API_URL', 'https://api.staging.justgiving.com/');
+//define('FUNDRAISING_API_URL', 'https://api.staging.justgiving.com/');
+define('FUNDRAISING_API_URL', 'https://api.justgiving.com/');
 define('FUNDRAISING_API_KEY', 'aca65145');
 define('FUNDRAISING_EMAIL', 'support@trailburning.com');
 define('FUNDRAISING_PASSWORD', 'helloworld');
