@@ -74,7 +74,33 @@ function buildSocialGameProgressImage($paramaObj) {
   // final image
   $params = array("w" => 1200, "h" => 630, "q" => 80, "markx" => 0, "marky" => 523, "mark64" => $leftData,
   "bw" => 228, "bh" => 100, "bx" => 578, "by" => 246, "bm" => 'normal', "blend64" => $txtProgress);
-  $finalImg = $builder->createURL("images/brands/mountainrush/social/wwf/CFYW_Gorilla.png", $params);
+  $finalImg = $builder->createURL("images/brands/mountainrush/social/wwf/CFYW_Gorilla_Progress.png", $params);
+
+  return $finalImg;
+}
+
+function buildSocialGameGoalImage($paramaObj) {
+  $builder = new UrlBuilder("tbassets2.imgix.net");
+
+  // bottom left data
+  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed,Bold", "txtclr" => '474747', "txtpad" => 0, "txtsize" => 60, "txt64" => $paramaObj->ascent . 'm');
+  $txtMountain = $builder->createURL("~text", $params);
+
+  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed,Medium", "txtclr" => '474747', "txtpad" => 0, "txtsize" => 45, "txt64" => strtoupper($paramaObj->mountain . ' ' . $paramaObj->type));
+  $txtCountry = $builder->createURL("~text", $params);
+
+  $params = array("w" => 654, "h" => 107, "markx" => 46, "marky" => 14, "mark64" => $txtMountain,
+  "bx" => 244, "by" => 29, "bm" => 'normal', "blend64" => $txtCountry);
+  $leftData = $builder->createURL("images/brands/mountainrush/social/wwf/bg_text.png", $params);
+
+  // goal
+  $params = array("w" => 228, "h" => 100, "txtfont64" => "Avenir Next Condensed,Bold", "txtalign" => 'center', "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 72, "txt64" => $paramaObj->goal);
+  $txtGoal = $builder->createURL("~text", $params);
+
+  // final image
+  $params = array("w" => 1200, "h" => 630, "q" => 80, "markx" => 0, "marky" => 523, "mark64" => $leftData,
+  "bw" => 228, "bh" => 100, "bx" => 578, "by" => 320, "bm" => 'normal', "blend64" => $txtGoal);
+  $finalImg = $builder->createURL("images/brands/mountainrush/social/wwf/CFYW_Gorilla_Goal.png", $params);
 
   return $finalImg;
 }
@@ -115,6 +141,31 @@ function generateGameProgressSocialImage($gameID, $progress) {
     if ($progress) {
       // 180328 MLA - temp until we can build images based on a template system
       echo buildSocialGameProgressImage($paramaObj);
+    }
+    else {
+      echo buildSocialGameImage($paramaObj);
+    }
+  }
+}
+
+function generateGameGoalSocialImage($gameID, $goal) {
+  $ret = '';
+
+  $arrResponse = getGameFromDB($gameID);
+  if (count($arrResponse)) {
+    $paramaObj = (object) [
+      'journeyID' => $arrResponse[0]['journeyID'],
+      'mountain' => $arrResponse[0]['name'],
+      'region' => strtolower($arrResponse[0]['region']),
+      'ascent' => $arrResponse[0]['ascent'],
+      'type' => $arrResponse[0]['type'],
+      'challenge' => strtolower($arrResponse[0]['type']) . ' challenge ',
+      'goal' => $goal
+    ];
+
+    if ($goal) {
+      // 180328 MLA - temp until we can build images based on a template system
+      echo buildSocialGameGoalImage($paramaObj);
     }
     else {
       echo buildSocialGameImage($paramaObj);

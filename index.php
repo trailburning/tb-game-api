@@ -133,6 +133,15 @@ $app->get('/game/{gameHashID}/socialimage/progress/{progress}', function (Reques
   echo generateGameProgressSocialImage($hashids->decode($hashGameID)[0], $strProgress);
 });
 
+$app->get('/game/{gameHashID}/socialimage/goal/{goal}', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashGameID = $request->getAttribute('gameHashID');
+
+  $strGoal = '£ ' . $request->getAttribute('goal');
+  echo generateGameGoalSocialImage($hashids->decode($hashGameID)[0], $strGoal);
+});
+
 $app->get('/game/{gameHashID}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
@@ -428,7 +437,7 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/page/{pageShortNa
 
   // update fundraising info in DB
   if ($jsonResponse) {
-    setPlayerGameFundraisingRaisedInDB($gameID, $playerID, $jsonResponse->totalRaisedOnline, $jsonResponse->currencyCode);
+    setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $jsonResponse->fundraisingTarget, $jsonResponse->totalRaisedOnline, $jsonResponse->currencyCode);
   }
 
   return $response->withJSON($jsonResponse);
