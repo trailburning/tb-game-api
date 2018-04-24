@@ -449,6 +449,16 @@ $app->get('/fundraiser/page/{pageShortName}/donations', function (Request $reque
   return $response->withJSON($jsonResponse);
 });
 
+$app->get('/fundraiser/campaign/{campaignHashID}/leaderboard', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $campaignID = $hashids->decode($request->getAttribute('campaignHashID'))[0];
+
+  $jsonResponse = getFundraisingCampaignLeaderboard($campaignID);
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->get('/fundraiser/leaderboard/event/{eventID}', function (Request $request, Response $response) {
   $jsonResponse = getFundraisingEventLeaderboard($request->getAttribute('eventID'));
 

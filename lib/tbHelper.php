@@ -16,17 +16,23 @@ function getPlayerGameProgress($playerID, $gameID) {
 
   $arrPlayerActivities = getPlayerActivities($playerID, $dtActivityStartDate, $dtActivityEndDate, $gameResults[0]['type']);
 
-  $nElevationGain = 0;
+  $fElevationGain = 0;
+  $fDistance = 0;
+
   foreach ($arrPlayerActivities as $activity) {
-    $nElevationGain += $activity['total_elevation_gain'];
+    $fElevationGain += $activity['total_elevation_gain'];
+    $fDistance += $activity['distance'];
   }
   // 1st activity is the most recent
   if (count($arrPlayerActivities)) {
     $dtLastActivity = $arrPlayerActivities[0]['start_date'];
   }
 
+  // update totals
+  setPlayerGameActivityTotalsInDB($gameID, $playerID, $fElevationGain, $fDistance);
+
   // has player reached or exceeded the ascent goal?
-  if ($nElevationGain >= $gameResults[0]['ascent']) {
+  if ($fElevationGain >= $gameResults[0]['ascent']) {
     setPlayerGameAscentCompleteInDB($gameID, $playerID, $dtLastActivity);
   }
   return $arrPlayerActivities;

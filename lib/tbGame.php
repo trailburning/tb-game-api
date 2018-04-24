@@ -56,7 +56,6 @@ function setPlayerGameActivityInDB($gameID, $playerID, $activity) {
 }
 
 function setPlayerGameFundraisingPageInDB($gameID, $playerID, $fundraisingPageID, $fundraisingPage, $fundraisingGoal) {
-  // only set once
   $db = connect_db();
   $db->query('UPDATE gamePlayers SET fundraising_pageID = "' . $fundraisingPageID . '", fundraising_page = "' . $fundraisingPage . '", fundraising_goal = ' . $fundraisingGoal . ' where game = ' . $gameID . ' and player = ' . $playerID);
 }
@@ -70,6 +69,11 @@ function setPlayerGameAscentCompleteInDB($gameID, $playerID, $ascentCompleteActi
       $db->query('UPDATE gamePlayers SET ascentCompleted = "' . $ascentCompleteActivityDate . '" where game = ' . $gameID . ' and player = ' . $playerID);
     }
   }
+}
+
+function setPlayerGameActivityTotalsInDB($gameID, $playerID, $ascent, $distance) {
+  $db = connect_db();
+  $db->query('UPDATE gamePlayers SET ascent = ' . $ascent . ', distance = ' . $distance . ' where game = ' . $gameID . ' and player = ' . $playerID);
 }
 
 function setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $fundraisingGoal, $fundraisingRaised, $fundraisingCurrency) {

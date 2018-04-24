@@ -80,3 +80,23 @@ function getFundraisingEventLeaderboard($eventId) {
 
   return $response;
 }
+
+function getFundraisingCampaignLeaderboard($campaignID) {
+  require_once 'lib/mysql.php';
+
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $db = connect_db();
+  $result = $db->query('SELECT players.id, players.firstname, players.lastname, players.avatar, games.id as gameID, games.type as game_type, games.game_start, games.game_end, gameLevels.name as level_name, gamePlayers.ascent, gamePlayers.distance, fundraising_currency, fundraising_raised FROM players JOIN gamePlayers ON players.id = gamePlayers.player JOIN games ON gamePlayers.game = games.id JOIN gameLevels ON games.levelID = gameLevels.id WHERE games.campaignID = ' . $campaignID . ' ORDER BY fundraising_raised DESC');
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $row['id'] = $hashids->encode($row['id']);
+    $row['gameID'] = $hashids->encode($row['gameID']);
+
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
