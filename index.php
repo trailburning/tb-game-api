@@ -246,6 +246,16 @@ $app->get('/campaign/{campaignHashID}/players/{match}', function (Request $reque
   return $response->withJSON($jsonResponse);
 });
 
+$app->get('/campaign/{campaignHashID}/summary', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $campaignID = $hashids->decode($request->getAttribute('campaignHashID'))[0];
+
+  $jsonResponse = getCampaignSummaryFromDB($campaignID);
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->post('/player', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
