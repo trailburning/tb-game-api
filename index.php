@@ -189,8 +189,8 @@ $app->post('/game', function (Request $request, Response $response) {
   $json = $request->getBody();
   $data = json_decode($json, true);
 
-  $hashCampaignID = $data['campaignID'];
-  $campaignID = $hashids->decode($hashCampaignID)[0];
+  $campaignID = $hashids->decode($data['campaignID'])[0];
+  $levelID = $hashids->decode($data['levelID'])[0];
 
   // do we want to calc the end date=
   if (isset($data['gameDaysDuration'])) {
@@ -199,7 +199,7 @@ $app->post('/game', function (Request $request, Response $response) {
     $data['gameEnd'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
   }
 
-  $jsonResponse = addGameToDB($campaignID, $data['season'], $data['type'], $data['gameStart'], $data['gameEnd'], $data['levelID']);
+  $jsonResponse = addGameToDB($campaignID, $data['season'], $data['type'], $data['gameStart'], $data['gameEnd'], $levelID);
 
   return $response->withJSON($jsonResponse);
 });
@@ -242,6 +242,16 @@ $app->get('/campaign/{campaignHashID}/players/{match}', function (Request $reque
   $campaignID = $hashids->decode($hashCampaignID)[0];
 
   $jsonResponse = getPlayersFromDBByCampaign($campaignID, $request->getAttribute('match'));
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->get('/campaign/{campaignHashID}/gamelevels', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $campaignID = $hashids->decode($request->getAttribute('campaignHashID'))[0];
+
+  $jsonResponse = getCampaignGameLevelsFromDB($campaignID);
 
   return $response->withJSON($jsonResponse);
 });
@@ -459,12 +469,12 @@ $app->get('/fundraiser/page/{pageShortName}/donations', function (Request $reque
   return $response->withJSON($jsonResponse);
 });
 
-$app->get('/fundraiser/campaign/{campaignHashID}/leaderboard', function (Request $request, Response $response) {
+$app->get('/fundraiser/campaign/{campaignHashID}/leaderboard/{numPlayers}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $campaignID = $hashids->decode($request->getAttribute('campaignHashID'))[0];
 
-  $jsonResponse = getFundraisingCampaignLeaderboard($campaignID);
+  $jsonResponse = getFundraisingCampaignLeaderboard($campaignID, $request->getAttribute('numPlayers'));
 
   return $response->withJSON($jsonResponse);
 });
