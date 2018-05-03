@@ -6,7 +6,7 @@ function sendWelcomeEmail($game, $player) {
 
   $strWelcome = $game['name'] . ' challenge';
   $strGameURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';  
-  $strPlayerURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '/player/' . $hashActivePlayerID . '">here</a>';
+  $strPlayerURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">here</a>';
 
   $strTitle = 'Challenge Ready!';
   $strMsg = $player['firstname'] . ', your ' . $strGameURL . ' challenge is ready and can be viewed ' . $strPlayerURL . '.';
