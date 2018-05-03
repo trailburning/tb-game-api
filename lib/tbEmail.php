@@ -1,4 +1,23 @@
 <?php
+function sendWelcomeEmail($game, $player) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $playerID = $hashids->decode($player['id'])[0];
+
+  $strWelcome = $game['name'] . ' challenge';
+  $strGameURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';  
+  $strPlayerURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '/player/' . $hashActivePlayerID . '">here</a>';
+
+  $strTitle = 'Challenge Ready!';
+  $strMsg = $player['firstname'] . ', your ' . $strGameURL . ' challenge is ready and can be viewed ' . $strPlayerURL . '.';
+
+  // now send an email
+  $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Player Activity', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strWelcome, $strTitle, $strMsg);
+
+  // MLA - test email
+  $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Player Activity DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strWelcome, $strTitle, $strMsg);
+}
+
 function sendActivityEmail($game, $player, $activePlayer) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 

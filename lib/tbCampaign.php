@@ -64,7 +64,7 @@ function getCampaignGameLevelsFromDB($campaignID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = connect_db();
-  $result = $db->query('SELECT gameLevels.id, name, region, ascent, seasonDefault FROM gameLevels JOIN campaignGameLevels ON gameLevels.id = campaignGameLevels.gameLevelID WHERE campaignGameLevels.campaignID = ' . $campaignID);
+  $result = $db->query('SELECT gameLevels.id, name, region, ascent, seasonDefault FROM gameLevels JOIN campaignGameLevels ON gameLevels.id = campaignGameLevels.gameLevelID WHERE campaignGameLevels.campaignID = ' . $campaignID . ' order by ascent');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {

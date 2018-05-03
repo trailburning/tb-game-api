@@ -212,9 +212,23 @@ $app->post('/game/{gameHashID}/player/{playerHashID}', function (Request $reques
   $hashPlayerID = $request->getAttribute('playerHashID');
   $playerID = $hashids->decode($hashPlayerID)[0];
 
-  $jsonResponse = addPlayerGameInDB($gameID, $playerID);
+  $jsonPlayerResponse = addPlayerGameInDB($gameID, $playerID);
 
-  return $response->withJSON($jsonResponse);
+  // now ping added player and say hi!
+  $jsonGamesResponse = getGameFromDB($gameID);
+  if (count($jsonGamesResponse)) {
+    foreach ($jsonGamesResponse as $game) {
+      if (count($jsonPlayerResponse)) {
+        foreach ($jsonPlayerResponse as $player) {
+          if ($player['game_notifications']) {
+            sendWelcomeEmail($game, $player);
+          }
+        }
+      }
+    }
+  }
+
+  return $response->withJSON($jsonPlayerResponse);
 });
 
 $app->get('/client/{clientHashID}/player/{token}', function (Request $request, Response $response) {

@@ -221,7 +221,7 @@ function getGameFromDB($gameID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = connect_db();
-  $result = $db->query('SELECT games.id, campaignID, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, gameLevels.mountainType FROM games JOIN gameLevels ON games.levelID = gameLevels.id where games.id = ' . $gameID);
+  $result = $db->query('SELECT games.id, campaignID, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, gameLevels.mountainType, campaigns.email_template FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id where games.id = ' . $gameID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -239,7 +239,7 @@ function getGamePlayerFromDB($gameID, $playerID) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('SELECT fundraising_pageID, fundraising_page, fundraising_goal, fundraising_raised, fundraising_currency, bMediaCaptured, ascentCompleted, distanceCompleted FROM gamePlayers where game = ' . $gameID . ' and player = ' . $playerID);
+  $result = $db->query('SELECT fundraising_pageID, fundraising_page, fundraising_goal, fundraising_raised, fundraising_currency, bMediaCaptured, ascentCompleted, distanceCompleted, players.firstname, players.lastname, players.email, players.game_notifications FROM gamePlayers JOIN players ON players.id = gamePlayers.player where game = ' . $gameID . ' and player = ' . $playerID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
