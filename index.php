@@ -1,6 +1,7 @@
 <?php
+error_reporting(E_ERROR);
 //error_reporting(E_ALL);
-//ini_set('display_errors', 1);
+ini_set('display_errors', 1);
 
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
@@ -190,6 +191,7 @@ $app->post('/game', function (Request $request, Response $response) {
   $data = json_decode($json, true);
 
   $campaignID = $hashids->decode($data['campaignID'])[0];
+  $ownerPlayerID = $hashids->decode($data['ownerPlayerID'])[0];
   $levelID = $hashids->decode($data['levelID'])[0];
 
   // do we want to calc the end date=
@@ -199,7 +201,7 @@ $app->post('/game', function (Request $request, Response $response) {
     $data['gameEnd'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
   }
 
-  $jsonResponse = addGameToDB($campaignID, $data['season'], $data['type'], $data['gameStart'], $data['gameEnd'], $levelID);
+  $jsonResponse = addGameToDB($campaignID, $ownerPlayerID, $data['season'], $data['type'], $data['gameStart'], $data['gameEnd'], $levelID);
 
   return $response->withJSON($jsonResponse);
 });
@@ -247,6 +249,28 @@ $app->get('/client/{clientHashID}/player/{token}', function (Request $request, R
 
     return $response->withJSON($jsonResponse);
   }
+});
+
+$app->get('/campaign/{campaignHashID}', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashCampaignID = $request->getAttribute('campaignHashID');
+  $campaignID = $hashids->decode($hashCampaignID)[0];
+
+  $jsonResponse = getCampaignFromDB($campaignID);
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->get('/campaign/{campaignHashID}/games', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashCampaignID = $request->getAttribute('campaignHashID');
+  $campaignID = $hashids->decode($hashCampaignID)[0];
+
+  $jsonResponse = getGamesBcCampaignFromDB($campaignID);
+
+  return $response->withJSON($jsonResponse);
 });
 
 $app->get('/campaign/{campaignHashID}/players/{match}', function (Request $request, Response $response) {
@@ -358,17 +382,6 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/activity/{activityID}/photos
     return $response->withJSON($jsonResponse);
 });
 
-$app->get('/campaign/{campaignHashID}', function (Request $request, Response $response) {
-  $hashids = new Hashids\Hashids('mountainrush', 10);
-
-  $hashCampaignID = $request->getAttribute('campaignHashID');
-  $campaignID = $hashids->decode($hashCampaignID)[0];
-
-  $jsonResponse = getCampaignFromDB($campaignID);
-
-  return $response->withJSON($jsonResponse);
-});
-
 $app->get('/fundraiser/user/{email}/{password}', function (Request $request, Response $response) {
   $bExists = false;
 
@@ -400,6 +413,22 @@ $app->post('/fundraiser/user', function (Request $request, Response $response) {
     'acceptTerms' => $data['acceptTerms']
   ];
   $jsonResponse = createFundraisingPlayer($paramaObj);
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->post('/fundraiser/user/lite', function (Request $request, Response $response) {
+  $json = $request->getBody();
+  $data = json_decode($json, true); 
+
+  $paramaObj = (object) [
+    'email' => $data['email'],
+    'password' => $data['password'],
+    'firstname' => $data['firstname'],
+    'lastname' => $data['lastname'],
+    'acceptTerms' => $data['acceptTerms']
+  ];
+  $jsonResponse = createFundraisingPlayerLite($paramaObj);
 
   return $response->withJSON($jsonResponse);
 });
@@ -437,12 +466,15 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
         'charityID' => $jsonCampaign[0]['fundraising_charity'],
         'eventID' => $jsonCampaign[0]['fundraising_event'],
         'targetAmount' => $data['targetAmount'],
+        'justGivingOptIn' => $data['justGivingOptIn'],
+        'charityOptIn' => $data['charityOptIn'],
         'imageURL' => "http://tbassets2.imgix.net/images/brands/mountainrush/social/wwf/TB_Gorilla_justgiving_image.png"
       ];
       $jsonResponse = createFundraisingPlayerPage($paramaObj);
 
       if ($jsonResponse) {
         if ($jsonResponse->pageId) {
+          $jsonResponse->fundraising_page = $fundraisingPage;
           // store fundraising page
           setPlayerGameFundraisingPageInDB($gameID, $playerID, $jsonResponse->pageId, $fundraisingPage, $data['targetAmount']);
         }

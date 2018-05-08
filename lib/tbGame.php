@@ -10,7 +10,7 @@ const STATE_GAME_OVER = 'complete';
 const STATE_GAME_ACTIVE = 'active';
 const STATE_GAME_PENDING = 'pending';
 
-function addGameToDB($campaignID, $season, $type, $gameStart, $gameEnd, $levelID) {
+function addGameToDB($campaignID, $ownerPlayerID, $season, $type, $gameStart, $gameEnd, $levelID) {
   require_once 'lib/mysql.php';
 
   $ret = null;
@@ -20,7 +20,7 @@ function addGameToDB($campaignID, $season, $type, $gameStart, $gameEnd, $levelID
   $dtNow = date('Y-m-d H:i:s', time());
 
   $db = connect_db();
-  if ($db->query('INSERT INTO games (created, campaignID, season, type, game_start, game_end, levelID) VALUES ("' . $dtNow . '", ' . $campaignID . ', ' . $season . ', "' . $type . '", "' . $gameStart . '", "' . $gameEnd . '", ' . $levelID . ')') === TRUE) {
+  if ($db->query('INSERT INTO games (created, campaignID, ownerPlayerID, season, type, game_start, game_end, levelID) VALUES ("' . $dtNow . '", ' . $campaignID . ', ' . $ownerPlayerID . ', ' . $season . ', "' . $type . '", "' . $gameStart . '", "' . $gameEnd . '", ' . $levelID . ')') === TRUE) {
     $lastInsertID = $db->insert_id;
 
     $ret = getGameFromDB($lastInsertID);
@@ -161,6 +161,45 @@ function getGamesFromDB() {
   return $rows;
 }
 
+function getGamesBcCampaignFromDB($campaignID) {
+  require_once 'lib/mysql.php';
+
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  // use UTC date
+  date_default_timezone_set("UTC");
+  $dtNow = new DateTime("now");
+
+  $db = connect_db();
+  $result = $db->query('SELECT games.id, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID FROM games JOIN gameLevels ON games.levelID = gameLevels.id WHERE games.campaignID = ' . $campaignID . ' order by game_end desc');
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $hashID = $hashids->encode($row['id']);
+    $row['id'] = $hashID;
+
+    // format dates as UTC
+    $dtStartDate = new DateTime($row['game_start']);
+    $row['game_start'] = $dtStartDate->format('Y-m-d\TH:i:s.000\Z');
+    $dtEndDate = new DateTime($row['game_end']);
+    $row['game_end'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
+
+    $row['game_state'] = STATE_GAME_OVER;
+    if ($dtStartDate < $dtNow && $dtEndDate > $dtNow) {
+      $row['game_state'] = STATE_GAME_ACTIVE;
+    }
+
+    if ($dtStartDate > $dtNow) {
+      $row['game_state'] = STATE_GAME_PENDING;
+    }
+
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
 function getPlayerActivtyByGameFromDB($gameID) {
   require_once 'lib/mysql.php';
 
@@ -221,12 +260,13 @@ function getGameFromDB($gameID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = connect_db();
-  $result = $db->query('SELECT games.id, campaignID, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, gameLevels.mountainType, campaigns.email_template FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id where games.id = ' . $gameID);
+  $result = $db->query('SELECT games.id, campaignID, ownerPlayerID, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, gameLevels.mountainType, campaigns.email_template FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id where games.id = ' . $gameID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
     $row['id'] = $hashids->encode($row['id']);
     $row['campaignID'] = $hashids->encode($row['campaignID']);
+    $row['ownerPlayerID'] = $hashids->encode($row['ownerPlayerID']);
 
     $rows[$index] = $row;
     $index++;
