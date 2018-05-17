@@ -48,7 +48,7 @@ function getPlayerFromDBByToken($clientID, $token) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE clientID = ' . $clientID . ' and playerProviderToken = "' . $token . '"');
+  $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, game_notifications, playerProviderID, last_activity, last_updated FROM players WHERE clientID = ' . $clientID . ' and playerProviderToken = "' . $token . '"');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -121,6 +121,13 @@ function updatePlayerLastActivityInDB($playerID, $dtLastActivity) {
 
   $db = connect_db();
   $result = $db->query('update players set last_activity = "' . $dtLastActivity . '" where id = ' . $playerID);
+}
+
+function updatePlayerPreferencesInDB($playerID, $bReceiveEmail) {
+  require_once 'lib/mysql.php';
+
+  $db = connect_db();
+  $result = $db->query('update players set game_notifications = ' . $bReceiveEmail . ' where id = ' . $playerID);
 }
 
 function updatePlayerDetailsInDB($avatar, $firstname, $lastname, $email, $city, $country, $token) {

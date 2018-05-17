@@ -321,6 +321,24 @@ $app->post('/player', function (Request $request, Response $response) {
   return $response->withJSON($jsonResponse);
 });
 
+$app->post('/player/{playerHashID}', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashPlayerID = $request->getAttribute('playerHashID');
+
+  $json = $request->getBody();
+  $data = json_decode($json, true);
+
+  $bReceiveEmail = 0;
+  if ($data['receiveEmail']) {
+    $bReceiveEmail = 1;
+  }
+
+  $jsonResponse = updatePlayerPreferencesInDB($hashids->decode($hashPlayerID)[0], $bReceiveEmail);
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->get('/client/{clientHashID}/player/{token}/update', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
