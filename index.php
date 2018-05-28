@@ -27,7 +27,8 @@ define('CLIENT_ID', 15175);
 define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
 
 const GAME_PLAYER_PLAYING_STATE = 0;
-const GAME_PLAYER_SUMMITED_STATE = 1;
+const GAME_PLAYER_PLAYING_NOT_ACTIVE_STATE = 1;
+const GAME_PLAYER_SUMMITED_STATE = 100;
 
 $app->get('/worker', function (Request $request, Response $response) {
   // process game activity

@@ -19,11 +19,31 @@ function sendWelcomeEmail($game, $player) {
   $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Challenge Ready DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
 }
 
+function sendInactivityEmail($game, $activePlayer) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $playerID = $hashids->decode($activePlayer['id'])[0];
+
+  $strWelcome = $game['name'] . ' challenge';
+  $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/profile">change your preferences</a>';
+  $strGameURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';
+
+  $strTitle = 'Everything Okay?';
+  $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_inactivity_682x300.jpg';
+  $strMsg = 'We notice you haven\'t logged any activity in your ' . $strGameURL . ' challenge for a while!';
+
+  // now send an email
+  $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Player Activity', $activePlayer['email'], $activePlayer['firstname'] . ' ' . $activePlayer['lastname'], $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
+
+  // MLA - test email
+  $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Player Activity DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
+}
+
 function sendActivityEmail($game, $player, $activePlayer) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $playerID = $hashids->decode($player['id'])[0];
-  $hashActivePlayerID = $hashids->encode($activePlayer['id']);
+  $hashActivePlayerID = $activePlayer['id'];
 
   $strWelcome = $game['name'] . ' challenge';
   $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/profile">change your preferences</a>';
@@ -34,7 +54,8 @@ function sendActivityEmail($game, $player, $activePlayer) {
   $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_activity_682x300.jpg';
   $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has progressed in the ' . $strGameURL . ' challenge!<br/><br/>Check ' . $activePlayer['firstname'] . '\'s progress ' . $strPlayerURL . '.';
   // player is same player with activity so change msg
-  if ($playerID == $activePlayer['id']) {
+  echo $player['id'] . ' : ' . $activePlayer['id'] . '<br/>' ;
+  if ($player['id'] == $activePlayer['id']) {
     $strMsg = 'You have progressed in the ' . $strGameURL . ' challenge!<br/><br/>Check your progress ' . $strPlayerURL . '.';
   }
 
@@ -49,7 +70,7 @@ function sendSummitEmail($game, $player, $activePlayer) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $playerID = $hashids->decode($player['id'])[0];
-  $hashActivePlayerID = $hashids->encode($activePlayer['id']);
+  $hashActivePlayerID = $activePlayer['id'];
 
   $strWelcome = $game['name'] . ' challenge';
   $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/profile">change your preferences</a>';
@@ -57,11 +78,11 @@ function sendSummitEmail($game, $player, $activePlayer) {
 
   $strTitle = 'Player Summited!';
   $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_summit_682x300.jpg';
-  $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has summited the ' . $strGame . ' and completed the challenge!';
+  $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has summited and completed the ' . $strGame . ' challenge!';
   // player is same player with activity so change msg
-  if ($playerID == $activePlayer['id']) {
+  if ($player['id'] == $activePlayer['id']) {
     $strTitle = 'Congratulations ' . $activePlayer['firstname'] . '!';
-    $strMsg = 'You have summited the ' . $strGame . ' and completed the challenge!';
+    $strMsg = 'You have summited and completed the ' . $strGame . ' challenge!';
   }
 
   // now send an email
@@ -117,9 +138,8 @@ function sendEmail($strEmailTemplate, $strJourneyID, $strSubject, $strToEmail, $
 
     return $result;
   } catch(Mandrill_Error $e) {
-    // Mandrill errors are thrown as exceptions
-    echo 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage();
+//    echo 'A mandrill error occurred: ' . get_class($e) . ' - ' . $e->getMessage();
     // A mandrill error occurred: Mandrill_Unknown_Subaccount - No subaccount exists with the id 'customer-123'
-    throw $e;
+//    throw $e;
   }
 }

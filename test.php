@@ -44,10 +44,10 @@ $id = $hashids->decode('djJrbPlYlX')[0];
 var_dump($id);
 
 //sendEmail('Mountain Rush - EDM', '5875843c37d99829635908', 'MR Test', 'mallbeury@mac.com', 'Matt', 'Welcome', 'Player Activity', 'Your have progressed in the <a href="">challenge</a>.', '<a href="">change your preferences</a>');
-
-//$gameID = 2041;
-//$gameID = 2033;
 /*
+$gameID = 2041;
+//$gameID = 2033;
+
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
 $jsonGamesResponse = getGameFromDB($gameID);
@@ -58,13 +58,12 @@ if (count($jsonGamesResponse)) {
         if ($player['game_notifications']) {
           $activePlayer = $player;
           sendWelcomeEmail($game, $player);
-          sendActivityEmail($game, $player, $activePlayer);
-          sendSummitEmail($game, $player, $activePlayer);
+//          sendActivityEmail($game, $player, $activePlayer);
+//          sendSummitEmail($game, $player, $activePlayer);
         }
       }
     }
   }
 }
 */
-
 exit;

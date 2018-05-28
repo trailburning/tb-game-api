@@ -108,7 +108,7 @@ function getGamePlayersFromDB($gameID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = connect_db();
-  $result = $db->query('SELECT players.id, avatar, firstname, lastname, email, city, country, game_notifications, playerProviderID, gamePlayers.fundraising_pageID, gamePlayers.fundraising_page FROM gamePlayers JOIN players ON gamePlayers.player = players.id WHERE game = ' . $gameID);
+  $result = $db->query('SELECT players.id, avatar, firstname, lastname, email, city, country, game_notifications, playerProviderID, playerProviderToken, last_activity, last_updated, gamePlayers.latest_activity, gamePlayers.state, gamePlayers.fundraising_pageID, gamePlayers.fundraising_page FROM gamePlayers JOIN players ON gamePlayers.player = players.id WHERE game = ' . $gameID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -162,7 +162,7 @@ function getGamesFromDB() {
   return $rows;
 }
 
-function getGamesBcCampaignFromDB($campaignID) {
+function getGamesByCampaignFromDB($campaignID) {
   require_once 'lib/mysql.php';
 
   $hashids = new Hashids\Hashids('mountainrush', 10);
@@ -194,21 +194,6 @@ function getGamesBcCampaignFromDB($campaignID) {
       $row['game_state'] = STATE_GAME_PENDING;
     }
 
-    $rows[$index] = $row;
-    $index++;
-  }
-
-  return $rows;
-}
-
-function getPlayerActivtyByGameFromDB($gameID) {
-  require_once 'lib/mysql.php';
-
-  $db = connect_db();
-  $result = $db->query('SELECT gamePlayers.latest_activity, gamePlayers.state, players.id, avatar, firstname, lastname, city, country, playerProviderToken FROM gamePlayers JOIN players ON gamePlayers.player = players.id WHERE game = ' . $gameID . ' and latest_activity != 0');
-  $rows = array();
-  $index = 0;
-  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
     $rows[$index] = $row;
     $index++;
   }
