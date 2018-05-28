@@ -234,6 +234,22 @@ $app->post('/game/{gameHashID}/player/{playerHashID}', function (Request $reques
   return $response->withJSON($jsonPlayerResponse);
 });
 
+$app->post('/game/{gameHashID}/player/{playerHashID}/marker', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashGameID = $request->getAttribute('gameHashID');
+  $hashPlayerID = $request->getAttribute('playerHashID');
+
+  $json = $request->getBody();
+  $data = json_decode($json, true); 
+
+//  echo $data['markerID'];
+
+  setPlayerGameLatestMarkerInDB($hashids->decode($hashGameID)[0], $hashids->decode($hashPlayerID)[0], $data['markerID']);
+
+  return $response->withJSON();
+});
+
 $app->get('/client/{clientHashID}/player/{token}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
