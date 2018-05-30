@@ -57,8 +57,9 @@ if (count($jsonGamesResponse)) {
       foreach ($jsonPlayerResponse as $player) {
         if ($player['game_notifications']) {
           $activePlayer = $player;
-          sendWelcomeEmail($game, $player);
+//          sendWelcomeEmail($game, $player);
 //          sendActivityEmail($game, $player, $activePlayer);
+//          sendInactivityEmail($game, $activePlayer);
 //          sendSummitEmail($game, $player, $activePlayer);
         }
       }

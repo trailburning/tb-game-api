@@ -1,4 +1,6 @@
 <?php
+const DAYS_INACTIVE = 5;
+
 function processGamePlayer($game, $gamePlayer) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
@@ -7,7 +9,7 @@ function processGamePlayer($game, $gamePlayer) {
 
   $gameID = $hashids->decode($game['id'])[0];
   $gamePlayerID = $hashids->decode($gamePlayer['id'])[0]; 
-//  echo 'Player:'. $gamePlayerID . ' : ' .  $gamePlayer['firstname'] . ' ' . $gamePlayer['lastname'] . '<br/>';
+  if (DEBUG) echo 'Player:'. $gamePlayerID . ' : ' .  $gamePlayer['firstname'] . ' ' . $gamePlayer['lastname'] . '<br/>';
 
   // does player have a new activity?
   if ($gamePlayer['latest_activity']) {
@@ -23,7 +25,7 @@ function processGamePlayer($game, $gamePlayer) {
           setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_PLAYING_STATE);
         }
 
-//        echo $activity['type'] . '<br/>';
+        if (DEBUG) echo $activity['type'] . '<br/>';
         // get all game players
         $jsonPlayersResponse = getGamePlayersFromDB($gameID);
         if (count($jsonPlayersResponse)) {
@@ -56,21 +58,26 @@ function processGamePlayer($game, $gamePlayer) {
     }
   }
   else {
-//    echo 'last activty:' . $gamePlayer['last_activity'] . '<br/>';
     // is player still playing?
     if ($gamePlayer['state'] == GAME_PLAYER_PLAYING_STATE) {
-//      echo 'check last activty<br/>';
+      if (DEBUG) echo 'check last activty<br/>';
       $dtLastActivityDate = new DateTime($gamePlayer['last_activity']);
-//      echo $dtNowDate->format('Y-m-d\TH:i:s.000\Z') . ' : ' . $dtLastActivityDate->format('Y-m-d\TH:i:s.000\Z') . '<br/>';
+      if (DEBUG) echo 'now:' . $dtNowDate->format('Y-m-d\TH:i:s.000\Z') . '<br/>';
+      if (DEBUG) echo 'last activity:' . $dtLastActivityDate->format('Y-m-d\TH:i:s.000\Z') . '<br/>';
 
-      $interval = $dtNowDate->diff($dtLastActivityDate);
-      $nDays = $interval->format('%R%a');
-//      echo $nDays . '<br/>';
+      $nDaysSinceLastActive = $dtNowDate->diff($dtLastActivityDate)->format('%R%a');
+      if (DEBUG) echo 'days since last active:' . $nDaysSinceLastActive . '<br/>';
+
+      // game start date
+      $dtGameStartDate = new DateTime($game['game_start']);
+      $nDaysSinceGameStart = $dtNowDate->diff($dtGameStartDate)->format('%R%a');
+      if (DEBUG) echo 'days since game start:' . $nDaysSinceGameStart . '<br/>';
+
       // no activity for a few days?
-      if ($nDays < -5) {
+      if ($nDaysSinceLastActive < -DAYS_INACTIVE && $nDaysSinceGameStart < -DAYS_INACTIVE) {
         // set as not active and prompt player
         setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_PLAYING_NOT_ACTIVE_STATE);        
-//        echo 'MOTIVATE EMAIL<br/>';      
+        if (DEBUG) echo 'MOTIVATE EMAIL<br/>';      
         if ($gamePlayer['game_notifications']) {
           sendInactivityEmail($game, $gamePlayer);
         }
@@ -91,7 +98,7 @@ function processActivity() {
     foreach ($jsonGamesResponse as $game) {
       // look for active games
       if ($game['game_state'] == STATE_GAME_ACTIVE) {
-//        echo '<br/>Game:' . $game['id'] . '<br/>';
+        if (DEBUG) echo '<br/>Game:' . $game['id'] . '<br/>';
         $gameID = $hashids->decode($game['id'])[0];
         // get game players
         $jsonGamePlayersResponse = getGamePlayersFromDB($gameID);

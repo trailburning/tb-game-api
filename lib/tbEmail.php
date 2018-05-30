@@ -10,7 +10,7 @@ function sendWelcomeEmail($game, $player) {
 
   $strTitle = 'Challenge Ready!';
   $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_ready_682x300.jpg';
-  $strMsg = $player['firstname'] . ', your ' . $strGameURL . ' challenge is ready and can be viewed ' . $strPlayerURL . '.';
+  $strMsg = $player['firstname'] . ', your ' . $strGameURL . ' ' . strtolower($game['type']) . ' challenge is ready and can be viewed ' . $strPlayerURL . '.';
 
   // now send an email
   $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Challenge Ready', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
@@ -30,7 +30,7 @@ function sendInactivityEmail($game, $activePlayer) {
 
   $strTitle = 'Everything Okay?';
   $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_inactivity_682x300.jpg';
-  $strMsg = 'We notice you haven\'t logged any activity in your ' . $strGameURL . ' challenge for a while!';
+  $strMsg = 'We notice you haven\'t logged any activity in your ' . $strGameURL . ' ' . strtolower($game['type']) . ' challenge for a while!';
 
   // now send an email
   $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Player Activity', $activePlayer['email'], $activePlayer['firstname'] . ' ' . $activePlayer['lastname'], $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
@@ -52,11 +52,10 @@ function sendActivityEmail($game, $player, $activePlayer) {
 
   $strTitle = 'Player Activity';
   $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_activity_682x300.jpg';
-  $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has progressed in the ' . $strGameURL . ' challenge!<br/><br/>Check ' . $activePlayer['firstname'] . '\'s progress ' . $strPlayerURL . '.';
+  $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has progressed in the ' . $strGameURL . ' ' . strtolower($game['type']) . ' challenge!<br/><br/>Check ' . $activePlayer['firstname'] . '\'s progress ' . $strPlayerURL . '.';
   // player is same player with activity so change msg
-  echo $player['id'] . ' : ' . $activePlayer['id'] . '<br/>' ;
   if ($player['id'] == $activePlayer['id']) {
-    $strMsg = 'You have progressed in the ' . $strGameURL . ' challenge!<br/><br/>Check your progress ' . $strPlayerURL . '.';
+    $strMsg = 'You have progressed in the ' . $strGameURL . ' ' . strtolower($game['type']) . ' challenge!<br/><br/>Check your progress ' . $strPlayerURL . '.';
   }
 
   // now send an email
@@ -78,11 +77,11 @@ function sendSummitEmail($game, $player, $activePlayer) {
 
   $strTitle = 'Player Summited!';
   $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_summit_682x300.jpg';
-  $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has summited and completed the ' . $strGame . ' challenge!';
+  $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has summited and completed the ' . $strGame . ' ' . strtolower($game['type']) . ' challenge!';
   // player is same player with activity so change msg
   if ($player['id'] == $activePlayer['id']) {
     $strTitle = 'Congratulations ' . $activePlayer['firstname'] . '!';
-    $strMsg = 'You have summited and completed the ' . $strGame . ' challenge!';
+    $strMsg = 'You have summited and completed the ' . $strGame . ' ' . strtolower($game['type']) . ' challenge!';
   }
 
   // now send an email
