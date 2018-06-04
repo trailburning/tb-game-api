@@ -9,6 +9,7 @@ header('Content-Type: application/json');
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+include "lib/tbLog.php";
 include "lib/tbEmail.php";
 include "lib/tbSocial.php";
 include "lib/tbCampaign.php";
@@ -87,33 +88,53 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
   $json = $request->getBody();
   $data = json_decode($json, true); 
 
-  // only want new activities
-  if ($data['object_type'] == 'activity' && $data['aspect_type'] == 'create') {
-    // look for users (in all campaigns)
-    $jsonPlayerResponse = getPlayerFromDBByProviderID($data['owner_id']);
-    if (count($jsonPlayerResponse)) {
-      foreach ($jsonPlayerResponse as $player) {
-        $playerID = $player['id'];
-        // look for games
-        $jsonGamesResponse = getGamesByPlayerFromDB($playerID);
-        if (count($jsonGamesResponse)) {
-          // look for active game
-          foreach ($jsonGamesResponse as $game) {
-            if ($game['game_state'] == STATE_GAME_ACTIVE) {
-              $gameID = $hashids->decode($game['game'])[0];
-              // ensure player has not already completed the game
-              $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
-              if (count($gamePlayerResults)) {
-                if (is_null($gamePlayerResults[0]['ascentCompleted'])) {
-                  // update that player has logged an activity
-                  setPlayerGameActivityInDB($gameID, $playerID, $data['object_id']);
+  switch ($data['object_type']) {
+    case 'athlete':
+      if ($data['updates']['authorized'] == 'false') {
+        $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/djJrblYlXV/challenge_ready_682x300.jpg';
+        sendEmail('EDM - Mountain Rush', 'MR Test - Strava', 'mallbeury@mac.com', 'Matt', $strImage, 'Strava', 'Player Strava Activity', 'Goodbye!', '');
+
+        $jsonPlayerResponse = getPlayerFromDBByProviderID($data['owner_id']);
+        if (count($jsonPlayerResponse)) {
+          foreach ($jsonPlayerResponse as $player) {
+            addLogToDB(LOG_OBJECT_PLAYER_PROVIDER, LOG_ACTIVITY_DELETE, $player['id']);
+          }
+        }
+        // now blank player (or players)
+        updatePlayerBlankDetails($data['owner_id']);
+      }
+      break;
+
+    case 'activity':
+      // only want new activities
+      if ($data['aspect_type'] == 'create') {
+        // look for users (in all campaigns)
+        $jsonPlayerResponse = getPlayerFromDBByProviderID($data['owner_id']);
+        if (count($jsonPlayerResponse)) {
+          foreach ($jsonPlayerResponse as $player) {
+            $playerID = $player['id'];
+            // look for games
+            $jsonGamesResponse = getGamesByPlayerFromDB($playerID);
+            if (count($jsonGamesResponse)) {
+              // look for active game
+              foreach ($jsonGamesResponse as $game) {
+                if ($game['game_state'] == STATE_GAME_ACTIVE) {
+                  $gameID = $hashids->decode($game['game'])[0];
+                  // ensure player has not already completed the game
+                  $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
+                  if (count($gamePlayerResults)) {
+                    if (is_null($gamePlayerResults[0]['ascentCompleted'])) {
+                      // update that player has logged an activity
+                      setPlayerGameActivityInDB($gameID, $playerID, $data['object_id']);
+                    }
+                  }
                 }
               }
             }
           }
         }
       }
-    }
+      break;
   }
 
   header("HTTP/1.1 200 OK");

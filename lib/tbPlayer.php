@@ -151,6 +151,14 @@ function updatePlayer($clientID, $token) {
   }
 }
 
+function updatePlayerBlankDetails($playerProviderID) {
+  // used when provider requires data to be blanked - hello GDPR!
+  require_once 'lib/mysql.php';
+
+  $db = connect_db();
+  $result = $db->query('UPDATE players SET avatar = "", firstname = "", lastname = "", email = "", city = "", country = "", playerProviderToken = "" WHERE playerProviderID = "' . $playerProviderID . '"');
+}
+
 function getPlayer($clientID, $token) {
   $results = getPlayerFromDBByToken($clientID, $token);
   if (count($results) == 0) {

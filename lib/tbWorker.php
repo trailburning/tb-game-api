@@ -1,5 +1,5 @@
 <?php
-const DAYS_INACTIVE = 5;
+const DAYS_INACTIVE = 7;
 
 function processGamePlayer($game, $gamePlayer) {
   $hashids = new Hashids\Hashids('mountainrush', 10);

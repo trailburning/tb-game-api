@@ -13,10 +13,10 @@ function sendWelcomeEmail($game, $player) {
   $strMsg = $player['firstname'] . ', your ' . $strGameURL . ' ' . strtolower($game['type']) . ' challenge is ready and can be viewed ' . $strPlayerURL . '.';
 
   // now send an email
-  $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Challenge Ready', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
+  $result = sendEmail($game['email_template'], 'Mountain Rush - Challenge Ready', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
 
   // MLA - test email
-  $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Challenge Ready DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
+  $result = sendEmail($game['email_template'], 'Mountain Rush - Challenge Ready DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
 }
 
 function sendInactivityEmail($game, $activePlayer) {
@@ -33,10 +33,10 @@ function sendInactivityEmail($game, $activePlayer) {
   $strMsg = 'We notice you haven\'t logged any activity in your ' . $strGameURL . ' ' . strtolower($game['type']) . ' challenge for a while!';
 
   // now send an email
-  $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Player Activity', $activePlayer['email'], $activePlayer['firstname'] . ' ' . $activePlayer['lastname'], $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
+  $result = sendEmail($game['email_template'], 'Mountain Rush - Player Activity', $activePlayer['email'], $activePlayer['firstname'] . ' ' . $activePlayer['lastname'], $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
 
   // MLA - test email
-  $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Player Activity DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
+  $result = sendEmail($game['email_template'], 'Mountain Rush - Player Activity DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
 }
 
 function sendActivityEmail($game, $player, $activePlayer) {
@@ -59,10 +59,10 @@ function sendActivityEmail($game, $player, $activePlayer) {
   }
 
   // now send an email
-  $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Player Activity', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
+  $result = sendEmail($game['email_template'], 'Mountain Rush - Player Activity', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
 
   // MLA - test email
-  $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Player Activity DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
+  $result = sendEmail($game['email_template'], 'Mountain Rush - Player Activity DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
 }
 
 function sendSummitEmail($game, $player, $activePlayer) {
@@ -85,13 +85,13 @@ function sendSummitEmail($game, $player, $activePlayer) {
   }
 
   // now send an email
-  $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Player Summited!', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
+  $result = sendEmail($game['email_template'], 'Mountain Rush - Player Summited!', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
 
   // MLA - test email
-  $result = sendEmail($game['email_template'], $game['journeyID'], 'Mountain Rush - Player Summited! DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
+  $result = sendEmail($game['email_template'], 'Mountain Rush - Player Summited! DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
 }
 
-function sendEmail($strEmailTemplate, $strJourneyID, $strSubject, $strToEmail, $strToName, $strImage, $strWelcome, $strMsgTitle, $strMsgContent, $strPreferences) {
+function sendEmail($strEmailTemplate, $strSubject, $strToEmail, $strToName, $strImage, $strWelcome, $strMsgTitle, $strMsgContent, $strPreferences) {
   try {
     $mandrill = new Mandrill('kRr66_sxVLQJwehdLnakqg');
 

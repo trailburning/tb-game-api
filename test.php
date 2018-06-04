@@ -2,6 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+include "lib/tbLog.php";
 include "lib/tbEmail.php";
 include "lib/tbSocial.php";
 include "lib/tbGame.php";
@@ -43,10 +44,14 @@ var_dump($id);
 $id = $hashids->decode('djJrbPlYlX')[0];
 var_dump($id);
 
-//sendEmail('Mountain Rush - EDM', '5875843c37d99829635908', 'MR Test', 'mallbeury@mac.com', 'Matt', 'Welcome', 'Player Activity', 'Your have progressed in the <a href="">challenge</a>.', '<a href="">change your preferences</a>');
+addLogToDB(LOG_OBJECT_GAME, LOG_ACTIVITY_CREATE, 2084);
+
+//$strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/djJrblYlXV/challenge_ready_682x300.jpg';
+//sendEmail('EDM - Mountain Rush', 'MR Test', 'mallbeury@mac.com', 'Matt', $strImage, 'Welcome', 'Player Activity', 'Your have progressed in the <a href="">challenge</a>.', '<a href="">change your preferences</a>');
+
 /*
-$gameID = 2041;
-//$gameID = 2033;
+//$gameID = 2041;
+$gameID = 2033;
 
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
