@@ -267,11 +267,22 @@ $app->post('/game/{gameHashID}/player/{playerHashID}/marker', function (Request 
   $json = $request->getBody();
   $data = json_decode($json, true); 
 
-//  echo $data['markerID'];
-
   setPlayerGameLatestMarkerInDB($hashids->decode($hashGameID)[0], $hashids->decode($hashPlayerID)[0], $data['markerID']);
 
   return $response->withJSON();
+});
+
+$app->post('/game/{gameHashID}/invite', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashGameID = $request->getAttribute('gameHashID');
+
+  $json = $request->getBody();
+  $data = json_decode($json, true); 
+
+  addGameInviteToDB($hashids->decode($hashGameID)[0], $data['email']);
+
+  return null;
 });
 
 $app->get('/client/{clientHashID}/player/{token}', function (Request $request, Response $response) {
@@ -283,8 +294,13 @@ $app->get('/client/{clientHashID}/player/{token}', function (Request $request, R
   $token = $request->getAttribute('token');
   $jsonResponse = getPlayer($clientID, $token);
   if (count($jsonResponse)) {
+
+    // add inviation data
+    $jsonResponse[0]['invitations'] = getPlayerGameInvitationsFromDB($jsonResponse[0]['id']);
+
     // add game data
     $jsonResponse[0]['games'] = getGamesByPlayerFromDB($jsonResponse[0]['id']);
+
     $jsonResponse[0]['id'] = $hashids->encode($jsonResponse[0]['id']);
     $jsonResponse[0]['clientID'] = $hashids->encode($jsonResponse[0]['clientID']);
 

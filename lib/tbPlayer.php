@@ -33,7 +33,6 @@ function getPlayerFromDBByEmail($clientID, $email) {
 
   $db = connect_db();
   $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE clientID = ' . $clientID . ' and email = "' . $email . '"');
-
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -82,6 +81,25 @@ function getPlayerFromDB($playerID) {
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
+function getPlayerDetailsFromDB($playerID) {
+  require_once 'lib/mysql.php';
+
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $db = connect_db();
+  $result = $db->query('SELECT id, avatar, firstname, lastname FROM players where id = ' . $playerID);
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $row['id'] = $hashids->encode($row['id']);
+
     $rows[$index] = $row;
     $index++;
   }

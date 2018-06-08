@@ -28,6 +28,21 @@ function addGameToDB($campaignID, $ownerPlayerID, $season, $type, $gameStart, $g
   return $ret;
 }
 
+function addGameInviteToDB($gameID, $playerEmail) {
+  require_once 'lib/mysql.php';
+
+  $ret = null;
+
+  // use UTC date
+  date_default_timezone_set("UTC");
+  $dtNow = date('Y-m-d H:i:s', time());
+
+  $db = connect_db();
+  $db->query('INSERT INTO gameInvitations (created, gameID, playerEmail) VALUES ("' . $dtNow . '", ' . $gameID . ', "' . $playerEmail . '")');
+
+  return $ret;
+}
+
 function addPlayerGameInDB($gameID, $playerID) {
   require_once 'lib/mysql.php';
 
@@ -41,6 +56,28 @@ function addPlayerGameInDB($gameID, $playerID) {
   $ret = getGamePlayerFromDB($gameID, $playerID);
 
   return $ret;
+}
+
+function getPlayerGameInvitationsFromDB($playerID) {
+  require_once 'lib/mysql.php';
+
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $db = connect_db();
+  $result = $db->query('SELECT gameInvitations.created, players.id, games.ownerPlayerID, games.id as gameID, games.type, gameLevels.name FROM gameInvitations JOIN games ON gameInvitations.gameID = games.id JOIN gameLevels ON games.levelID = gameLevels.id JOIN players ON gameInvitations.playerEmail = players.email WHERE players.id = ' . $playerID . ' ORDER BY gameInvitations.created ASC');
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $row['owner'] = getPlayerDetailsFromDB($row['ownerPlayerID']);
+
+    $row['id'] = $hashids->encode($row['id']);
+    $row['gameID'] = $hashids->encode($row['gameID']);
+
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
 }
 
 function setPlayerGameStateInDB($gameID, $playerID, $state) {
