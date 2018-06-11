@@ -50,8 +50,9 @@ addLogToDB(LOG_OBJECT_GAME, LOG_ACTIVITY_CREATE, 2084);
 //sendEmail('EDM - Mountain Rush', 'MR Test', 'mallbeury@mac.com', 'Matt', $strImage, 'Welcome', 'Player Activity', 'Your have progressed in the <a href="">challenge</a>.', '<a href="">change your preferences</a>');
 
 /*
-//$gameID = 2041;
-$gameID = 2033;
+$gameID = 2041;
+$LatestActivity = 1626880620;
+//$gameID = 2033;
 
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
@@ -62,8 +63,12 @@ if (count($jsonGamesResponse)) {
       foreach ($jsonPlayerResponse as $player) {
         if ($player['game_notifications']) {
           $activePlayer = $player;
+
+          $activity = getPlayerActivity($activePlayer['playerProviderToken'], $LatestActivity);
+          if ($activity) {
+            sendActivityEmail($game, $player, $activePlayer, $activity);
+          }
 //          sendWelcomeEmail($game, $player);
-//          sendActivityEmail($game, $player, $activePlayer);
 //          sendInactivityEmail($game, $activePlayer);
 //          sendSummitEmail($game, $player, $activePlayer);
         }

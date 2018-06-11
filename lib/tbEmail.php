@@ -39,7 +39,7 @@ function sendInactivityEmail($game, $activePlayer) {
   $result = sendEmail($game['email_template'], 'Mountain Rush - Player Activity DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
 }
 
-function sendActivityEmail($game, $player, $activePlayer) {
+function sendActivityEmail($game, $player, $activePlayer, $activity) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $playerID = $hashids->decode($player['id'])[0];
@@ -52,10 +52,10 @@ function sendActivityEmail($game, $player, $activePlayer) {
 
   $strTitle = 'Player Activity';
   $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_activity_682x300.jpg';
-  $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has progressed in the ' . $strGameURL . ' ' . strtolower($game['type']) . ' challenge!<br/><br/>Check ' . $activePlayer['firstname'] . '\'s progress ' . $strPlayerURL . '.';
+  $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has climbed <strong>' . floor($activity['total_elevation_gain']) . 'm</strong> in the ' . $strGameURL . ' ' . strtolower($game['type']) . ' challenge!<br/><br/>Check ' . $activePlayer['firstname'] . '\'s progress ' . $strPlayerURL . '.';
   // player is same player with activity so change msg
   if ($player['id'] == $activePlayer['id']) {
-    $strMsg = 'You have progressed in the ' . $strGameURL . ' ' . strtolower($game['type']) . ' challenge!<br/><br/>Check your progress ' . $strPlayerURL . '.';
+    $strMsg = 'You have climbed <strong>' . floor($activity['total_elevation_gain']) . 'm</strong> in the ' . $strGameURL . ' ' . strtolower($game['type']) . ' challenge!<br/><br/>Check your progress ' . $strPlayerURL . '.';
   }
 
   // now send an email

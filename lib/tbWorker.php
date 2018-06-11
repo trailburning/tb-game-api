@@ -42,7 +42,7 @@ function processGamePlayer($game, $gamePlayer) {
 
           foreach ($jsonPlayersResponse as $player) {
             if ($player['game_notifications']) {
-              sendActivityEmail($game, $player, $gamePlayer);
+              sendActivityEmail($game, $player, $gamePlayer, $activity);
             }
               
             // has player summited and not already been processed?
