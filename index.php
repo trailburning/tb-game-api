@@ -91,9 +91,6 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
   switch ($data['object_type']) {
     case 'athlete':
       if ($data['updates']['authorized'] == 'false') {
-        $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/djJrblYlXV/challenge_ready_682x300.jpg';
-        sendEmail('EDM - Mountain Rush', 'MR Test - Strava', 'mallbeury@mac.com', 'Matt', $strImage, 'Strava', 'Player Strava Activity', 'Goodbye!', '');
-
         $jsonPlayerResponse = getPlayerFromDBByProviderID($data['owner_id']);
         if (count($jsonPlayerResponse)) {
           foreach ($jsonPlayerResponse as $player) {
@@ -276,11 +273,25 @@ $app->post('/game/{gameHashID}/invite', function (Request $request, Response $re
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $hashGameID = $request->getAttribute('gameHashID');
+  $gameID = $hashids->decode($hashGameID)[0];
 
   $json = $request->getBody();
   $data = json_decode($json, true); 
 
-  addGameInviteToDB($hashids->decode($hashGameID)[0], $data['email']);
+  // get game
+  $jsonGamesResponse = getGameFromDB($gameID);
+  if (count($jsonGamesResponse)) {
+    foreach ($jsonGamesResponse as $game) {
+      $invitingPlayerID = $hashids->decode($game['ownerPlayerID'])[0];
+
+      addGameInviteToDB($gameID, $data['email']);
+      // send invite
+      $jsonInvitingPlayerResponse = getPlayerDetailsFromDB($invitingPlayerID);
+      foreach ($jsonInvitingPlayerResponse as $invitingPlayer) {
+        sendInviteEmail($game, $invitingPlayer, $data['name'], $data['email']);
+      }
+    }
+  }
 
   $jsonResponse = array();
 

@@ -44,15 +44,13 @@ var_dump($id);
 $id = $hashids->decode('djJrbPlYlX')[0];
 var_dump($id);
 
-addLogToDB(LOG_OBJECT_GAME, LOG_ACTIVITY_CREATE, 2084);
+//addLogToDB(LOG_OBJECT_GAME, LOG_ACTIVITY_CREATE, 2084);
 
 //$strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/djJrblYlXV/challenge_ready_682x300.jpg';
 //sendEmail('EDM - Mountain Rush', 'MR Test', 'mallbeury@mac.com', 'Matt', $strImage, 'Welcome', 'Player Activity', 'Your have progressed in the <a href="">challenge</a>.', '<a href="">change your preferences</a>');
-
 /*
 $gameID = 2041;
 $LatestActivity = 1626880620;
-//$gameID = 2033;
 
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
@@ -60,13 +58,19 @@ $jsonGamesResponse = getGameFromDB($gameID);
 if (count($jsonGamesResponse)) {
   foreach ($jsonGamesResponse as $game) {
     if (count($jsonPlayerResponse)) {
+      // send invite
+      $jsonInvitingPlayerResponse = getPlayerDetailsFromDB(67);
+      foreach ($jsonInvitingPlayerResponse as $invitingPlayer) {
+        sendInviteEmail($game, $invitingPlayer, 'Matt', 'mallbeury@mac.com');
+      }
+
       foreach ($jsonPlayerResponse as $player) {
         if ($player['game_notifications']) {
           $activePlayer = $player;
 
           $activity = getPlayerActivity($activePlayer['playerProviderToken'], $LatestActivity);
           if ($activity) {
-            sendActivityEmail($game, $player, $activePlayer, $activity);
+//            sendActivityEmail($game, $player, $activePlayer, $activity);
           }
 //          sendWelcomeEmail($game, $player);
 //          sendInactivityEmail($game, $activePlayer);
