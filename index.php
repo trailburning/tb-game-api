@@ -282,7 +282,56 @@ $app->post('/game/{gameHashID}/invite', function (Request $request, Response $re
 
   addGameInviteToDB($hashids->decode($hashGameID)[0], $data['email']);
 
-  return null;
+  $jsonResponse = array();
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->post('/game/{gameHashID}/player/{playerHashID}/invite/{inviteHashID}/accept', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashGameID = $request->getAttribute('gameHashID');
+  $gameID = $hashids->decode($hashGameID)[0];
+  $hashPlayerID = $request->getAttribute('playerHashID');
+  $playerID = $hashids->decode($hashPlayerID)[0];
+  $hashInviteID = $request->getAttribute('inviteHashID');
+  $inviteID = $hashids->decode($hashInviteID)[0];
+
+  $jsonPlayerResponse = addPlayerGameInDB($gameID, $playerID);
+  removePlayerGameInvitationFromDB($inviteID);
+  addLogToDB(LOG_OBJECT_PLAYER, LOG_ACTIVITY_INVITATION_ACCEPT, $playerID);
+
+  // now ping added player and say hi!
+  $jsonGamesResponse = getGameFromDB($gameID);
+  if (count($jsonGamesResponse)) {
+    foreach ($jsonGamesResponse as $game) {
+      if (count($jsonPlayerResponse)) {
+        foreach ($jsonPlayerResponse as $player) {
+          if ($player['game_notifications']) {
+            sendWelcomeEmail($game, $player);
+          }
+        }
+      }
+    }
+  }
+
+  return $response->withJSON($jsonPlayerResponse);
+});
+
+$app->post('/game/{gameHashID}/player/{playerHashID}/invite/{inviteHashID}/reject', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashPlayerID = $request->getAttribute('playerHashID');
+  $playerID = $hashids->decode($hashPlayerID)[0];
+  $hashInviteID = $request->getAttribute('inviteHashID');
+  $inviteID = $hashids->decode($hashInviteID)[0];
+
+  removePlayerGameInvitationFromDB($inviteID);
+  addLogToDB(LOG_OBJECT_PLAYER, LOG_ACTIVITY_INVITATION_REJECT, $playerID);
+
+  $jsonResponse = array();
+
+  return $response->withJSON($jsonResponse);
 });
 
 $app->get('/client/{clientHashID}/player/{token}', function (Request $request, Response $response) {
@@ -454,6 +503,21 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/activity/{activityID}/photos
       // store that we have media
       setPlayerGameMediaCaptureInDB($gameID, $playerID);
     }
+    return $response->withJSON($jsonResponse);
+});
+
+$app->get('/game/{gameHashID}/player/{playerHashID}/activity/{activityID}/comments', function (Request $request, Response $response) {
+    $hashids = new Hashids\Hashids('mountainrush', 10);
+
+    $hashGameID = $request->getAttribute('gameHashID');
+    $gameID = $hashids->decode($hashGameID)[0];
+  
+    $hashPlayerID = $request->getAttribute('playerHashID');
+    $playerID = $hashids->decode($hashPlayerID)[0];
+
+    $activityID = $request->getAttribute('activityID');
+    $jsonResponse = getGamePlayerActivityComments($gameID, $playerID, $activityID);
+
     return $response->withJSON($jsonResponse);
 });
 

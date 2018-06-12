@@ -12,6 +12,9 @@ define('LOG_ACTIVITY_CREATE', 0);
 define('LOG_ACTIVITY_UPDATE', 1);
 define('LOG_ACTIVITY_DELETE', 2);
 
+define('LOG_ACTIVITY_INVITATION_ACCEPT', 100);
+define('LOG_ACTIVITY_INVITATION_REJECT', 101);
+
 function addLogToDB($nObject, $nActivity, $objectID) {
   require_once 'lib/mysql.php';
 

@@ -63,8 +63,12 @@ function getPlayerGameInvitationsFromDB($playerID) {
 
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
+  // use UTC date
+  date_default_timezone_set("UTC");
+  $dtNow = new DateTime("now");
+
   $db = connect_db();
-  $result = $db->query('SELECT gameInvitations.created, players.id, games.ownerPlayerID, games.id as gameID, games.type, gameLevels.name FROM gameInvitations JOIN games ON gameInvitations.gameID = games.id JOIN gameLevels ON games.levelID = gameLevels.id JOIN players ON gameInvitations.playerEmail = players.email WHERE players.id = ' . $playerID . ' ORDER BY gameInvitations.created ASC');
+  $result = $db->query('SELECT gameInvitations.id, gameInvitations.created, games.ownerPlayerID, games.id as gameID, games.type, games.game_start, games.game_end, gameLevels.name FROM gameInvitations JOIN games ON gameInvitations.gameID = games.id JOIN gameLevels ON games.levelID = gameLevels.id JOIN players ON gameInvitations.playerEmail = players.email WHERE players.id = ' . $playerID . ' ORDER BY gameInvitations.created ASC');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -72,12 +76,28 @@ function getPlayerGameInvitationsFromDB($playerID) {
 
     $row['id'] = $hashids->encode($row['id']);
     $row['gameID'] = $hashids->encode($row['gameID']);
+    $row['ownerPlayerID'] = $hashids->encode($row['ownerPlayerID']);
+
+    // format dates as UTC
+    $dtStartDate = new DateTime($row['game_start']);
+    $row['game_start'] = $dtStartDate->format('Y-m-d\TH:i:s.000\Z');
+    $dtEndDate = new DateTime($row['game_end']);
+    $row['game_end'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
+
+    $row['game_state'] = getGameState($dtNow, $dtStartDate, $dtEndDate);
 
     $rows[$index] = $row;
     $index++;
   }
 
   return $rows;
+}
+
+function removePlayerGameInvitationFromDB($invitationID) {
+  require_once 'lib/mysql.php';
+
+  $db = connect_db();
+  $db->query('DELETE from gameInvitations WHERE id = ' . $invitationID);
 }
 
 function setPlayerGameStateInDB($gameID, $playerID, $state) {
@@ -170,6 +190,19 @@ function getGamePlayersFromDB($gameID) {
   return $rows;
 }
 
+function getGameState($dtNow, $dtStartDate, $dtEndDate) {
+  $retState = STATE_GAME_OVER;
+  if ($dtStartDate < $dtNow && $dtEndDate > $dtNow) {
+    $retState = STATE_GAME_ACTIVE;
+  }
+
+  if ($dtStartDate > $dtNow) {
+    $retState = STATE_GAME_PENDING;
+  }
+
+  return $retState;
+}
+
 function getGamesFromDB() {
   require_once 'lib/mysql.php';
 
@@ -194,14 +227,7 @@ function getGamesFromDB() {
     $dtEndDate = new DateTime($row['game_end']);
     $row['game_end'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
 
-    $row['game_state'] = STATE_GAME_OVER;
-    if ($dtStartDate < $dtNow && $dtEndDate > $dtNow) {
-      $row['game_state'] = STATE_GAME_ACTIVE;
-    }
-
-    if ($dtStartDate > $dtNow) {
-      $row['game_state'] = STATE_GAME_PENDING;
-    }
+    $row['game_state'] = getGameState($dtNow, $dtStartDate, $dtEndDate);
 
     $rows[$index] = $row;
     $index++;
@@ -233,14 +259,7 @@ function getGamesByCampaignFromDB($campaignID) {
     $dtEndDate = new DateTime($row['game_end']);
     $row['game_end'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
 
-    $row['game_state'] = STATE_GAME_OVER;
-    if ($dtStartDate < $dtNow && $dtEndDate > $dtNow) {
-      $row['game_state'] = STATE_GAME_ACTIVE;
-    }
-
-    if ($dtStartDate > $dtNow) {
-      $row['game_state'] = STATE_GAME_PENDING;
-    }
+    $row['game_state'] = getGameState($dtNow, $dtStartDate, $dtEndDate);
 
     $rows[$index] = $row;
     $index++;
@@ -272,14 +291,7 @@ function getGamesByPlayerFromDB($playerID) {
     $dtEndDate = new DateTime($row['game_end']);
     $row['game_end'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
 
-    $row['game_state'] = STATE_GAME_OVER;
-    if ($dtStartDate < $dtNow && $dtEndDate > $dtNow) {
-      $row['game_state'] = STATE_GAME_ACTIVE;
-    }
-
-    if ($dtStartDate > $dtNow) {
-      $row['game_state'] = STATE_GAME_PENDING;
-    }
+    $row['game_state'] = getGameState($dtNow, $dtStartDate, $dtEndDate);
 
     $rows[$index] = $row;
     $index++;
@@ -343,6 +355,27 @@ function getGamePlayerActivityPhotos($gameID, $playerID, $activityID) {
       $activityPhotos = $client->getActivityPhotos($activityID, $size = 640, $photo_sources = 'true');
 
       $ret = $activityPhotos;
+    } catch(\Exception $e) {
+    }
+  }  
+  return $ret;
+}
+
+function getGamePlayerActivityComments($gameID, $playerID, $activityID) {
+  $ret = [];
+
+  // first find last update date
+  $results = getPlayerFromDB($playerID);
+  if (count($results) != 0) {
+    $token = $results[0]['playerProviderToken'];
+    try {
+      $adapter = new Pest('https://www.strava.com/api/v3');
+      $service = new REST($token, $adapter);
+
+      $client = new Client($service);
+      $activityComments = $client->getActivityComments($activityID);
+
+      $ret = $activityComments;
     } catch(\Exception $e) {
     }
   }  
