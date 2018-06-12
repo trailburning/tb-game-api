@@ -4,14 +4,14 @@ function sendInviteEmail($game, $invitingPlayer, $inviteName, $inviteEmail) {
 
   $strWelcome = $game['name'] . ' challenge';
   $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/preferences">change your preferences</a>';
-  $strProfileURL = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/profile">here</a>';
+  $strInviteURL = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/invite">here</a>';
 
   $strGameURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';  
   $strPlayerURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">here</a>';
 
   $strTitle = 'Challenge Invitation!';
   $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_invite_682x300.jpg';
-  $strMsg = $inviteName . ', you\'ve been invited by <strong>' . $invitingPlayer['firstname'] . ' ' . $invitingPlayer['lastname'] . '</strong> to a ' . $strGameURL . ' ' . strtolower($game['type']) . ' challenge.  You can see the challenge ' . $strPlayerURL . '.<br/><br/>Click ' . $strProfileURL . ' to accept the invitation!';
+  $strMsg = $inviteName . ', you\'ve been invited by <strong>' . $invitingPlayer['firstname'] . ' ' . $invitingPlayer['lastname'] . '</strong> to a ' . $strGameURL . ' ' . strtolower($game['type']) . ' challenge.  You can see the challenge ' . $strPlayerURL . '.<br/><br/>Click ' . $strInviteURL . ' to view the invitation!';
 
   // now send an email
   $result = sendEmail($game['email_template'], 'Mountain Rush - Challenge Invitation', $inviteEmail, $inviteName, $strImage, $strWelcome, $strTitle, $strMsg, $strPreferences);
