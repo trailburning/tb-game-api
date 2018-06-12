@@ -3,7 +3,7 @@ function sendInviteEmail($game, $invitingPlayer, $inviteName, $inviteEmail) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $strWelcome = $game['name'] . ' challenge';
-  $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/profile">change your preferences</a>';
+  $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/preferences">change your preferences</a>';
   $strProfileURL = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/profile">here</a>';
 
   $strGameURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';  
@@ -24,7 +24,7 @@ function sendWelcomeEmail($game, $player) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $strWelcome = $game['name'] . ' challenge';
-  $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/profile">change your preferences</a>';
+  $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/preferences">change your preferences</a>';
 
   $strGameURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';  
   $strPlayerURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">here</a>';
@@ -46,7 +46,7 @@ function sendInactivityEmail($game, $activePlayer) {
   $playerID = $hashids->decode($activePlayer['id'])[0];
 
   $strWelcome = $game['name'] . ' challenge';
-  $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/profile">change your preferences</a>';
+  $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/preferences">change your preferences</a>';
   $strGameURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';
 
   $strTitle = 'Everything Okay?';
@@ -67,7 +67,7 @@ function sendActivityEmail($game, $player, $activePlayer, $activity) {
   $hashActivePlayerID = $activePlayer['id'];
 
   $strWelcome = $game['name'] . ' challenge';
-  $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/profile">change your preferences</a>';
+  $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/preferences">change your preferences</a>';
   $strGameURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';
   $strPlayerURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '/player/' . $hashActivePlayerID . '">here</a>';
 
@@ -93,7 +93,7 @@ function sendSummitEmail($game, $player, $activePlayer) {
   $hashActivePlayerID = $activePlayer['id'];
 
   $strWelcome = $game['name'] . ' challenge';
-  $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/profile">change your preferences</a>';
+  $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/preferences">change your preferences</a>';
   $strGame = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '/player/' . $hashActivePlayerID . '">' . $game['name'] . '</a>';
 
   $strTitle = 'Player Summited!';
