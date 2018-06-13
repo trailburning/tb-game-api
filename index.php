@@ -224,6 +224,8 @@ $app->post('/game', function (Request $request, Response $response) {
   }
 
   $jsonResponse = addGameToDB($campaignID, $ownerPlayerID, $data['season'], $data['type'], $data['gameStart'], $data['gameEnd'], $levelID);
+  $gameID = $hashids->decode($jsonResponse[0]['id'])[0];
+  addLogToDB(LOG_OBJECT_GAME, LOG_ACTIVITY_CREATE, $gameID);
 
   return $response->withJSON($jsonResponse);
 });
@@ -285,10 +287,12 @@ $app->post('/game/{gameHashID}/invite', function (Request $request, Response $re
       $invitingPlayerID = $hashids->decode($game['ownerPlayerID'])[0];
 
       addGameInviteToDB($gameID, $data['email']);
-      // send invite
+      // get inviting player
       $jsonInvitingPlayerResponse = getPlayerDetailsFromDB($invitingPlayerID);
       foreach ($jsonInvitingPlayerResponse as $invitingPlayer) {
+        // send invite
         sendInviteEmail($game, $invitingPlayer, $data['name'], $data['email']);
+        addLogToDB(LOG_OBJECT_PLAYER, LOG_ACTIVITY_INVITATION_SENT, $invitingPlayerID);
       }
     }
   }
