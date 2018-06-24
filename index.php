@@ -47,7 +47,7 @@ $app->get('/strava/subscribe', function (Request $request, Response $response) {
     'client_secret' => CLIENT_SECRET,
     'object_type' => 'activity',
     'aspect_type' => 'create',
-    'callback_url' => 'http://mountainrush.trailburning.com/tb-game-api/strava/callback',
+    'callback_url' => 'http://mountainrush.co.uk/tb-game-api/strava/callback',
     'verify_token' => 'STRAVA'
   );
 

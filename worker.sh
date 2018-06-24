@@ -1,1 +1,1 @@
-curl -L http://mountainrush.trailburning.com/tb-game-api/worker
+curl -L http://mountainrush.co.uk/tb-game-api/worker

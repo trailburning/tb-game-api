@@ -3,11 +3,11 @@ function sendInviteEmail($game, $invitingPlayer, $inviteName, $inviteEmail) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $strWelcome = $game['name'] . ' challenge';
-  $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/preferences">change your preferences</a>';
-  $strInviteURL = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/invite">here</a>';
+  $strPreferences = '<a href="http://mountainrush.co.uk/campaign/' . $game['campaignID'] . '/preferences">change your preferences</a>';
+  $strInviteURL = '<a href="http://mountainrush.co.uk/campaign/' . $game['campaignID'] . '/invite">here</a>';
 
-  $strGameURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';  
-  $strPlayerURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">here</a>';
+  $strGameURL = '<a href="http://mountainrush.co.uk/game/' . $game['id'] . '">' . $game['name'] . '</a>';  
+  $strPlayerURL = '<a href="http://mountainrush.co.uk/game/' . $game['id'] . '">here</a>';
 
   $strTitle = 'Challenge Invitation!';
   $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_invite_682x300.jpg';
@@ -24,10 +24,10 @@ function sendWelcomeEmail($game, $player) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $strWelcome = $game['name'] . ' challenge';
-  $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/preferences">change your preferences</a>';
+  $strPreferences = '<a href="http://mountainrush.co.uk/campaign/' . $game['campaignID'] . '/preferences">change your preferences</a>';
 
-  $strGameURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';  
-  $strPlayerURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">here</a>';
+  $strGameURL = '<a href="http://mountainrush.co.uk/game/' . $game['id'] . '">' . $game['name'] . '</a>';  
+  $strPlayerURL = '<a href="http://mountainrush.co.uk/game/' . $game['id'] . '">here</a>';
 
   $strTitle = 'Challenge Ready!';
   $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_ready_682x300.jpg';
@@ -46,8 +46,8 @@ function sendInactivityEmail($game, $activePlayer) {
   $playerID = $hashids->decode($activePlayer['id'])[0];
 
   $strWelcome = $game['name'] . ' challenge';
-  $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/preferences">change your preferences</a>';
-  $strGameURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';
+  $strPreferences = '<a href="http://mountainrush.co.uk/campaign/' . $game['campaignID'] . '/preferences">change your preferences</a>';
+  $strGameURL = '<a href="http://mountainrush.co.uk/game/' . $game['id'] . '">' . $game['name'] . '</a>';
 
   $strTitle = 'Everything Okay?';
   $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_inactivity_682x300.jpg';
@@ -67,9 +67,9 @@ function sendActivityEmail($game, $player, $activePlayer, $activity) {
   $hashActivePlayerID = $activePlayer['id'];
 
   $strWelcome = $game['name'] . ' challenge';
-  $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/preferences">change your preferences</a>';
-  $strGameURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '">' . $game['name'] . '</a>';
-  $strPlayerURL = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '/player/' . $hashActivePlayerID . '">here</a>';
+  $strPreferences = '<a href="http://mountainrush.co.uk/campaign/' . $game['campaignID'] . '/preferences">change your preferences</a>';
+  $strGameURL = '<a href="http://mountainrush.co.uk/game/' . $game['id'] . '">' . $game['name'] . '</a>';
+  $strPlayerURL = '<a href="http://mountainrush.co.uk/game/' . $game['id'] . '/player/' . $hashActivePlayerID . '">here</a>';
 
   $strTitle = 'Player Activity';
   $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_activity_682x300.jpg';
@@ -93,8 +93,8 @@ function sendSummitEmail($game, $player, $activePlayer) {
   $hashActivePlayerID = $activePlayer['id'];
 
   $strWelcome = $game['name'] . ' challenge';
-  $strPreferences = '<a href="http://mountainrush.trailburning.com/campaign/' . $game['campaignID'] . '/preferences">change your preferences</a>';
-  $strGame = '<a href="http://mountainrush.trailburning.com/game/' . $game['id'] . '/player/' . $hashActivePlayerID . '">' . $game['name'] . '</a>';
+  $strPreferences = '<a href="http://mountainrush.co.uk/campaign/' . $game['campaignID'] . '/preferences">change your preferences</a>';
+  $strGame = '<a href="http://mountainrush.co.uk/game/' . $game['id'] . '/player/' . $hashActivePlayerID . '">' . $game['name'] . '</a>';
 
   $strTitle = 'Player Summited!';
   $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_summit_682x300.jpg';
@@ -140,7 +140,7 @@ function sendEmail($strEmailTemplate, $strSubject, $strToEmail, $strToName, $str
     );
     $message = array(
       'subject' => $strSubject,
-      'from_email' => 'hello@trailburning.com',
+      'from_email' => 'support@mountainrush.co.uk',
       'from_name' => 'Mountain Rush',
       'to' => array(
         array(
@@ -149,7 +149,7 @@ function sendEmail($strEmailTemplate, $strSubject, $strToEmail, $strToName, $str
           'type' => 'to'
         )
       ),
-      'headers' => array('Reply-To' => 'hello@trailburning.com')
+      'headers' => array('Reply-To' => 'support@mountainrush.co.uk')
     );
     $async = false;
     $ip_pool = '';
