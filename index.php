@@ -24,6 +24,8 @@ require 'vendor/autoload.php';
 
 $app = new \Slim\App;
 
+define('MR_DOMAIN', 'http://mountainrush.co.uk/');
+//define('MR_DOMAIN', 'http://mountainrush.trailburning.com/');
 define('CLIENT_ID', 15175);
 define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
 
@@ -47,7 +49,7 @@ $app->get('/strava/subscribe', function (Request $request, Response $response) {
     'client_secret' => CLIENT_SECRET,
     'object_type' => 'activity',
     'aspect_type' => 'create',
-    'callback_url' => 'http://mountainrush.co.uk/tb-game-api/strava/callback',
+    'callback_url' => MR_DOMAIN . 'tb-game-api/strava/callback',
     'verify_token' => 'STRAVA'
   );
 
