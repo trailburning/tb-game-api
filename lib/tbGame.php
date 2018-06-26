@@ -68,7 +68,7 @@ function getPlayerGameInvitationsFromDB($playerID) {
   $dtNow = new DateTime("now");
 
   $db = connect_db();
-  $result = $db->query('SELECT gameInvitations.id, gameInvitations.created, games.ownerPlayerID, games.id as gameID, games.type, games.game_start, games.game_end, gameLevels.name FROM gameInvitations JOIN games ON gameInvitations.gameID = games.id JOIN gameLevels ON games.levelID = gameLevels.id JOIN players ON gameInvitations.playerEmail = players.email WHERE players.id = ' . $playerID . ' ORDER BY gameInvitations.created ASC');
+  $result = $db->query('SELECT gameInvitations.id, gameInvitations.created, games.ownerPlayerID, games.id as gameID, games.type, games.game_start, games.game_end, gameLevels.name FROM gameInvitations JOIN games ON gameInvitations.gameID = games.id JOIN campaigns ON games.campaignID = campaigns.id JOIN clients ON campaigns.clientID = clients.id JOIN gameLevels ON games.levelID = gameLevels.id JOIN players ON gameInvitations.playerEmail = players.email WHERE players.id = ' . $playerID . ' AND players.clientID = clients.id ORDER BY gameInvitations.created ASC');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -76,6 +76,8 @@ function getPlayerGameInvitationsFromDB($playerID) {
 
     $row['id'] = $hashids->encode($row['id']);
     $row['gameID'] = $hashids->encode($row['gameID']);
+    $row['campaignID'] = $hashids->encode($row['campaignID']);
+    $row['clientID'] = $hashids->encode($row['clientID']);
     $row['ownerPlayerID'] = $hashids->encode($row['ownerPlayerID']);
 
     // format dates as UTC
