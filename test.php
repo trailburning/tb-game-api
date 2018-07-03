@@ -2,6 +2,8 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+define('MR_DOMAIN', 'http://mountainrush.co.uk/');
+
 include "lib/tbLog.php";
 include "lib/tbEmail.php";
 include "lib/tbSocial.php";
@@ -10,6 +12,7 @@ include "lib/tbPlayer.php";
 include "lib/tbPlayerActivities.php";
 
 require_once('vendor/autoload.php');
+
 /*
 $game = array(
   'id' => 'yKerNk4mwM',
@@ -70,11 +73,11 @@ if (count($jsonGamesResponse)) {
 
           $activity = getPlayerActivity($activePlayer['playerProviderToken'], $LatestActivity);
           if ($activity) {
-//            sendActivityEmail($game, $player, $activePlayer, $activity);
+            sendActivityEmail($game, $player, $activePlayer, $activity);
           }
-//          sendWelcomeEmail($game, $player);
-//          sendInactivityEmail($game, $activePlayer);
-//          sendSummitEmail($game, $player, $activePlayer);
+          sendWelcomeEmail($game, $player);
+          sendInactivityEmail($game, $activePlayer);
+          sendSummitEmail($game, $player, $activePlayer);
         }
       }
     }

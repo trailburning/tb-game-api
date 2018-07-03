@@ -6,6 +6,11 @@ ini_set('display_errors', 1);
 header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
+define('MR_DOMAIN', 'http://mountainrush.co.uk/');
+//define('MR_DOMAIN', 'http://mountainrush.trailburning.com/');
+define('CLIENT_ID', 15175);
+define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
+
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
@@ -23,11 +28,6 @@ include "lib/tbHelper.php";
 require 'vendor/autoload.php';
 
 $app = new \Slim\App;
-
-define('MR_DOMAIN', 'http://mountainrush.co.uk/');
-//define('MR_DOMAIN', 'http://mountainrush.trailburning.com/');
-define('CLIENT_ID', 15175);
-define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
 
 const DEBUG = false;
 //const DEBUG = true;

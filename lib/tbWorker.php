@@ -65,16 +65,16 @@ function processGamePlayer($game, $gamePlayer) {
       if (DEBUG) echo 'now:' . $dtNowDate->format('Y-m-d\TH:i:s.000\Z') . '<br/>';
       if (DEBUG) echo 'last activity:' . $dtLastActivityDate->format('Y-m-d\TH:i:s.000\Z') . '<br/>';
 
-      $nDaysSinceLastActive = $dtNowDate->diff($dtLastActivityDate)->format('%R%a');
+      $nDaysSinceLastActive = $dtNowDate->diff($dtLastActivityDate, true)->format('%R%a');
       if (DEBUG) echo 'days since last active:' . $nDaysSinceLastActive . '<br/>';
 
       // game start date
       $dtGameStartDate = new DateTime($game['game_start']);
-      $nDaysSinceGameStart = $dtNowDate->diff($dtGameStartDate)->format('%R%a');
+      $nDaysSinceGameStart = $dtNowDate->diff($dtGameStartDate, true)->format('%R%a');
       if (DEBUG) echo 'days since game start:' . $nDaysSinceGameStart . '<br/>';
 
       // no activity for a few days?
-      if ($nDaysSinceLastActive < -DAYS_INACTIVE && $nDaysSinceGameStart < -DAYS_INACTIVE) {
+      if ($nDaysSinceLastActive >= DAYS_INACTIVE && $nDaysSinceGameStart >= DAYS_INACTIVE) {
         // set as not active and prompt player
         setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_PLAYING_NOT_ACTIVE_STATE);        
         if (DEBUG) echo 'MOTIVATE EMAIL<br/>';      
