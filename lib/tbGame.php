@@ -238,6 +238,42 @@ function getGamesFromDB() {
   return $rows;
 }
 
+function getActiveGamesFromDB() {
+  require_once 'lib/mysql.php';
+
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  // use UTC date
+  date_default_timezone_set("UTC");
+  $dtNow = new DateTime("now");
+  $formattedNow = $dtNow->format('Y-m-d\TH:i:s.000\Z');
+
+  $db = connect_db();
+  $strSQL = 'SELECT games.id, campaignID, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, campaigns.email_template FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id WHERE game_start < "' . $formattedNow . '" AND game_end > "' . $formattedNow . '" order by game_end desc';
+  $result = $db->query($strSQL);
+
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $hashID = $hashids->encode($row['id']);
+    $row['id'] = $hashID;
+    $row['campaignID'] = $hashids->encode($row['campaignID']);
+
+    // format dates as UTC
+    $dtStartDate = new DateTime($row['game_start']);
+    $row['game_start'] = $dtStartDate->format('Y-m-d\TH:i:s.000\Z');
+    $dtEndDate = new DateTime($row['game_end']);
+    $row['game_end'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
+
+    $row['game_state'] = getGameState($dtNow, $dtStartDate, $dtEndDate);
+
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
 function getGamesByCampaignFromDB($campaignID) {
   require_once 'lib/mysql.php';
 

@@ -38,7 +38,12 @@ const GAME_PLAYER_SUMMITED_STATE = 100;
 
 $app->get('/worker', function (Request $request, Response $response) {
   // process game activity
-  processActivity();
+  $jsonResponse = processActivity();
+
+  $gameJSON = $response->withJSON($jsonResponse);
+
+  return $gameJSON;
+
 });
 
 $app->get('/strava/subscribe', function (Request $request, Response $response) {

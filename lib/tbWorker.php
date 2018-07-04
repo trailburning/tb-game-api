@@ -47,6 +47,7 @@ function processGamePlayer($game, $gamePlayer) {
               
             // has player summited and not already been processed?
             if ($bGamePlayerSummited && $gamePlayer['state'] == GAME_PLAYER_PLAYING_STATE) {
+              if (DEBUG) echo 'PLAYER SUMMIT EMAIL<br/>';
               setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_SUMMITED_STATE);
               if ($player['game_notifications']) {
                 sendSummitEmail($game, $player, $gamePlayer);
@@ -93,22 +94,20 @@ function processActivity() {
   date_default_timezone_set("UTC");
 
   // get all games
-  $jsonGamesResponse = getGamesFromDB();
+  $jsonGamesResponse = getActiveGamesFromDB();
   if (count($jsonGamesResponse)) {
     foreach ($jsonGamesResponse as $game) {
-      // look for active games
-      if ($game['game_state'] == STATE_GAME_ACTIVE) {
-        if (DEBUG) echo '<br/>Game:' . $game['id'] . '<br/>';
-        $gameID = $hashids->decode($game['id'])[0];
-        // get game players
-        $jsonGamePlayersResponse = getGamePlayersFromDB($gameID);
-        if (count($jsonGamePlayersResponse)) {
-          // go through all active game players
-          foreach ($jsonGamePlayersResponse as $gamePlayer) {
-            processGamePlayer($game, $gamePlayer);
-          }
+      if (DEBUG) echo '<br/>Game:' . $game['id'] . '<br/>';
+      $gameID = $hashids->decode($game['id'])[0];
+      // get game players
+      $jsonGamePlayersResponse = getGamePlayersFromDB($gameID);
+      if (count($jsonGamePlayersResponse)) {
+        // go through all active game players
+        foreach ($jsonGamePlayersResponse as $gamePlayer) {
+          processGamePlayer($game, $gamePlayer);
         }
       }
     }
   }
+  return $jsonGamesResponse;
 }
