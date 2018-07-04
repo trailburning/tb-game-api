@@ -7,7 +7,8 @@ header('Access-Control-Allow-Origin: *');
 header('Content-Type: application/json');
 
 define('MR_DOMAIN', 'http://mountainrush.co.uk/');
-//define('MR_DOMAIN', 'http://mountainrush.trailburning.com/');
+define('MR_SECURE_DOMAIN', 'https://mountainrush.co.uk/');
+
 define('CLIENT_ID', 15175);
 define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
 

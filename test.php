@@ -3,6 +3,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 define('MR_DOMAIN', 'http://mountainrush.co.uk/');
+define('MR_SECURE_DOMAIN', 'https://mountainrush.co.uk/');
 
 include "lib/tbLog.php";
 include "lib/tbEmail.php";
@@ -51,7 +52,7 @@ var_dump($id);
 
 //$strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/djJrblYlXV/challenge_ready_682x300.jpg';
 //sendEmail('EDM - Mountain Rush', 'MR Test', 'mallbeury@mac.com', 'Matt', $strImage, 'Welcome', 'Player Activity', 'Your have progressed in the <a href="">challenge</a>.', '<a href="">change your preferences</a>');
-/*
+
 $gameID = 2041;
 $LatestActivity = 1626880620;
 
@@ -64,7 +65,7 @@ if (count($jsonGamesResponse)) {
       // send invite
       $jsonInvitingPlayerResponse = getPlayerDetailsFromDB(67);
       foreach ($jsonInvitingPlayerResponse as $invitingPlayer) {
-        sendInviteEmail($game, $invitingPlayer, 'Matt', 'mallbeury@mac.com');
+//        sendInviteEmail($game, $invitingPlayer, 'Matt', 'mallbeury@mac.com');
       }
 
       foreach ($jsonPlayerResponse as $player) {
@@ -75,13 +76,13 @@ if (count($jsonGamesResponse)) {
           if ($activity) {
             sendActivityEmail($game, $player, $activePlayer, $activity);
           }
-          sendWelcomeEmail($game, $player);
-          sendInactivityEmail($game, $activePlayer);
-          sendSummitEmail($game, $player, $activePlayer);
+//          sendWelcomeEmail($game, $player);
+//          sendInactivityEmail($game, $activePlayer);
+//          sendSummitEmail($game, $player, $activePlayer);
         }
       }
     }
   }
 }
-*/
+
 exit;

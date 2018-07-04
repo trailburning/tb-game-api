@@ -22,7 +22,7 @@ function sendWelcomeEmail($game, $player) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $strWelcome = $game['name'] . ' challenge';
-  $strPreferences = 'Want to change how you receive these emails?<br>You can <a href="' . MR_DOMAIN . 'campaign/' . $game['campaignID'] . '/preferences">update your preferences</a>.<br><br>';
+  $strPreferences = 'Want to change how you receive these emails?<br>You can <a href="' . MR_SECURE_DOMAIN . 'campaign/' . $game['campaignID'] . '/preferences">update your preferences</a>.<br><br>';
   $strPlayerURL = '<a href="' . MR_DOMAIN . 'game/' . $game['id'] . '">here</a>';
 
   $strTitle = 'Challenge Ready!';
@@ -43,7 +43,7 @@ function sendInactivityEmail($game, $activePlayer) {
   $hashActivePlayerID = $activePlayer['id'];
 
   $strWelcome = $game['name'] . ' challenge';
-  $strPreferences = 'Want to change how you receive these emails?<br>You can <a href="' . MR_DOMAIN . 'campaign/' . $game['campaignID'] . '/preferences">update your preferences</a>.<br><br>';
+  $strPreferences = 'Want to change how you receive these emails?<br>You can <a href="' . MR_SECURE_DOMAIN . 'campaign/' . $game['campaignID'] . '/preferences">update your preferences</a>.<br><br>';
   $strPlayerURL = '<a href="' . MR_DOMAIN . 'game/' . $game['id'] . '/player/' . $hashActivePlayerID . '">here</a>';
 
   $strTitle = 'Everything Okay?';
@@ -64,7 +64,7 @@ function sendActivityEmail($game, $player, $activePlayer, $activity) {
   $hashActivePlayerID = $activePlayer['id'];
 
   $strWelcome = $game['name'] . ' challenge';
-  $strPreferences = 'Want to change how you receive these emails?<br>You can <a href="' . MR_DOMAIN . 'campaign/' . $game['campaignID'] . '/preferences">update your preferences</a>.<br><br>';
+  $strPreferences = 'Want to change how you receive these emails?<br>You can <a href="' . MR_SECURE_DOMAIN . 'campaign/' . $game['campaignID'] . '/preferences">update your preferences</a>.<br><br>';
   $strPlayerURL = '<a href="' . MR_DOMAIN . 'game/' . $game['id'] . '/player/' . $hashActivePlayerID . '">here</a>';
 
   $strTitle = 'Player Activity';
@@ -89,7 +89,7 @@ function sendSummitEmail($game, $player, $activePlayer) {
   $hashActivePlayerID = $activePlayer['id'];
 
   $strWelcome = $game['name'] . ' challenge';
-  $strPreferences = 'Want to change how you receive these emails?<br>You can <a href="' . MR_DOMAIN . 'campaign/' . $game['campaignID'] . '/preferences">update your preferences</a>.<br><br>';
+  $strPreferences = 'Want to change how you receive these emails?<br>You can <a href="' . MR_SECURE_DOMAIN . 'campaign/' . $game['campaignID'] . '/preferences">update your preferences</a>.<br><br>';
   $strPlayerURL = '<a href="' . MR_DOMAIN . 'game/' . $game['id'] . '/player/' . $hashActivePlayerID . '">here</a>';
 
   $strTitle = 'Player Summited!';
