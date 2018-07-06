@@ -45,14 +45,14 @@ $hashids = new Hashids\Hashids('mountainrush', 10);
 $id = $hashids->encode(1);
 var_dump($id);
 
-$id = $hashids->decode('djJrbPlYlX')[0];
+$id = $hashids->decode('5pYoEpPrdW')[0];
 var_dump($id);
 
 //addLogToDB(LOG_OBJECT_GAME, LOG_ACTIVITY_CREATE, 2084);
 
 //$strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/djJrblYlXV/challenge_ready_682x300.jpg';
 //sendEmail('EDM - Mountain Rush', 'MR Test', 'mallbeury@mac.com', 'Matt', $strImage, 'Welcome', 'Player Activity', 'Your have progressed in the <a href="">challenge</a>.', '<a href="">change your preferences</a>');
-
+/*
 $gameID = 2041;
 $LatestActivity = 1626880620;
 
@@ -84,5 +84,5 @@ if (count($jsonGamesResponse)) {
     }
   }
 }
-
+*/
 exit;
