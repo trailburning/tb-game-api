@@ -16,6 +16,8 @@ define('LOG_ACTIVITY_INVITATION_SENT', 100);
 define('LOG_ACTIVITY_INVITATION_ACCEPT', 101);
 define('LOG_ACTIVITY_INVITATION_REJECT', 102);
 
+define('LOG_ACTIVITY_GAME_ACTIVITY', 200);
+
 function addLogToDB($nObject, $nActivity, $objectID) {
   require_once 'lib/mysql.php';
 

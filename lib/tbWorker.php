@@ -13,13 +13,17 @@ function processGamePlayer($game, $gamePlayer) {
 
   // does player have a new activity?
   if ($gamePlayer['latest_activity']) {
+    if (DEBUG) echo 'Player:' . $gamePlayer['latest_activity'] . '<br/>';
     // check the activity exists
     $activity = getPlayerActivity($gamePlayer['playerProviderToken'], $gamePlayer['latest_activity']);
     if ($activity) {
+      if (DEBUG) echo 'Found Player Activity<br/>';
       // reset activity
       setPlayerGameActivityInDB($gameID, $gamePlayerID, 0);
       // check activity type matches game type
       if ($activity['type'] == $game['type']) {
+        addLogToDB(LOG_OBJECT_PLAYER, LOG_ACTIVITY_GAME_ACTIVITY, $gamePlayerID);
+
         // activiy puts player back to active if they were inactive
         if ($gamePlayer['state'] == GAME_PLAYER_PLAYING_NOT_ACTIVE_STATE) {
           setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_PLAYING_STATE);
@@ -41,6 +45,7 @@ function processGamePlayer($game, $gamePlayer) {
           }
 
           foreach ($jsonPlayersResponse as $player) {
+            if (DEBUG) echo 'PLAYER ACTIVITY EMAIL<br/>';
             if ($player['game_notifications']) {
               sendActivityEmail($game, $player, $gamePlayer, $activity);
             }

@@ -44,7 +44,6 @@ $app->get('/worker', function (Request $request, Response $response) {
   $gameJSON = $response->withJSON($jsonResponse);
 
   return $gameJSON;
-
 });
 
 $app->get('/strava/subscribe', function (Request $request, Response $response) {
@@ -63,6 +62,16 @@ $app->get('/strava/subscribe', function (Request $request, Response $response) {
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch,CURLOPT_POST, count($fields));
   curl_setopt($ch,CURLOPT_POSTFIELDS, http_build_query($fields));
+  curl_exec($ch);
+  curl_close($ch);
+});
+
+$app->get('/strava/unsubscribe/{ID}', function (Request $request, Response $response) {
+  $url = 'https://api.strava.com/api/v3/push_subscriptions/' . $request->getAttribute('ID') . '?client_id=' . CLIENT_ID . '&client_secret=' . CLIENT_SECRET;
+
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
   curl_exec($ch);
   curl_close($ch);
 });
