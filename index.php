@@ -411,6 +411,20 @@ $app->get('/campaign/{campaignHashID}/games', function (Request $request, Respon
   return $response->withJSON($jsonResponse);
 });
 
+$app->post('/campaign/{campaignHashID}/checkinvite', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashCampaignID = $request->getAttribute('campaignHashID');
+  $campaignID = $hashids->decode($hashCampaignID)[0];
+
+  $json = $request->getBody();
+  $data = json_decode($json, true);
+
+  $jsonResponse = getCampaignCodeFromDB($campaignID, $data['code']);
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->get('/campaign/{campaignHashID}/players/{match}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
