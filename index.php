@@ -653,7 +653,7 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
         'targetAmount' => $data['targetAmount'],
         'justGivingOptIn' => $data['justGivingOptIn'],
         'charityOptIn' => $data['charityOptIn'],
-        'imageURL' => "http://tbassets2.imgix.net/images/brands/mountainrush/social/wwf/TB_Gorilla_justgiving_image.png"
+        'imageURL' => "http://tbassets2.imgix.net/images/brands/mountainrush/social/wwf/CFYW_Gorilla_JustGiving2.png"
       ];
       $jsonResponse = createFundraisingPlayerPage($paramaObj);
 
