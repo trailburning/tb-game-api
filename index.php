@@ -24,9 +24,11 @@ include "lib/tbPlayer.php";
 include "lib/tbPlayerActivities.php";
 include "lib/tbWorker.php";
 include "lib/tbFundraising.php";
+include "lib/tbKPI.php";
 include "lib/tbHelper.php";
 
 require 'vendor/autoload.php';
+require_once 'lib/mysql.php';
 
 $app = new \Slim\App;
 
@@ -712,6 +714,42 @@ $app->get('/fundraiser/campaign/{campaignHashID}/leaderboard/{numPlayers}', func
 
 $app->get('/fundraiser/leaderboard/event/{eventID}', function (Request $request, Response $response) {
   $jsonResponse = getFundraisingEventLeaderboard($request->getAttribute('eventID'));
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->get('/campaign/{campaignHashID}/kpi/climbers', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $campaignID = $hashids->decode($request->getAttribute('campaignHashID'))[0];
+
+  $jsonResponse = array();
+
+  $jsonClimbersResponse = getCampaignKPITotalClimbersFromDB($campaignID);
+  $jsonResponse[0]['key'] = 'Total Climbers';
+  $jsonResponse[0]['value'] = $jsonClimbersResponse[0]['total'];
+
+  $jsonFundraisingClimbersResponse = getCampaignKPITotalFundraisingClimbersFromDB($campaignID);
+  $jsonResponse[1]['key'] = 'Fundraising Climbers';
+  $jsonResponse[1]['value'] = $jsonFundraisingClimbersResponse[0]['total'];
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->get('/campaign/{campaignHashID}/kpi/fundraising', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $campaignID = $hashids->decode($request->getAttribute('campaignHashID'))[0];
+
+  $jsonResponse = array();
+
+  $jsonGoalResponse = getCampaignKPITotalFundraisingGoalFromDB($campaignID);
+  $jsonResponse[0]['key'] = 'Fundraising Goal';
+  $jsonResponse[0]['value'] = $jsonGoalResponse[0]['total'];
+
+  $jsonFundraisingRaisedResponse = getCampaignKPITotalFundraisingRaisedFromDB($campaignID);
+  $jsonResponse[1]['key'] = 'Fundraising Raised';
+  $jsonResponse[1]['value'] = $jsonFundraisingRaisedResponse[0]['total'];
 
   return $response->withJSON($jsonResponse);
 });

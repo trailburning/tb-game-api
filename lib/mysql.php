@@ -21,3 +21,16 @@ function connect_db() {
 
   return $connection;
 }
+
+function getResultsFromDB($strSQL) {
+  $db = connect_db();
+  $result = $db->query($strSQL);
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
