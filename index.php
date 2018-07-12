@@ -726,7 +726,7 @@ $app->get('/campaign/{campaignHashID}/kpi/climbers', function (Request $request,
   $jsonResponse = array();
 
   $jsonClimbersResponse = getCampaignKPITotalClimbersFromDB($campaignID);
-  $jsonResponse[0]['key'] = 'Total Climbers';
+  $jsonResponse[0]['key'] = 'Climbers';
   $jsonResponse[0]['value'] = $jsonClimbersResponse[0]['total'];
 
   $jsonFundraisingClimbersResponse = getCampaignKPITotalFundraisingClimbersFromDB($campaignID);
@@ -744,12 +744,16 @@ $app->get('/campaign/{campaignHashID}/kpi/fundraising', function (Request $reque
   $jsonResponse = array();
 
   $jsonGoalResponse = getCampaignKPITotalFundraisingGoalFromDB($campaignID);
-  $jsonResponse[0]['key'] = 'Fundraising Goal';
-  $jsonResponse[0]['value'] = $jsonGoalResponse[0]['total'];
+  if (count($jsonGoalResponse)) {
+    $jsonResponse[0]['key'] = 'Goal';
+    $jsonResponse[0]['value'] = ($jsonGoalResponse[0]['total'] == null) ? 0 : $jsonGoalResponse[0]['total'];
+  }
 
   $jsonFundraisingRaisedResponse = getCampaignKPITotalFundraisingRaisedFromDB($campaignID);
-  $jsonResponse[1]['key'] = 'Fundraising Raised';
-  $jsonResponse[1]['value'] = $jsonFundraisingRaisedResponse[0]['total'];
+  if (count($jsonFundraisingRaisedResponse)) {
+    $jsonResponse[1]['key'] = 'Raised';
+    $jsonResponse[1]['value'] = ($jsonFundraisingRaisedResponse[0]['total'] == null) ? 0 : $jsonFundraisingRaisedResponse[0]['total'];
+  }
 
   return $response->withJSON($jsonResponse);
 });
