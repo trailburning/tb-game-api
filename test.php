@@ -53,8 +53,13 @@ var_dump($id);
 //$strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/djJrblYlXV/challenge_ready_682x300.jpg';
 //sendEmail('EDM - Mountain Rush', 'MR Test', 'mallbeury@mac.com', 'Matt', $strImage, 'Welcome', 'Player Activity', 'Your have progressed in the <a href="">challenge</a>.', '<a href="">change your preferences</a>');
 /*
+// MR
 $gameID = 2041;
 $LatestActivity = 1626880620;
+
+// CFYW
+$gameID = 2036;
+$LatestActivity = 1593291827;
 
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
@@ -76,9 +81,9 @@ if (count($jsonGamesResponse)) {
           if ($activity) {
             sendActivityEmail($game, $player, $activePlayer, $activity);
           }
-//          sendWelcomeEmail($game, $player);
-//          sendInactivityEmail($game, $activePlayer);
-//          sendSummitEmail($game, $player, $activePlayer);
+          sendWelcomeEmail($game, $player);
+          sendInactivityEmail($game, $activePlayer);
+          sendSummitEmail($game, $player, $activePlayer);
         }
       }
     }

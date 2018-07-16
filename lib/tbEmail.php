@@ -8,7 +8,7 @@ function sendInviteEmail($game, $invitingPlayer, $inviteName, $inviteEmail) {
   $strPlayerURL = '<a href="' . MR_DOMAIN . 'game/' . $game['id'] . '">here</a>';
 
   $strTitle = 'Challenge Invitation!';
-  $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_invite_682x300.jpg';
+  $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_invite_682x300.jpg?q=80';
   $strMsg = $inviteName . ', you\'ve been invited by <strong>' . $invitingPlayer['firstname'] . ' ' . $invitingPlayer['lastname'] . '</strong> to a <strong>' . $game['name'] . ' ' . strtolower($game['type']) . ' challenge</strong>.  You can see the challenge ' . $strPlayerURL . '.<br/><br/>Click ' . $strInviteURL . ' to view the invitation!';
 
   // now send an email
@@ -26,7 +26,7 @@ function sendWelcomeEmail($game, $player) {
   $strPlayerURL = '<a href="' . MR_DOMAIN . 'game/' . $game['id'] . '">here</a>';
 
   $strTitle = 'Challenge Ready!';
-  $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_ready_682x300.jpg';
+  $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_ready_682x300.jpg?q=80';
   $strMsg = $player['firstname'] . ', your <strong>' . $game['name'] . ' ' . strtolower($game['type']) . ' challenge</strong> is ready and can be viewed ' . $strPlayerURL . '.';
 
   // now send an email
@@ -47,7 +47,7 @@ function sendInactivityEmail($game, $activePlayer) {
   $strPlayerURL = '<a href="' . MR_DOMAIN . 'game/' . $game['id'] . '/player/' . $hashActivePlayerID . '">here</a>';
 
   $strTitle = 'Everything Okay?';
-  $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_inactivity_682x300.jpg';
+  $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_inactivity_682x300.jpg?q=80';
   $strMsg = 'We notice you haven\'t logged any activity in your <strong>' . $game['name'] . ' ' . strtolower($game['type']) . ' challenge</strong> for a while!<br/><br/>You can check your progress ' . $strPlayerURL . '.';
 
   // now send an email
@@ -68,7 +68,7 @@ function sendActivityEmail($game, $player, $activePlayer, $activity) {
   $strPlayerURL = '<a href="' . MR_DOMAIN . 'game/' . $game['id'] . '/player/' . $hashActivePlayerID . '">here</a>';
 
   $strTitle = 'Player Activity';
-  $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_activity_682x300.jpg';
+  $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_activity_682x300.jpg?q=80';
   $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has climbed <strong>' . floor($activity['total_elevation_gain']) . 'm</strong> in the <strong>' . $game['name'] . ' ' . strtolower($game['type']) . ' challenge</strong>!<br/><br/>Check ' . $activePlayer['firstname'] . '\'s progress ' . $strPlayerURL . '.';
   // player is same player with activity so change msg
   if ($player['id'] == $activePlayer['id']) {
@@ -93,7 +93,7 @@ function sendSummitEmail($game, $player, $activePlayer) {
   $strPlayerURL = '<a href="' . MR_DOMAIN . 'game/' . $game['id'] . '/player/' . $hashActivePlayerID . '">here</a>';
 
   $strTitle = 'Player Summited!';
-  $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_summit_682x300.jpg';
+  $strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/' . $game['campaignID'] . '/challenge_summit_682x300.jpg?q=80';
   $strMsg = $activePlayer['firstname'] . ' ' . $activePlayer['lastname'] . ' has summited and completed the <strong>' . $game['name'] . ' ' . strtolower($game['type']) . ' challenge<strong>!<br/><br/>See ' . $activePlayer['firstname'] . ' at the summit ' . $strPlayerURL . '.';
 
   // player is same player with activity so change msg
