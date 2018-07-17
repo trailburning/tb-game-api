@@ -310,7 +310,13 @@ $app->post('/game/{gameHashID}/invite', function (Request $request, Response $re
       $jsonInvitingPlayerResponse = getPlayerDetailsFromDB($invitingPlayerID);
       foreach ($jsonInvitingPlayerResponse as $invitingPlayer) {
         // send invite
-        sendInviteEmail($game, $invitingPlayer, $data['name'], $data['email']);
+        $player = array();
+        $player['id'] = 0;
+        $player['firstname'] = $data['name'];
+        $player['lastname'] = '';
+        $player['email'] = $data['email'];
+
+        sendInviteEmail($game, $invitingPlayer, $player);        
         addLogToDB(LOG_OBJECT_PLAYER, LOG_ACTIVITY_INVITATION_SENT, $invitingPlayerID);
       }
     }

@@ -54,12 +54,14 @@ var_dump($id);
 //sendEmail('EDM - Mountain Rush', 'MR Test', 'mallbeury@mac.com', 'Matt', $strImage, 'Welcome', 'Player Activity', 'Your have progressed in the <a href="">challenge</a>.', '<a href="">change your preferences</a>');
 /*
 // MR
+$activePlayerID = 36;
 $gameID = 2041;
+//$gameID = 2114; // 2 player
 $LatestActivity = 1626880620;
 
 // CFYW
-$gameID = 2036;
-$LatestActivity = 1593291827;
+//$gameID = 2036;
+//$LatestActivity = 1593291827;
 
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
@@ -70,24 +72,34 @@ if (count($jsonGamesResponse)) {
       // send invite
       $jsonInvitingPlayerResponse = getPlayerDetailsFromDB(67);
       foreach ($jsonInvitingPlayerResponse as $invitingPlayer) {
-//        sendInviteEmail($game, $invitingPlayer, 'Matt', 'mallbeury@mac.com');
+        $player = array();
+        $player['id'] = 0;
+        $player['firstname'] = 'Matt';
+        $player['lastname'] = '';
+        $player['email'] = 'mallbeury@mac.com';
+//        sendInviteEmail($game, $invitingPlayer, $player);
       }
 
+      $activePlayer = null;
       foreach ($jsonPlayerResponse as $player) {
-        if ($player['game_notifications']) {
-          $activePlayer = $player;
+        $playerID = $hashids->decode($player['id'])[0];
 
+        if ($playerID == $activePlayerID) {
+          $activePlayer = $player;
+        }
+
+        if ($player['game_notifications']) {
           $activity = getPlayerActivity($activePlayer['playerProviderToken'], $LatestActivity);
           if ($activity) {
-            sendActivityEmail($game, $player, $activePlayer, $activity);
+//            sendActivityEmail($game, $player, $activePlayer, $activity);
           }
           sendWelcomeEmail($game, $player);
-          sendInactivityEmail($game, $activePlayer);
-          sendSummitEmail($game, $player, $activePlayer);
+//          sendInactivityEmail($game, $activePlayer);
+//          sendSummitEmail($game, $player, $activePlayer);
         }
       }
     }
   }
 }
-*/
+*()
 exit;
