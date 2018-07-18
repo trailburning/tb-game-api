@@ -47,7 +47,11 @@ function processGamePlayer($game, $gamePlayer) {
           foreach ($jsonPlayersResponse as $player) {
             if (DEBUG) echo 'PLAYER ACTIVITY EMAIL<br/>';
             if ($player['game_notifications']) {
-              sendActivityEmail($game, $player, $gamePlayer, $activity);
+              $jsonEmail = $game['email_activity_broadcast'];
+              if ($player['id'] == $activePlayer['id']) {
+                $jsonEmail = $game['email_activity'];
+              }              
+              sendActivityEmail($jsonEmail, $game, $player, $gamePlayer, $activity);
             }
               
             // has player summited and not already been processed?
@@ -55,7 +59,11 @@ function processGamePlayer($game, $gamePlayer) {
               if (DEBUG) echo 'PLAYER SUMMIT EMAIL<br/>';
               setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_SUMMITED_STATE);
               if ($player['game_notifications']) {
-                sendSummitEmail($game, $player, $gamePlayer);
+                $jsonEmail = $game['email_summit_broadcast'];
+                if ($player['id'] == $activePlayer['id']) {
+                  $jsonEmail = $game['email_summit'];
+                }
+                sendSummitEmail($jsonEmail, $game, $player, $gamePlayer);
               }
             }
           }
@@ -85,7 +93,8 @@ function processGamePlayer($game, $gamePlayer) {
         setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_PLAYING_NOT_ACTIVE_STATE);        
         if (DEBUG) echo 'MOTIVATE EMAIL<br/>';      
         if ($gamePlayer['game_notifications']) {
-          sendInactivityEmail($game, $gamePlayer);
+          $jsonEmail = $game['email_inactivity'];          
+          sendInactivityEmail($jsonEmail, $game, $gamePlayer);
         }
       }
     }

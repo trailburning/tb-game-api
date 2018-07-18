@@ -266,7 +266,8 @@ $app->post('/game/{gameHashID}/player/{playerHashID}', function (Request $reques
       if (count($jsonPlayerResponse)) {
         foreach ($jsonPlayerResponse as $player) {
           if ($player['game_notifications']) {
-            sendWelcomeEmail($game, $player);
+            $jsonEmail = $game['email_welcome'];
+            sendWelcomeEmail($jsonEmail, $game, $player);
           }
         }
       }
@@ -316,7 +317,8 @@ $app->post('/game/{gameHashID}/invite', function (Request $request, Response $re
         $player['lastname'] = '';
         $player['email'] = $data['email'];
 
-        sendInviteEmail($game, $invitingPlayer, $player);        
+        $jsonEmail = $game['email_invite'];
+        sendInviteEmail($jsonEmail, $game, $invitingPlayer, $player);        
         addLogToDB(LOG_OBJECT_PLAYER, LOG_ACTIVITY_INVITATION_SENT, $invitingPlayerID);
       }
     }
@@ -348,7 +350,8 @@ $app->post('/game/{gameHashID}/player/{playerHashID}/invite/{inviteHashID}/accep
       if (count($jsonPlayerResponse)) {
         foreach ($jsonPlayerResponse as $player) {
           if ($player['game_notifications']) {
-            sendWelcomeEmail($game, $player);
+            $jsonEmail = $game['email_welcome'];
+            sendWelcomeEmail($jsonEmail, $game, $player);
           }
         }
       }

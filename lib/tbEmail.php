@@ -1,76 +1,67 @@
 <?php
-//function sendInviteEmail($game, $invitingPlayer, $inviteName, $inviteEmail) {
-function sendInviteEmail($game, $player, $activePlayer) {
-  $jsonEmail = '{"title": "Challenge Invitation!", "image": "http://tbassets2.imgix.net/images/brands/mountainrush/edm/[CAMPAIGN_ID]/challenge_invite_682x300.jpg?q=80", "message": "<p>[ACTIVE_PLAYER_FIRSTNAME], you\'ve been invited by <strong>[PLAYER_FIRSTNAME] [PLAYER_LASTNAME]</strong> to a <strong>[GAME_NAME] [GAME_TYPE] challenge</strong>. You can see the challenge [GAME_LINK].<br/><br/>Click [INVITE_LINK] to view the invitation.<br/><br/>The Mountain Rush Team<br/><br/>If you have any questions please <a href=\"mailto:support@mountainrush.co.uk\">contact</a> us!</p>", "preferences": "Want to change how you receive these emails?<br>You can [PREFERENCES_LINK]."}';
+function sendInviteEmail($jsonEmail, $game, $player, $activePlayer) {
   $jsonEmail = replaceTags($jsonEmail, $game, $player, $activePlayer, null);
   $arrEmail = json_decode($jsonEmail);
 
+  $strSubject = $game['campaign_name'] . ' - ' . $arrEmail->title;
+
   // now send an email
-  $result = sendEmail($game['email_template'], 'Mountain Rush - Challenge Invitation', $activePlayer['email'], $activePlayer['firstname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($game['email_template'], $strSubject, $activePlayer['email'], $activePlayer['firstname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 
   // MLA - test email
-  $result = sendEmail($game['email_template'], 'Mountain Rush - Challenge Invitation DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($game['email_template'], $strSubject . ' DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
-function sendWelcomeEmail($game, $player) {
-  $jsonEmail = '{"title": "Challenge Ready", "image": "http://tbassets2.imgix.net/images/brands/mountainrush/edm/[CAMPAIGN_ID]/challenge_ready_682x300.jpg?q=80", "message": "<p>[PLAYER_FIRSTNAME], your <strong>[GAME_NAME] [GAME_TYPE] challenge</strong> is ready and can be viewed [GAME_LINK].<br/><br/>Don\'t forget to post photos of your journey to the summit using the <a href=\"https://www.strava.com/mobile\">Strava App</a> or <a href=\"https://www.instagram.com\">Instagram</a>.  You can also include <strong>#playmountainrush</strong> in any social posts.<br/><br/>The Mountain Rush Team<br/><br/>If you have any questions please <a href=\"mailto:support@mountainrush.co.uk\">contact</a> us!</p>", "preferences": "Want to change how you receive these emails?<br>You can [PREFERENCES_LINK]."}';
+function sendWelcomeEmail($jsonEmail, $game, $player) {
   $jsonEmail = replaceTags($jsonEmail, $game, $player, $player, null);
   $arrEmail = json_decode($jsonEmail);
 
+  $strSubject = $game['campaign_name'] . ' - ' . $arrEmail->title;
+
   // now send an email
-  $result = sendEmail($game['email_template'], 'Mountain Rush - Challenge Ready', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($game['email_template'], $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 
   // MLA - test email
-  $result = sendEmail($game['email_template'], 'Mountain Rush - Challenge Ready DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($game['email_template'], $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
-function sendInactivityEmail($game, $activePlayer) {
-  $jsonEmail = '{"title": "Everything Okay", "image": "http://tbassets2.imgix.net/images/brands/mountainrush/edm/[CAMPAIGN_ID]/challenge_inactivity_682x300.jpg?q=80", "message": "<p>We notice you haven\'t logged any activity in your <strong>[GAME_NAME] [GAME_TYPE] challenge</strong> for a while!<br/><br/>You can check your progress [ACTIVE_PLAYER_LINK].<br/><br/>The Mountain Rush Team<br/><br/>If you have any questions please <a href=\"mailto:support@mountainrush.co.uk\">contact</a> us!</p>", "preferences": "Want to change how you receive these emails?<br>You can [PREFERENCES_LINK]."}';
-
+function sendInactivityEmail($jsonEmail, $game, $activePlayer) {
   $jsonEmail = replaceTags($jsonEmail, $game, $activePlayer, $activePlayer, null);
   $arrEmail = json_decode($jsonEmail);
 
+  $strSubject = $game['campaign_name'] . ' - ' . $arrEmail->title;
+
   // now send an email
-  $result = sendEmail($game['email_template'], 'Mountain Rush - Player Activity', $activePlayer['email'], $activePlayer['firstname'] . ' ' . $activePlayer['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($game['email_template'], $strSubject, $activePlayer['email'], $activePlayer['firstname'] . ' ' . $activePlayer['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 
   // MLA - test email
-  $result = sendEmail($game['email_template'], 'Mountain Rush - Player Activity DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($game['email_template'], $strSubject . ' DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
-function sendActivityEmail($game, $player, $activePlayer, $activity) {
-  $hashids = new Hashids\Hashids('mountainrush', 10);
-
-  $jsonEmail = '{"title": "Player Activity", "image": "http://tbassets2.imgix.net/images/brands/mountainrush/edm/[CAMPAIGN_ID]/challenge_activity_682x300.jpg?q=80", "message": "<p>[ACTIVE_PLAYER_FIRSTNAME] [ACTIVE_PLAYER_LASTNAME] has climbed <strong>[ACTIVITY_ELEVATION]m</strong> in the <strong>[GAME_NAME] [GAME_TYPE] challenge</strong>, check [ACTIVE_PLAYER_FIRSTNAME]\'s progress [ACTIVE_PLAYER_LINK].<br/><br/>Don\'t forget to post photos of your journey to the summit using the <a href=\"https://www.strava.com/mobile\">Strava App</a> or <a href=\"https://www.instagram.com\">Instagram</a>.  You can also include <strong>#playmountainrush</strong> in any social posts.<br/><br/>The Mountain Rush Team<br/><br/>If you have any questions please <a href=\"mailto:support@mountainrush.co.uk\">contact</a> us!</p>", "preferences": "Want to change how you receive these emails?<br>You can [PREFERENCES_LINK]."}';
-
-  if ($player['id'] == $activePlayer['id']) {
-    $jsonEmail = '{"title": "Player Activity", "image": "http://tbassets2.imgix.net/images/brands/mountainrush/edm/[CAMPAIGN_ID]/challenge_activity_682x300.jpg?q=80", "message": "<p>You have climbed <strong>[ACTIVITY_ELEVATION]m</strong> in the <strong>[GAME_NAME] [GAME_TYPE] challenge</strong> and can check your progress [PLAYER_LINK].<br/><br/>Don\'t forget to post photos of your journey to the summit using the <a href=\"https://www.strava.com/mobile\">Strava App</a> or <a href=\"https://www.instagram.com\">Instagram</a>.  You can also include <strong>#playmountainrush</strong> in any social posts.<br/><br/>The Mountain Rush Team<br/><br/>If you have any questions please <a href=\"mailto:support@mountainrush.co.uk\">contact</a> us!</p>", "preferences": "Want to change how you receive these emails?<br>You can [PREFERENCES_LINK]."}';
-  }
-
+function sendActivityEmail($jsonEmail, $game, $player, $activePlayer, $activity) {
   $jsonEmail = replaceTags($jsonEmail, $game, $player, $activePlayer, $activity);
   $arrEmail = json_decode($jsonEmail);
 
+  $strSubject = $game['campaign_name'] . ' - ' . $arrEmail->title;
+
   // now send an email
-  $result = sendEmail($game['email_template'], 'Mountain Rush - Player Activity', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($game['email_template'], $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 
   // MLA - test email
-  $result = sendEmail($game['email_template'], 'Mountain Rush - Player Activity DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($game['email_template'], $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
-function sendSummitEmail($game, $player, $activePlayer) {
-  $jsonEmail = '{"title": "Player Summited!", "image": "http://tbassets2.imgix.net/images/brands/mountainrush/edm/[CAMPAIGN_ID]/challenge_summit_682x300.jpg?q=80", "message": "<p>[ACTIVE_PLAYER_FIRSTNAME] [ACTIVE_PLAYER_LASTNAME] has summited and completed the <strong>[GAME_NAME] [GAME_TYPE] challenge</strong>, see [ACTIVE_PLAYER_FIRSTNAME] at the summit [ACTIVE_PLAYER_LINK]!<br/><br/>Don\'t forget to post photos of your journey to the summit using the <a href=\"https://www.strava.com/mobile\">Strava App</a> or <a href=\"https://www.instagram.com\">Instagram</a>.  You can also include <strong>#playmountainrush</strong> in any social posts.<br/><br/>The Mountain Rush Team<br/><br/>If you have any questions please <a href=\"mailto:support@mountainrush.co.uk\">contact</a> us!</p>", "preferences": "Want to change how you receive these emails?<br>You can [PREFERENCES_LINK]."}';
-
-  if ($player['id'] == $activePlayer['id']) {
-    $jsonEmail = '{"title": "Congratulations [PLAYER_FIRSTNAME]!", "image": "http://tbassets2.imgix.net/images/brands/mountainrush/edm/[CAMPAIGN_ID]/challenge_summit_682x300.jpg?q=80", "message": "<p>You have <strong>summited</strong> and completed the <strong>[GAME_NAME] [GAME_TYPE] challenge</strong>, see yourself at the summit [PLAYER_LINK]!<br/><br/>Don\t forget to include <strong>#playmountainrush</strong> in any social posts.<br/><br/>The Mountain Rush Team<br/><br/>If you have any questions please <a href=\"mailto:support@mountainrush.co.uk\">contact</a> us!</p>", "preferences": "Want to change how you receive these emails?<br>You can [PREFERENCES_LINK]."}';
-  }
-
+function sendSummitEmail($jsonEmail, $game, $player, $activePlayer) {
   $jsonEmail = replaceTags($jsonEmail, $game, $player, $activePlayer, null);
   $arrEmail = json_decode($jsonEmail);
 
+  $strSubject = $game['campaign_name'] . ' - ' . $arrEmail->title;
+
   // now send an email
-  $result = sendEmail($game['email_template'], 'Mountain Rush - Player Summited!', $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($game['email_template'], $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 
   // MLA - test email
-  $result = sendEmail($game['email_template'], 'Mountain Rush - Player Summited! DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($game['email_template'], $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
 function replaceTags($strText, $game, $player, $activePlayer , $activity) {

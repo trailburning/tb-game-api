@@ -52,7 +52,7 @@ var_dump($id);
 
 //$strImage = 'http://tbassets2.imgix.net/images/brands/mountainrush/edm/djJrblYlXV/challenge_ready_682x300.jpg';
 //sendEmail('EDM - Mountain Rush', 'MR Test', 'mallbeury@mac.com', 'Matt', $strImage, 'Welcome', 'Player Activity', 'Your have progressed in the <a href="">challenge</a>.', '<a href="">change your preferences</a>');
-/*
+
 // MR
 $activePlayerID = 36;
 $gameID = 2041;
@@ -60,9 +60,11 @@ $gameID = 2041;
 $LatestActivity = 1626880620;
 
 // CFYW
+//$activePlayerID = 164;
 //$gameID = 2036;
 //$LatestActivity = 1593291827;
 
+/*
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
 $jsonGamesResponse = getGameFromDB($gameID);
@@ -77,7 +79,10 @@ if (count($jsonGamesResponse)) {
         $player['firstname'] = 'Matt';
         $player['lastname'] = '';
         $player['email'] = 'mallbeury@mac.com';
-//        sendInviteEmail($game, $invitingPlayer, $player);
+
+        // invite email
+        $jsonEmail = $game['email_invite'];
+        sendInviteEmail($jsonEmail, $game, $invitingPlayer, $player);
       }
 
       $activePlayer = null;
@@ -91,15 +96,32 @@ if (count($jsonGamesResponse)) {
         if ($player['game_notifications']) {
           $activity = getPlayerActivity($activePlayer['playerProviderToken'], $LatestActivity);
           if ($activity) {
-//            sendActivityEmail($game, $player, $activePlayer, $activity);
+            // activity email
+            $jsonEmail = $game['email_activity_broadcast'];
+            if ($player['id'] == $activePlayer['id']) {
+              $jsonEmail = $game['email_activity'];
+            }
+            sendActivityEmail($jsonEmail, $game, $player, $activePlayer, $activity);
           }
-          sendWelcomeEmail($game, $player);
-//          sendInactivityEmail($game, $activePlayer);
-//          sendSummitEmail($game, $player, $activePlayer);
+
+          // welcome email
+          $jsonEmail = $game['email_welcome'];
+          sendWelcomeEmail($jsonEmail, $game, $player);
+
+          // inactivity email
+          $jsonEmail = $game['email_inactivity'];
+          sendInactivityEmail($jsonEmail, $game, $activePlayer);
+
+          // summit email
+          $jsonEmail = $game['email_summit_broadcast'];
+          if ($player['id'] == $activePlayer['id']) {
+            $jsonEmail = $game['email_summit'];
+          }
+          sendSummitEmail($jsonEmail, $game, $player, $activePlayer);
         }
       }
     }
   }
 }
-*()
+*/
 exit;
