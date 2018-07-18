@@ -6,7 +6,7 @@ function getCampaignKPITotalClimbersFromDB($campaignID) {
 }
 
 function getCampaignKPITotalFundraisingClimbersFromDB($campaignID) {
-  $strSQL = 'SELECT count(fundraising_goal) as total FROM gamePlayers JOIN games ON gamePlayers.game = games.id WHERE campaignID = ' . $campaignID;
+  $strSQL = 'SELECT count(fundraising_goal) as total FROM gamePlayers JOIN games ON gamePlayers.game = games.id WHERE campaignID = ' . $campaignID . ' and fundraising_goal > 0';
 
   return getResultsFromDB($strSQL);
 }

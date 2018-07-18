@@ -48,7 +48,7 @@ function processGamePlayer($game, $gamePlayer) {
             if (DEBUG) echo 'PLAYER ACTIVITY EMAIL<br/>';
             if ($player['game_notifications']) {
               $jsonEmail = $game['email_activity_broadcast'];
-              if ($player['id'] == $activePlayer['id']) {
+              if ($player['id'] == $gamePlayer['id']) {
                 $jsonEmail = $game['email_activity'];
               }              
               sendActivityEmail($jsonEmail, $game, $player, $gamePlayer, $activity);
@@ -60,7 +60,7 @@ function processGamePlayer($game, $gamePlayer) {
               setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_SUMMITED_STATE);
               if ($player['game_notifications']) {
                 $jsonEmail = $game['email_summit_broadcast'];
-                if ($player['id'] == $activePlayer['id']) {
+                if ($player['id'] == $gamePlayer['id']) {
                   $jsonEmail = $game['email_summit'];
                 }
                 sendSummitEmail($jsonEmail, $game, $player, $gamePlayer);
