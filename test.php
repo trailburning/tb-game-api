@@ -54,17 +54,16 @@ var_dump($id);
 //sendEmail('EDM - Mountain Rush', 'MR Test', 'mallbeury@mac.com', 'Matt', $strImage, 'Welcome', 'Player Activity', 'Your have progressed in the <a href="">challenge</a>.', '<a href="">change your preferences</a>');
 
 // MR
-$activePlayerID = 36;
-$gameID = 2041;
+//$activePlayerID = 36;
+//$gameID = 2041;
 //$gameID = 2114; // 2 player
-$LatestActivity = 1626880620;
+//$LatestActivity = 1626880620;
 
 // CFYW
-//$activePlayerID = 164;
-//$gameID = 2036;
-//$LatestActivity = 1593291827;
+$activePlayerID = 164;
+$gameID = 2036;
+$LatestActivity = 1593291827;
 
-/*
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
 $jsonGamesResponse = getGameFromDB($gameID);
@@ -82,7 +81,7 @@ if (count($jsonGamesResponse)) {
 
         // invite email
         $jsonEmail = $game['email_invite'];
-        sendInviteEmail($jsonEmail, $game, $invitingPlayer, $player);
+//        sendInviteEmail($jsonEmail, $game, $invitingPlayer, $player);
       }
 
       $activePlayer = null;
@@ -106,22 +105,22 @@ if (count($jsonGamesResponse)) {
 
           // welcome email
           $jsonEmail = $game['email_welcome'];
-          sendWelcomeEmail($jsonEmail, $game, $player);
+//          sendWelcomeEmail($jsonEmail, $game, $player);
 
           // inactivity email
           $jsonEmail = $game['email_inactivity'];
-          sendInactivityEmail($jsonEmail, $game, $activePlayer);
+//          sendInactivityEmail($jsonEmail, $game, $activePlayer);
 
           // summit email
           $jsonEmail = $game['email_summit_broadcast'];
           if ($player['id'] == $activePlayer['id']) {
             $jsonEmail = $game['email_summit'];
           }
-          sendSummitEmail($jsonEmail, $game, $player, $activePlayer);
+//          sendSummitEmail($jsonEmail, $game, $player, $activePlayer);
         }
       }
     }
   }
 }
-*/
+
 exit;
