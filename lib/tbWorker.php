@@ -58,7 +58,7 @@ function processGamePlayer($game, $gamePlayer) {
             if ($bGamePlayerSummited && $gamePlayer['state'] == GAME_PLAYER_PLAYING_STATE) {
               if (DEBUG) echo 'PLAYER SUMMIT EMAIL<br/>';
               setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_SUMMITED_STATE);
-              if ($player['game_notifications']) {
+              if ($gamePlayer['game_notifications']) {
                 $jsonEmail = $game['email_summit_broadcast'];
                 if ($player['id'] == $gamePlayer['id']) {
                   $jsonEmail = $game['email_summit'];
@@ -95,6 +95,35 @@ function processGamePlayer($game, $gamePlayer) {
         if ($gamePlayer['game_notifications']) {
           $jsonEmail = $game['email_inactivity'];          
           sendInactivityEmail($jsonEmail, $game, $gamePlayer);
+        }
+      }
+      else { // has player summited?
+        $jsonPlayersResponse = getGamePlayersFromDB($gameID);
+        if (count($jsonPlayersResponse)) {
+          $bGamePlayerSummited = false;
+
+          // get player game details
+          $gamePlayerResults = getGamePlayerFromDB($gameID, $gamePlayerID);
+          if (count($gamePlayerResults)) {
+            if (!is_null($gamePlayerResults[0]['ascentCompleted'])) {
+              $bGamePlayerSummited = true;
+            }
+          }
+
+          foreach ($jsonPlayersResponse as $player) {
+            // has player summited and not already been processed?
+            if ($bGamePlayerSummited && $gamePlayer['state'] == GAME_PLAYER_PLAYING_STATE) {
+              if (DEBUG) echo 'PLAYER SUMMIT EMAIL<br/>';
+              setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_SUMMITED_STATE);
+              if ($gamePlayer['game_notifications']) {
+                $jsonEmail = $game['email_summit_broadcast'];
+                if ($player['id'] == $gamePlayer['id']) {
+                  $jsonEmail = $game['email_summit'];
+                }
+                sendSummitEmail($jsonEmail, $game, $player, $gamePlayer);
+              }
+            }
+          }
         }
       }
     }

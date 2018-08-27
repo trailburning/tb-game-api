@@ -14,6 +14,9 @@ include "lib/tbPlayerActivities.php";
 
 require_once('vendor/autoload.php');
 
+const DEBUG = false;
+//const DEBUG = true;
+
 /*
 $game = array(
   'id' => 'yKerNk4mwM',
@@ -100,12 +103,12 @@ if (count($jsonGamesResponse)) {
             if ($player['id'] == $activePlayer['id']) {
               $jsonEmail = $game['email_activity'];
             }
-            sendActivityEmail($jsonEmail, $game, $player, $activePlayer, $activity);
+//            sendActivityEmail($jsonEmail, $game, $player, $activePlayer, $activity);
           }
 
           // welcome email
           $jsonEmail = $game['email_welcome'];
-//          sendWelcomeEmail($jsonEmail, $game, $player);
+          sendWelcomeEmail($jsonEmail, $game, $player);
 
           // inactivity email
           $jsonEmail = $game['email_inactivity'];

@@ -45,7 +45,9 @@ $app->get('/worker', function (Request $request, Response $response) {
 
   $gameJSON = $response->withJSON($jsonResponse);
 
-  return $gameJSON;
+  if (!DEBUG) {
+    return $gameJSON;
+  }
 });
 
 $app->get('/strava/subscribe', function (Request $request, Response $response) {
@@ -453,6 +455,16 @@ $app->get('/campaign/{campaignHashID}/gamelevels', function (Request $request, R
   $campaignID = $hashids->decode($request->getAttribute('campaignHashID'))[0];
 
   $jsonResponse = getCampaignGameLevelsFromDB($campaignID);
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->get('/campaign/{campaignHashID}/gameactivitytypes', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $campaignID = $hashids->decode($request->getAttribute('campaignHashID'))[0];
+
+  $jsonResponse = getCampaignGameActivityTypesFromDB($campaignID);
 
   return $response->withJSON($jsonResponse);
 });

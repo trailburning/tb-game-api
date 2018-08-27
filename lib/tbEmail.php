@@ -75,6 +75,11 @@ function replaceTags($strText, $game, $player, $activePlayer , $activity) {
 
 function sendEmail($strEmailTemplate, $strSubject, $strToEmail, $strToName, $strImage, $strMsgTitle, $strMsgContent, $strPreferences) {
 
+  if (DEBUG) {
+    echo 'sendEmail:' . $strToEmail . ' : SEND OFF<br/>';
+    return;
+  }
+
   try {
     $mandrill = new Mandrill('kRr66_sxVLQJwehdLnakqg');
 

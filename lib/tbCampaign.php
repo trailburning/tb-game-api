@@ -77,6 +77,25 @@ function getCampaignGameLevelsFromDB($campaignID) {
   return $rows;
 }
 
+function getCampaignGameActivityTypesFromDB($campaignID) {
+  require_once 'lib/mysql.php';
+
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $db = connect_db();
+  $result = $db->query('SELECT gameActivityTypes.id, name, description FROM gameActivityTypes JOIN campaignGameActivityTypes ON gameActivityTypes.id = campaignGameActivityTypes.gameActivityTypeID WHERE campaignGameActivityTypes.campaignID = ' . $campaignID . ' order by preferredOrder');
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $row['id'] = $hashids->encode($row['id']);
+
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
 function getCampaignCodeFromDB($campaignID, $strCode) {
   require_once 'lib/mysql.php';
 
