@@ -459,12 +459,15 @@ $app->get('/campaign/{campaignHashID}/gamelevels', function (Request $request, R
   return $response->withJSON($jsonResponse);
 });
 
-$app->get('/campaign/{campaignHashID}/gameactivitytypes', function (Request $request, Response $response) {
+$app->get('/campaign/{campaignHashID}/gameoptions', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $campaignID = $hashids->decode($request->getAttribute('campaignHashID'))[0];
 
-  $jsonResponse = getCampaignGameActivityTypesFromDB($campaignID);
+  $jsonResponse = array();
+
+  $jsonResponse['types'] = getCampaignGameActivityTypesFromDB($campaignID);
+  $jsonResponse['durations'] = getCampaignGameDurationsFromDB($campaignID);
 
   return $response->withJSON($jsonResponse);
 });

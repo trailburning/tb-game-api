@@ -119,7 +119,7 @@ if (count($jsonGamesResponse)) {
           if ($player['id'] == $activePlayer['id']) {
             $jsonEmail = $game['email_summit'];
           }
-//          sendSummitEmail($jsonEmail, $game, $player, $activePlayer);
+          sendSummitEmail($jsonEmail, $game, $player, $activePlayer);
         }
       }
     }
