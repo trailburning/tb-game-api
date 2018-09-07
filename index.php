@@ -563,13 +563,17 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/progress', function (Request
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   echo 't2';
-/*  
 
   $hashGameID = $request->getAttribute('gameHashID');
   $gameID = $hashids->decode($hashGameID)[0];
 
   $hashPlayerID = $request->getAttribute('playerHashID');
   $playerID = $hashids->decode($hashPlayerID)[0];
+
+  echo 't3';
+
+/*  
+
 
   // get latest activities
   $arrPlayerActivities = getPlayerGameProgress($playerID, $gameID);
