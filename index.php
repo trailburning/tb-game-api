@@ -53,12 +53,12 @@ if (getenv("CLEARDB_DATABASE_URL")) {
   $password = $url["pass"];
   $database = substr($url["path"], 1);
 }
-echo 'server:' . $server . '<br/>';
 
 $app->get('/', function (Request $request, Response $response) {
   echo 'Trailburning® Platform GAME API';
 
   echo 't:' . getenv("CLEARDB_DATABASE_URL");
+  echo 'server:' . $server . '<br/>';
 });
 
 $app->get('/worker', function (Request $request, Response $response) {
