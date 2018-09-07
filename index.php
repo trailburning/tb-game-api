@@ -1,6 +1,6 @@
 <?php
-error_reporting(E_ERROR);
-//error_reporting(E_ALL);
+//error_reporting(E_ERROR);
+error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 header('Access-Control-Allow-Origin: *');
@@ -56,11 +56,6 @@ if (getenv("CLEARDB_DATABASE_URL")) {
 
 $app->get('/', function (Request $request, Response $response) {
   echo 'Trailburning® Platform GAME API<br/>';
-
-  echo 's:' . $GLOBALS['db_server'] . '<br/>';
-  echo 'u:' . $GLOBALS['db_user'] . '<br/>';
-  echo 'p:' . $GLOBALS['db_pass'] . '<br/>';
-  echo 'db:' . $GLOBALS['db_name'] . '<br/>';
 });
 
 $app->get('/worker', function (Request $request, Response $response) {
