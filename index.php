@@ -44,7 +44,7 @@ $user = 'root';
 $pass = 'root';
 $database = 'tb_game';
 
-echo 't:' . getenv("CLEARDB_DATABASE_URL") . '<br/>';
+//echo 't:' . getenv("CLEARDB_DATABASE_URL") . '<br/>';
 if (getenv("CLEARDB_DATABASE_URL")) {
   $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
 
@@ -53,7 +53,7 @@ if (getenv("CLEARDB_DATABASE_URL")) {
   $password = $url["pass"];
   $database = substr($url["path"], 1);
 }
-echo $server . '<br/>';
+echo 'server:' . $server . '<br/>';
 
 $app->get('/', function (Request $request, Response $response) {
   echo 'Trailburning® Platform GAME API';
