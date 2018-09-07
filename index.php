@@ -39,6 +39,10 @@ const GAME_PLAYER_PLAYING_STATE = 0;
 const GAME_PLAYER_PLAYING_NOT_ACTIVE_STATE = 1;
 const GAME_PLAYER_SUMMITED_STATE = 100;
 
+$app->get('/', function (Request $request, Response $response) {
+  echo 'Trailburning® Platform GAME API';
+});
+
 $app->get('/worker', function (Request $request, Response $response) {
   // process game activity
   $jsonResponse = processActivity();

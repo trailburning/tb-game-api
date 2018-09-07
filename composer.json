@@ -6,5 +6,8 @@
     "hashids/hashids": "^2.0",
     "imgix/imgix-php": "dev-master",
     "mandrill/mandrill": "1.0.*"
-   }
+  },
+  "require-dev": {
+    "heroku/heroku-buildpack-php": "*"
+  }
 }
