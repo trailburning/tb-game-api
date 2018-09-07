@@ -41,6 +41,8 @@ const GAME_PLAYER_SUMMITED_STATE = 100;
 
 $app->get('/', function (Request $request, Response $response) {
   echo 'Trailburning® Platform GAME API';
+
+  echo 't:' . getenv("CLEARDB_DATABASE_URL");
 });
 
 $app->get('/worker', function (Request $request, Response $response) {
