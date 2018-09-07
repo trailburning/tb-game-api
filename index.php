@@ -56,7 +56,6 @@ if (getenv("CLEARDB_DATABASE_URL")) {
 
 $app->get('/', function (Request $request, Response $response) {
   echo 'Trailburning® Platform GAME API<br/>';
-  echo $GLOBALS['db_server'];
 });
 
 $app->get('/worker', function (Request $request, Response $response) {
