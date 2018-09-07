@@ -1,7 +1,13 @@
 {
   "require": {
     "ext-bcmath": "*",
-    "ext-gmp": "*"
+    "ext-gmp": "*",
+    "slim/slim": "^3.0",
+    "educoder/pest": "1.0.0",
+    "basvandorst/StravaPHP": "1.0.2",
+    "hashids/hashids": "^2.0",
+    "imgix/imgix-php": "dev-master",
+    "mandrill/mandrill": "1.0.*"
   },
   "require-dev": {
     "heroku/heroku-buildpack-php": "*"
