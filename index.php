@@ -557,26 +557,13 @@ $app->get('/client/{clientHashID}/player/{token}/update', function (Request $req
 });
 
 $app->get('/game/{gameHashID}/player/{playerHashID}/progress', function (Request $request, Response $response) {
-
-  echo 't1';
-
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
-  echo 't2';
-
   $hashGameID = $request->getAttribute('gameHashID');
-
-  echo 't3:' . $hashGameID . '<br/>';
-
   $gameID = $hashids->decode($hashGameID)[0];
-
-  echo 't4';
 
   $hashPlayerID = $request->getAttribute('playerHashID');
   $playerID = $hashids->decode($hashPlayerID)[0];
-
-/*  
-
 
   // get latest activities
   $arrPlayerActivities = getPlayerGameProgress($playerID, $gameID);
@@ -589,7 +576,6 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/progress', function (Request
   $jsonResponse[0]['activities'] = $arrPlayerActivities;
 
   return $response->withJSON($jsonResponse);
-*/  
 });
 
 $app->get('/game/{gameHashID}/player/{playerHashID}/activity/{activityID}/photos', function (Request $request, Response $response) {
