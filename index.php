@@ -39,6 +39,22 @@ const GAME_PLAYER_PLAYING_STATE = 0;
 const GAME_PLAYER_PLAYING_NOT_ACTIVE_STATE = 1;
 const GAME_PLAYER_SUMMITED_STATE = 100;
 
+$server = 'localhost';
+$user = 'root';
+$pass = 'root';
+$database = 'tb_game';
+
+echo 't:' . getenv("CLEARDB_DATABASE_URL") . '<br/>';
+if (getenv("CLEARDB_DATABASE_URL")) {
+  $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+
+  $server = $url["host"];
+  $username = $url["user"];
+  $password = $url["pass"];
+  $database = substr($url["path"], 1);
+}
+echo $server . '<br/>';
+
 $app->get('/', function (Request $request, Response $response) {
   echo 'Trailburning® Platform GAME API';
 
