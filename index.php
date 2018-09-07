@@ -565,12 +565,15 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/progress', function (Request
   echo 't2';
 
   $hashGameID = $request->getAttribute('gameHashID');
+
+  echo 't3';
+
   $gameID = $hashids->decode($hashGameID)[0];
+
+  echo 't4';
 
   $hashPlayerID = $request->getAttribute('playerHashID');
   $playerID = $hashids->decode($hashPlayerID)[0];
-
-  echo 't3';
 
 /*  
 
