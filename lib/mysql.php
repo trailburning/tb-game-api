@@ -1,17 +1,6 @@
 <?php
 function connect_db() {
-/*
-  $server = 'external-db.s225016.gridserver.com';
-  $user = 'db225016';
-  $pass = 'Summits0fMyLif3!';
-  $database = 'db225016_tb_game';
-*/  
-  $server = 'localhost';
-  $user = 'root';
-  $pass = 'root';
-  $database = 'tb_game';
-
-  $connection = new mysqli($server, $user, $pass, $database);
+  $connection = new mysqli($GLOBALS['db_server'], $GLOBALS['db_user'], $GLOBALS['db_pass'], $GLOBALS['db_name']);
 
   return $connection;
 }

@@ -39,28 +39,28 @@ const GAME_PLAYER_PLAYING_STATE = 0;
 const GAME_PLAYER_PLAYING_NOT_ACTIVE_STATE = 1;
 const GAME_PLAYER_SUMMITED_STATE = 100;
 
-$server = 'localhost';
-$user = 'root';
-$pass = 'root';
-$database = 'tb_game';
+$GLOBALS['db_server'] = 'localhost';
+$GLOBALS['db_user'] = 'root';
+$GLOBALS['db_pass'] = 'root';
+$GLOBALS['db_name'] = 'tb_game';
 
 //echo 't:' . getenv("CLEARDB_DATABASE_URL") . '<br/>';
 if (getenv("CLEARDB_DATABASE_URL")) {
   $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
 
-  $server = $url["host"];
-  $username = $url["user"];
-  $password = $url["pass"];
-  $database = substr($url["path"], 1);
+  $GLOBALS['db_server'] = $url["host"];
+  $GLOBALS['db_user'] = $url["user"];
+  $GLOBALS['db_pass'] = $url["pass"];
+  $GLOBALS['db_name'] = substr($url["path"], 1);
 }
 
 $app->get('/', function (Request $request, Response $response) {
-  echo 'Trailburning® Platform GAME API';
+  echo 'Trailburning® Platform GAME API<br/>';
 
-  echo $server . '<br/>';
-  echo $username . '<br/>';
-  echo $password . '<br/>';
-  echo $database . '<br/>';
+  echo 's:' . $GLOBALS['db_server'] . '<br/>';
+  echo 'u:' . $GLOBALS['db_user'] . '<br/>';
+  echo 'p:' . $GLOBALS['db_pass'] . '<br/>';
+  echo 'db:' . $GLOBALS['db_name'] . '<br/>';
 });
 
 $app->get('/worker', function (Request $request, Response $response) {
