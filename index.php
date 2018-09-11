@@ -8,6 +8,7 @@ header('Content-Type: application/json');
 
 define('MR_DOMAIN', 'http://mountainrush.co.uk/');
 define('MR_SECURE_DOMAIN', 'https://mountainrush.co.uk/');
+define('GAME_API_DOMAIN', 'http://gameapi.trailburning.com/');
 
 define('CLIENT_ID', 15175);
 define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
@@ -77,7 +78,7 @@ $app->get('/strava/subscribe', function (Request $request, Response $response) {
     'client_secret' => CLIENT_SECRET,
     'object_type' => 'activity',
     'aspect_type' => 'create',
-    'callback_url' => MR_DOMAIN . 'tb-game-api/strava/callback',
+    'callback_url' => GAME_API_DOMAIN . 'strava/callback',
     'verify_token' => 'STRAVA'
   );
 
