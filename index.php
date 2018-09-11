@@ -59,6 +59,35 @@ $app->get('/', function (Request $request, Response $response) {
   echo 'Trailburning® Platform GAME API<br/>';
 });
 
+$app->get('/test', function (Request $request, Response $response) {
+
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, "https://www.howsmyssl.com/a/check");
+curl_setopt($ch, CURLOPT_SSLVERSION, 6);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$response = curl_exec($ch);
+curl_close($ch);
+$tlsVer = json_decode($response, true);
+echo "<h1>Your TSL version is: <u>" . ( $tlsVer['tls_version'] ? $tlsVer['tls_version'] : 'no TLS support' ) . "</u></h1>";
+
+
+  $url = "https://api.raisenow.com/epayment/api/amp-v6a6sz/transactions/search?sort[0][field_name]=created&sort[0][order]=desc&displayed_fields=stored_my_test_parameter,stored_customer_firstname,stored_customer_lastname,stored_customer_additional_message,amount,currency_identifier&filters[0][field_name]=stored_my_test_parameter&filters[0][type]=fulltext&filters[0][value]=MountainGorillas2";
+   
+  $ch = curl_init();  
+  curl_setopt($ch, CURLOPT_SSLVERSION, 6); //Integer NOT string TLS v1.2
+  curl_setopt($ch, CURLOPT_URL, $url);   
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_USERPWD, "matt@trailburning.com:M0r3I5B3tt3r!");
+  curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+
+  $output = curl_exec($ch);
+  $info = curl_getinfo($ch);
+  curl_close($ch);
+
+  echo $output;
+
+});
+
 $app->get('/worker', function (Request $request, Response $response) {
   // process game activity
   $jsonResponse = processActivity();
