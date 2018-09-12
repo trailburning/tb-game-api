@@ -4,6 +4,10 @@ error_reporting(E_ERROR);
 ini_set('display_errors', 1);
 
 header('Access-Control-Allow-Origin: *');
+header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+header('Access-Control-Max-Age: 1000');
+header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token , Authorization');
 header('Content-Type: application/json');
 
 define('MR_DOMAIN', 'http://mountainrush.co.uk/');
@@ -45,7 +49,6 @@ $GLOBALS['db_user'] = 'root';
 $GLOBALS['db_pass'] = 'root';
 $GLOBALS['db_name'] = 'tb_game';
 
-//echo 't:' . getenv("CLEARDB_DATABASE_URL") . '<br/>';
 if (getenv("CLEARDB_DATABASE_URL")) {
   $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
 
@@ -60,22 +63,12 @@ $app->get('/', function (Request $request, Response $response) {
 });
 
 $app->get('/test', function (Request $request, Response $response) {
-
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, "https://www.howsmyssl.com/a/check");
-curl_setopt($ch, CURLOPT_SSLVERSION, 6);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-$response = curl_exec($ch);
-curl_close($ch);
-$tlsVer = json_decode($response, true);
-echo "<h1>Your TSL version is: <u>" . ( $tlsVer['tls_version'] ? $tlsVer['tls_version'] : 'no TLS support' ) . "</u></h1>";
-
-
+  // test RaiseNow API
   $url = "https://api.raisenow.com/epayment/api/amp-v6a6sz/transactions/search?sort[0][field_name]=created&sort[0][order]=desc&displayed_fields=stored_my_test_parameter,stored_customer_firstname,stored_customer_lastname,stored_customer_additional_message,amount,currency_identifier&filters[0][field_name]=stored_my_test_parameter&filters[0][type]=fulltext&filters[0][value]=MountainGorillas2";
    
   $ch = curl_init();  
-  curl_setopt($ch, CURLOPT_SSLVERSION, 6); //Integer NOT string TLS v1.2
-  curl_setopt($ch, CURLOPT_URL, $url);   
+  curl_setopt($ch, CURLOPT_URL, $url);  
+  curl_setopt($ch, CURLOPT_SSLVERSION, 1); 
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
   curl_setopt($ch, CURLOPT_USERPWD, "matt@trailburning.com:M0r3I5B3tt3r!");
   curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
@@ -85,7 +78,6 @@ echo "<h1>Your TSL version is: <u>" . ( $tlsVer['tls_version'] ? $tlsVer['tls_ve
   curl_close($ch);
 
   echo $output;
-
 });
 
 $app->get('/worker', function (Request $request, Response $response) {
