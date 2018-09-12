@@ -17,6 +17,20 @@ require_once('vendor/autoload.php');
 const DEBUG = false;
 //const DEBUG = true;
 
+$GLOBALS['db_server'] = 'localhost';
+$GLOBALS['db_user'] = 'root';
+$GLOBALS['db_pass'] = 'root';
+$GLOBALS['db_name'] = 'tb_game';
+
+if (getenv("CLEARDB_DATABASE_URL")) {
+  $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+
+  $GLOBALS['db_server'] = $url["host"];
+  $GLOBALS['db_user'] = $url["user"];
+  $GLOBALS['db_pass'] = $url["pass"];
+  $GLOBALS['db_name'] = substr($url["path"], 1);
+}
+
 /*
 $game = array(
   'id' => 'yKerNk4mwM',
@@ -103,7 +117,7 @@ if (count($jsonGamesResponse)) {
             if ($player['id'] == $activePlayer['id']) {
               $jsonEmail = $game['email_activity'];
             }
-//            sendActivityEmail($jsonEmail, $game, $player, $activePlayer, $activity);
+            sendActivityEmail($jsonEmail, $game, $player, $activePlayer, $activity);
           }
 
           // welcome email
@@ -112,7 +126,7 @@ if (count($jsonGamesResponse)) {
 
           // inactivity email
           $jsonEmail = $game['email_inactivity'];
-//          sendInactivityEmail($jsonEmail, $game, $activePlayer);
+          sendInactivityEmail($jsonEmail, $game, $activePlayer);
 
           // summit email
           $jsonEmail = $game['email_summit_broadcast'];
