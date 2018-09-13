@@ -63,6 +63,9 @@ $app->get('/', function (Request $request, Response $response) {
 
 $app->get('/test', function (Request $request, Response $response) {
   // test RaiseNow API
+
+// curl -u matt@trailburning.com:M0r3I5B3tt3r! -g "https://api.raisenow.com/epayment/api/amp-v6a6sz/transactions/search?sort[0][field_name]=created&sort[0][order]=desc&displayed_fields=stored_anonymous_donation,stored_customer_firstname,stored_customer_lastname,stored_customer_additional_message,amount,currency_identifier&filters[0][field_name]=stored_TBPlayerID&filters[0][type]=fulltext&filters[0][value]=b31r7RZ7Xo&filters[1][field_name]=stored_TBGameID&filters[1][type]=fulltext&filters[1][value]=j6YXVaMrxW"
+
   $url = "https://api.raisenow.com/epayment/api/amp-v6a6sz/transactions/search?sort[0][field_name]=created&sort[0][order]=desc&displayed_fields=stored_my_test_parameter,stored_customer_firstname,stored_customer_lastname,stored_customer_additional_message,amount,currency_identifier&filters[0][field_name]=stored_my_test_parameter&filters[0][type]=fulltext&filters[0][value]=MountainGorillas2";
    
   $ch = curl_init();  
@@ -801,7 +804,7 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/page/{pageShortNa
   // update fundraising info in DB
   if ($jsonResponse) {
     // always set CharityOptIn to false as JustGiving maintain this internally
-    setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $jsonResponse->fundraisingTarget, $jsonResponse->totalRaisedOnline, $jsonResponse->currencyCode, false);
+    setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $jsonResponse->fundraisingTarget, $jsonResponse->totalRaisedOnline, $jsonResponse->currencyCode, 0);
   }
 
   return $response->withJSON($jsonResponse);

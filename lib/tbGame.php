@@ -316,7 +316,7 @@ function getGamesByPlayerFromDB($playerID) {
   $dtNow = new DateTime("now");
 
   $db = connect_db();
-  $result = $db->query('SELECT gamePlayers.game, gamePlayers.fundraising_pageID, gamePlayers.fundraising_page, games.ownerPlayerID, games.type, games.game_start, games.game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.multiplayer, campaigns.name as campaign_name, campaigns.fundraising_page as campaign_fundraising_page FROM gamePlayers join games on gamePlayers.game = games.id join gameLevels on games.levelID = gameLevels.id join campaigns on games.campaignID = campaigns.id where player = ' . $playerID . ' order by games.game_end desc');
+  $result = $db->query('SELECT gamePlayers.game, gamePlayers.fundraising_pageID, gamePlayers.fundraising_page, gamePlayers.fundraising_goal, games.ownerPlayerID, games.type, games.game_start, games.game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.multiplayer, campaigns.name as campaign_name, campaigns.fundraising_page as campaign_fundraising_page FROM gamePlayers join games on gamePlayers.game = games.id join gameLevels on games.levelID = gameLevels.id join campaigns on games.campaignID = campaigns.id where player = ' . $playerID . ' order by games.game_end desc');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
