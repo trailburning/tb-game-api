@@ -1,6 +1,5 @@
 <?php
 error_reporting(E_ERROR);
-//error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 header('Access-Control-Allow-Origin: *');
@@ -331,7 +330,9 @@ $app->post('/game/{gameHashID}/player/{playerHashID}/marker', function (Request 
 
   setPlayerGameLatestMarkerInDB($hashids->decode($hashGameID)[0], $hashids->decode($hashPlayerID)[0], $data['markerID']);
 
-  return $response->withJSON();
+  $jsonResponse = array();
+
+  return $response->withJSON($jsonResponse);
 });
 
 $app->post('/game/{gameHashID}/invite', function (Request $request, Response $response) {
@@ -634,6 +635,50 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/activity/{activityID}/commen
     return $response->withJSON($jsonResponse);
 });
 
+/* **************************************************************************** */
+/* Start Support RaiseNow */
+/* **************************************************************************** */
+$app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{playerHashID}/details', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashCampaignID = $request->getAttribute('campaignHashID');
+  $hashGameID = $request->getAttribute('gameHashID');
+  $hashPlayerID = $request->getAttribute('playerHashID');
+
+  $campaignID = $hashids->decode($hashCampaignID)[0];
+  $gameID = $hashids->decode($hashGameID)[0];
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
+  $json = $request->getBody();
+  $data = json_decode($json, true); 
+
+  // get campaign
+  $jsonCampaign = getCampaignFromDB($campaignID);
+  if (count($jsonCampaign)) {
+    // get player game details
+    $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
+    if (count($gamePlayerResults)) {
+      // store fundraising details
+      setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $data['targetAmount'], 0, $data['currencyCode'], $data['charityOptIn']);
+
+      $jsonResponse = null;
+
+      return $response->withJSON($jsonResponse);
+    }
+    else {
+      $jsonResponse = array('error' => array('id' => 'UserDoesNotExist'));
+
+      return $response->withJSON($jsonResponse);
+    }
+  }
+});
+/* **************************************************************************** */
+/* End Support RaiseNow */
+/* **************************************************************************** */
+
+/* **************************************************************************** */
+/* Start Support JustGiving */
+/* **************************************************************************** */
 $app->get('/fundraiser/user/{email}/{password}', function (Request $request, Response $response) {
   $bExists = false;
 
@@ -755,7 +800,8 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/page/{pageShortNa
 
   // update fundraising info in DB
   if ($jsonResponse) {
-    setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $jsonResponse->fundraisingTarget, $jsonResponse->totalRaisedOnline, $jsonResponse->currencyCode);
+    // always set CharityOptIn to false as JustGiving maintain this internally
+    setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $jsonResponse->fundraisingTarget, $jsonResponse->totalRaisedOnline, $jsonResponse->currencyCode, false);
   }
 
   return $response->withJSON($jsonResponse);
@@ -766,6 +812,9 @@ $app->get('/fundraiser/page/{pageShortName}/donations', function (Request $reque
 
   return $response->withJSON($jsonResponse);
 });
+/* **************************************************************************** */
+/* End Support JustGiving */
+/* **************************************************************************** */
 
 $app->get('/fundraiser/campaign/{campaignHashID}/leaderboard/{numPlayers}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);

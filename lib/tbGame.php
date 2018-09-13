@@ -135,12 +135,12 @@ function setPlayerGameActivityTotalsInDB($gameID, $playerID, $ascent, $distance)
   $db->query('UPDATE gamePlayers SET ascent = ' . $ascent . ', distance = ' . $distance . ' where game = ' . $gameID . ' and player = ' . $playerID);
 }
 
-function setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $fundraisingGoal, $fundraisingRaised, $fundraisingCurrency) {
+function setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $fundraisingGoal, $fundraisingRaised, $fundraisingCurrency, $fundraisingCharityOptIn) {
   require_once 'lib/mysql.php';
 
   // only set once
   $db = connect_db();
-  $db->query('UPDATE gamePlayers SET fundraising_goal = ' . $fundraisingGoal . ', fundraising_raised = ' . $fundraisingRaised . ', fundraising_currency = "' . $fundraisingCurrency . '" where game = ' . $gameID . ' and player = ' . $playerID);
+  $db->query('UPDATE gamePlayers SET fundraising_goal = ' . $fundraisingGoal . ', fundraising_raised = ' . $fundraisingRaised . ', fundraising_currency = "' . $fundraisingCurrency . '", fundraising_charityOptIn = ' . $fundraisingCharityOptIn . ' where game = ' . $gameID . ' and player = ' . $playerID);
 }
 
 function setPlayerGameDistanceCompleteInDB($gameID, $playerID, $distanceCompleteActivityDate) {
