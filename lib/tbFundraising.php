@@ -14,6 +14,9 @@ define('FUNDRAISING_PASSWORD', 'helloworld');
 function getFundraisingDetails($hashGameID, $hashPlayerID) {
   $url = 'https://api.raisenow.com/epayment/api/amp-v6a6sz/transactions/search?sort[0][field_name]=created&sort[0][order]=desc&displayed_fields=stored_anonymous_donation,stored_customer_firstname,stored_customer_lastname,stored_customer_additional_message,amount,currency_identifier&filters[0][field_name]=stored_TBPlayerID&filters[0][type]=fulltext&filters[0][value]=' . $hashPlayerID . '&filters[1][field_name]=stored_TBGameID&filters[1][type]=fulltext&filters[1][value]='. $hashGameID;
    
+
+//  $url = 'https://tb-game-api-staging.herokuapp.com/game/31r7l7A47X/player/gxAZjLl4XR/progress';
+
   $ch = curl_init();  
   curl_setopt($ch, CURLOPT_URL, $url);  
   curl_setopt($ch, CURLOPT_SSLVERSION, 1); 
@@ -26,7 +29,7 @@ function getFundraisingDetails($hashGameID, $hashPlayerID) {
 
   curl_close($ch);
 
-  $jsonResponse['result']['fundraisingTarget'] = '100';
+  $jsonResponse['fundraisingTarget'] = '100';
   
   return $jsonResponse;
 }
