@@ -26,7 +26,7 @@ function getFundraisingDetails($hashGameID, $hashPlayerID) {
 
   curl_close($ch);
 
-//  $jsonResponse['fundraisingTarget'] = '100';
+  $jsonResponse['result']['fundraisingTarget'] = '100';
   
   return $jsonResponse;
 }
