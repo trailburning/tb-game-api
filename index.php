@@ -63,12 +63,13 @@ $app->get('/', function (Request $request, Response $response) {
 
 $app->get('/worker', function (Request $request, Response $response) {
   // process game activity
-  $jsonResponse = processActivity();
+  $jsonActivity = processActivity();
 
-  $gameJSON = $response->withJSON($jsonResponse);
+  // don't present full json as it's very large, just create something small!
+  $jsonResponse = array('active_games' => count($jsonActivity[0]));
 
   if (!DEBUG) {
-    return $gameJSON;
+    return $response->withJSON($jsonResponse);
   }
 });
 
