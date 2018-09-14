@@ -22,11 +22,11 @@ function getFundraisingDetails($hashGameID, $hashPlayerID) {
   curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 
   $result = curl_exec($ch);
-  curl_close($ch);
-
   $jsonResponse = json_decode($result);  
 
-  $jsonResponse['fundraisingTarget'] = '100';
+  curl_close($ch);
+
+//  $jsonResponse['fundraisingTarget'] = '100';
   
   return $jsonResponse;
 }
