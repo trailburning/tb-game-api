@@ -665,24 +665,34 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/details', functio
   $playerID = $hashids->decode($hashPlayerID)[0];
 
   $jsonResponse = getFundraisingDetails($hashGameID, $hashPlayerID);
-/*
 
   // update fundraising info in DB
   if ($jsonResponse) {
-    // always set CharityOptIn to false as JustGiving maintain this internally
-    setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $jsonResponse->fundraisingTarget, $jsonResponse->totalRaisedOnline, $jsonResponse->currencyCode, 0);
+    setPlayerGameFundraisingTotalsInDB($gameID, $playerID, $jsonResponse->totalRaisedOnline);
+
+    $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
+    if (count($gamePlayerResults)) {
+      $jsonResponse->fundraisingTarget = $gamePlayerResults[0]['fundraising_goal'];
+      $jsonResponse->currencySymbol = 'CHF';
+      $jsonResponse->currencyCode = $gamePlayerResults[0]['fundraising_currency'];
+    }
   }
 
-*/  
   return $response->withJSON($jsonResponse);
 });
 
 $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/donations', function (Request $request, Response $response) {
-/*  
-  $jsonResponse = getFundraisingPageDonations($request->getAttribute('pageShortName'));
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashGameID = $request->getAttribute('gameHashID');
+  $hashPlayerID = $request->getAttribute('playerHashID');
+
+  $gameID = $hashids->decode($hashGameID)[0];
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
+  $jsonResponse = getFundraisingDonations($hashGameID, $hashPlayerID);
 
   return $response->withJSON($jsonResponse);
-*/  
 });
 /* **************************************************************************** */
 /* End Support RaiseNow */
