@@ -61,27 +61,6 @@ $app->get('/', function (Request $request, Response $response) {
   echo 'Trailburning® Platform GAME API<br/>';
 });
 
-$app->get('/test', function (Request $request, Response $response) {
-  // test RaiseNow API
-
-// curl -u matt@trailburning.com:M0r3I5B3tt3r! -g "https://api.raisenow.com/epayment/api/amp-v6a6sz/transactions/search?sort[0][field_name]=created&sort[0][order]=desc&displayed_fields=stored_anonymous_donation,stored_customer_firstname,stored_customer_lastname,stored_customer_additional_message,amount,currency_identifier&filters[0][field_name]=stored_TBPlayerID&filters[0][type]=fulltext&filters[0][value]=b31r7RZ7Xo&filters[1][field_name]=stored_TBGameID&filters[1][type]=fulltext&filters[1][value]=j6YXVaMrxW"
-
-  $url = "https://api.raisenow.com/epayment/api/amp-v6a6sz/transactions/search?sort[0][field_name]=created&sort[0][order]=desc&displayed_fields=stored_my_test_parameter,stored_customer_firstname,stored_customer_lastname,stored_customer_additional_message,amount,currency_identifier&filters[0][field_name]=stored_my_test_parameter&filters[0][type]=fulltext&filters[0][value]=MountainGorillas2";
-   
-  $ch = curl_init();  
-  curl_setopt($ch, CURLOPT_URL, $url);  
-  curl_setopt($ch, CURLOPT_SSLVERSION, 1); 
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($ch, CURLOPT_USERPWD, "matt@trailburning.com:M0r3I5B3tt3r!");
-  curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-
-  $output = curl_exec($ch);
-  $info = curl_getinfo($ch);
-  curl_close($ch);
-
-  echo $output;
-});
-
 $app->get('/worker', function (Request $request, Response $response) {
   // process game activity
   $jsonResponse = processActivity();
@@ -674,6 +653,46 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
       return $response->withJSON($jsonResponse);
     }
   }
+});
+
+$app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/details', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashGameID = $request->getAttribute('gameHashID');
+  $hashPlayerID = $request->getAttribute('playerHashID');
+
+  $gameID = $hashids->decode($hashGameID)[0];
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
+  $jsonResponse = getFundraisingDetails($hashGameID, $hashPlayerID);
+
+  // update fundraising info in DB
+  if ($jsonResponse) {
+    setPlayerGameFundraisingTotalsInDB($gameID, $playerID, $jsonResponse->totalRaisedOnline);
+
+    $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
+    if (count($gamePlayerResults)) {
+      $jsonResponse->fundraisingTarget = $gamePlayerResults[0]['fundraising_goal'];
+      $jsonResponse->currencySymbol = 'CHF';
+      $jsonResponse->currencyCode = $gamePlayerResults[0]['fundraising_currency'];
+    }
+  }
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/donations', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashGameID = $request->getAttribute('gameHashID');
+  $hashPlayerID = $request->getAttribute('playerHashID');
+
+  $gameID = $hashids->decode($hashGameID)[0];
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
+  $jsonResponse = getFundraisingDonations($hashGameID, $hashPlayerID);
+
+  return $response->withJSON($jsonResponse);
 });
 /* **************************************************************************** */
 /* End Support RaiseNow */
