@@ -150,6 +150,8 @@ function processActivity() {
           processGamePlayer($game, $gamePlayer);
         }
       }
+      // a little sleep
+      sleep(0.1);
     }
   }
   return $jsonGamesResponse;
