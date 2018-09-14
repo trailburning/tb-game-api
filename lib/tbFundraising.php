@@ -8,6 +8,31 @@ define('FUNDRAISING_API_KEY', 'aca65145');
 define('FUNDRAISING_EMAIL', 'support@trailburning.com');
 define('FUNDRAISING_PASSWORD', 'helloworld');
 
+/* **************************************************************************** */
+/* Start Support RaiseNow */
+/* **************************************************************************** */
+function getFundraisingDetails($gameID, $playerID) {
+  $url = 'https://api.raisenow.com/epayment/api/amp-v6a6sz/transactions/search?sort[0][field_name]=created&sort[0][order]=desc&displayed_fields=stored_anonymous_donation,stored_customer_firstname,stored_customer_lastname,stored_customer_additional_message,amount,currency_identifier&filters[0][field_name]=stored_TBPlayerID&filters[0][type]=fulltext&filters[0][value]=' . $playerID . '&filters[1][field_name]=stored_TBGameID&filters[1][type]=fulltext&filters[1][value]='. $gameID;
+   
+  $ch = curl_init();  
+  curl_setopt($ch, CURLOPT_URL, $url);  
+  curl_setopt($ch, CURLOPT_SSLVERSION, 1); 
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_USERPWD, "matt@trailburning.com:M0r3I5B3tt3r!");
+  curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+
+  $result = curl_exec($ch);
+  curl_close($ch);
+
+  return json_decode($result);  
+}
+/* **************************************************************************** */
+/* End Support RaiseNow */
+/* **************************************************************************** */
+
+/* **************************************************************************** */
+/* Start Support JustGiving */
+/* **************************************************************************** */
 function getFundraisingPlayer($fundraisingPlayerEmail, $fundraisingPlayerPassword) {
   $client = new JustGivingClient(FUNDRAISING_API_URL, FUNDRAISING_API_KEY, 1, $fundraisingPlayerEmail, $fundraisingPlayerPassword);
   $response = $client->Account->AccountDetails();
@@ -110,6 +135,9 @@ function getFundraisingEventLeaderboard($eventId) {
 
   return $response;
 }
+/* **************************************************************************** */
+/* End Support JustGiving */
+/* **************************************************************************** */
 
 function getFundraisingCampaignLeaderboard($campaignID, $numPlayers) {
   require_once 'lib/mysql.php';
