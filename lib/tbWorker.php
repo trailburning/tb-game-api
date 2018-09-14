@@ -144,14 +144,12 @@ function processActivity() {
       $gameID = $hashids->decode($game['id'])[0];
       // get game players
       $jsonGamePlayersResponse = getGamePlayersFromDB($gameID);
-/*    
       if (count($jsonGamePlayersResponse)) {
         // go through all active game players
         foreach ($jsonGamePlayersResponse as $gamePlayer) {
           processGamePlayer($game, $gamePlayer);
         }
       }
-*/    
     }
   }
   return $jsonGamesResponse;

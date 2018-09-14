@@ -36,8 +36,8 @@ require_once 'lib/mysql.php';
 
 $app = new \Slim\App;
 
-const DEBUG = false;
-//const DEBUG = true;
+//const DEBUG = false;
+const DEBUG = true;
 
 const GAME_PLAYER_PLAYING_STATE = 0;
 const GAME_PLAYER_PLAYING_NOT_ACTIVE_STATE = 1;
