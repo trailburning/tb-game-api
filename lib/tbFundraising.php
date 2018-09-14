@@ -24,7 +24,11 @@ function getFundraisingDetails($hashGameID, $hashPlayerID) {
   $result = curl_exec($ch);
   curl_close($ch);
 
-  return json_decode($result);  
+  $jsonResponse = json_decode($result);  
+
+  $jsonResponse[0]['fundraisingTarget'] = '100';
+  
+  return $jsonResponse;
 }
 /* **************************************************************************** */
 /* End Support RaiseNow */
