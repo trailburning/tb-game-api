@@ -139,20 +139,20 @@ function processActivity() {
   // get all games
   $jsonGamesResponse = getActiveGamesFromDB();
   if (count($jsonGamesResponse)) {
-/*    
     foreach ($jsonGamesResponse as $game) {
       if (DEBUG) echo '<br/>Game:' . $game['id'] . '<br/>';
       $gameID = $hashids->decode($game['id'])[0];
       // get game players
       $jsonGamePlayersResponse = getGamePlayersFromDB($gameID);
+/*    
       if (count($jsonGamePlayersResponse)) {
         // go through all active game players
         foreach ($jsonGamePlayersResponse as $gamePlayer) {
           processGamePlayer($game, $gamePlayer);
         }
       }
-    }
 */    
+    }
   }
   return $jsonGamesResponse;
 }
