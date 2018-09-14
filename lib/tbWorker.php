@@ -1,14 +1,10 @@
 <?php
 const DAYS_INACTIVE = 7;
 
-function processGamePlayer($game, $gamePlayer) {
-  $hashids = new Hashids\Hashids('mountainrush', 10);
-
+function processGamePlayer($gameID, $game, $gamePlayerID, $gamePlayer) {
   $dtNow = date('Y-m-d\TH:i:s.000\Z', time());
   $dtNowDate = new DateTime($dtNow);
 
-  $gameID = $hashids->decode($game['id'])[0];
-  $gamePlayerID = $hashids->decode($gamePlayer['id'])[0]; 
   if (DEBUG) echo 'Player:'. $gamePlayerID . ' : ' .  $gamePlayer['firstname'] . ' ' . $gamePlayer['lastname'] . '<br/>';
 
   // does player have a new activity?
@@ -139,7 +135,7 @@ function processActivity() {
   // get all games
   $jsonGamesResponse = getActiveGamesFromDB();
   if (count($jsonGamesResponse)) {
-    foreach ($jsonGamesResponse as $game) {
+    foreach ($jsonGamesResponse as $game) {      
       if (DEBUG) echo '<br/>Game:' . $game['id'] . '<br/>';
       $gameID = $hashids->decode($game['id'])[0];
       // get game players
@@ -147,7 +143,8 @@ function processActivity() {
       if (count($jsonGamePlayersResponse)) {
         // go through all active game players
         foreach ($jsonGamePlayersResponse as $gamePlayer) {
-          processGamePlayer($game, $gamePlayer);
+          $gamePlayerID = $hashids->decode($gamePlayer['id'])[0]; 
+          processGamePlayer($gameID, $game, $gamePlayerID, $gamePlayer);
         }
       }
       // a little sleep
