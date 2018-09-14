@@ -74,7 +74,7 @@ function replaceTags($strText, $game, $player, $activePlayer , $activity) {
 }
 
 function sendEmail($strEmailTemplate, $strSubject, $strToEmail, $strToName, $strImage, $strMsgTitle, $strMsgContent, $strPreferences) {
-
+return;
   if (DEBUG) {
     echo 'sendEmail:' . $strToEmail . ' : SEND OFF<br/>';
     return;
