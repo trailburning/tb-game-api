@@ -23,13 +23,23 @@ function getFundraisingDetails($hashGameID, $hashPlayerID) {
 
   $result = curl_exec($ch);
 
-//  $result = '{"result": {} }';
+//  $result = '{"result": { "transactions": [ { "amount": 100 }, { "amount": 200 } ] } }';
 
   $jsonResponse = json_decode($result);  
 
   curl_close($ch);
 
+  // get total raised
+  $totalRaisedOnline = 0;
+  foreach ($jsonResponse->result->transactions as $transaction) {
+    $totalRaisedOnline += $transaction->amount;
+  }
+  $totalRaisedOnline = $totalRaisedOnline / 100;
+
   $jsonResponse->fundraisingTarget = '100';
+  $jsonResponse->totalRaisedOnline = "$totalRaisedOnline";
+  $jsonResponse->currencySymbol = '£';
+  $jsonResponse->currencyCode = 'GBP';
   
   return $jsonResponse;
 }
