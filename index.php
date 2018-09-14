@@ -664,7 +664,7 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/details', functio
   $gameID = $hashids->decode($hashGameID)[0];
   $playerID = $hashids->decode($hashPlayerID)[0];
 
-  $jsonResponse = getFundraisingDetails($gameID, $playerID);
+  $jsonResponse = getFundraisingDetails($hashGameID, $hashPlayerID);
 /*
 
   // update fundraising info in DB
