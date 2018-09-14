@@ -66,7 +66,7 @@ $app->get('/worker', function (Request $request, Response $response) {
   $jsonActivity = processActivity();
 
   // don't present full json as it's very large, just create something small!
-  $jsonResponse = array('active_games' => count($jsonActivity[0]));
+  $jsonResponse = array('active_games' => count($jsonActivity));
 
   if (!DEBUG) {
     return $response->withJSON($jsonResponse);
