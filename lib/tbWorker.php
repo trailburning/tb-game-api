@@ -70,7 +70,7 @@ function processGamePlayer($gameID, $game, $gamePlayerID, $gamePlayer) {
   else {
     // is player still playing?
     if ($gamePlayer['state'] == GAME_PLAYER_PLAYING_STATE) {
-      if (DEBUG) echo 'check last activty<br/>';
+      if (DEBUG) echo 'check last activity<br/>';
       $dtLastActivityDate = new DateTime($gamePlayer['last_activity']);
       if (DEBUG) echo 'now:' . $dtNowDate->format('Y-m-d\TH:i:s.000\Z') . '<br/>';
       if (DEBUG) echo 'last activity:' . $dtLastActivityDate->format('Y-m-d\TH:i:s.000\Z') . '<br/>';
