@@ -576,6 +576,9 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/progress', function (Request
 
   // get player game details
   $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
+  if (count($gamePlayerResults)) {
+    $gamePlayerResults[0]['fundraising_currency_symbol'] = getCurrencySymbol($gamePlayerResults[0]['fundraising_currency']);
+  }
 
   $jsonResponse = $gamePlayerResults;
 
