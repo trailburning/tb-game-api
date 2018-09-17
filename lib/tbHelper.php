@@ -37,3 +37,22 @@ function getPlayerGameProgress($playerID, $gameID) {
   }
   return $arrPlayerActivities;
 }
+
+function getCurrencySymbol($currencyCode) {
+  $currencySymbol = '$';
+
+  switch ($currencyCode) {
+    case 'GBP':
+      $currencySymbol = '£';
+      break;
+
+    case 'EUR':
+      $currencySymbol = '€';
+      break;
+
+    case 'CHF':
+      $currencySymbol = 'CHF';
+      break;
+  }
+  return $currencySymbol;
+}
