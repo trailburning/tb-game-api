@@ -433,9 +433,13 @@ $app->get('/campaign/{campaignHashID}', function (Request $request, Response $re
   $hashCampaignID = $request->getAttribute('campaignHashID');
   $campaignID = $hashids->decode($hashCampaignID)[0];
 
-  $jsonResponse = getCampaignFromDB($campaignID);
+  if ($campaignID) {
+    $jsonResponse = getCampaignFromDB($campaignID);
 
-  return $response->withJSON($jsonResponse);
+    return $response->withJSON($jsonResponse);
+  }
+
+  return null;
 });
 
 $app->get('/campaign/{campaignHashID}/games', function (Request $request, Response $response) {
