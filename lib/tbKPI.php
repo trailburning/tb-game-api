@@ -23,7 +23,7 @@ function getCampaignKPITotalFundraisingRaisedFromDB($campaignID) {
   return getResultsFromDB($strSQL);
 }
 
-function getCampaignKPITotalActiveCampaignsFromDB($campaignID) {
+function getCampaignKPITotalActiveGamesFromDB($campaignID) {
   // use UTC date
   date_default_timezone_set("UTC");
   $dtNow = new DateTime("now");
@@ -36,7 +36,7 @@ function getCampaignKPITotalActiveCampaignsFromDB($campaignID) {
   return getResultsFromDB($strSQL);
 }
 
-function getCampaignKPITotalPendingCampaignsFromDB($campaignID) {
+function getCampaignKPITotalPendingGamesFromDB($campaignID) {
   // use UTC date
   date_default_timezone_set("UTC");
   $dtNow = new DateTime("now");

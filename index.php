@@ -902,18 +902,18 @@ $app->get('/campaign/{campaignHashID}/kpi/fundraising', function (Request $reque
   return $response->withJSON($jsonResponse);
 });
 
-$app->get('/campaign/{campaignHashID}/kpi/campaign', function (Request $request, Response $response) {
+$app->get('/campaign/{campaignHashID}/kpi/games', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $campaignID = $hashids->decode($request->getAttribute('campaignHashID'))[0];
 
   $jsonResponse = array();  
 
-  $jsonCampaignResponse = getCampaignKPITotalActiveCampaignsFromDB($campaignID);
+  $jsonCampaignResponse = getCampaignKPITotalActiveGamesFromDB($campaignID);
   $jsonResponse[0]['key'] = 'Active';
   $jsonResponse[0]['value'] = $jsonCampaignResponse[0]['total'];
 
-  $jsonCampaignResponse = getCampaignKPITotalPendingCampaignsFromDB($campaignID);
+  $jsonCampaignResponse = getCampaignKPITotalPendingGamesFromDB($campaignID);
   $jsonResponse[1]['key'] = 'Pending';
   $jsonResponse[1]['value'] = $jsonCampaignResponse[0]['total'];
 
