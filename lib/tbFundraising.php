@@ -31,8 +31,6 @@ function getFundraisingDetails($hashGameID, $hashPlayerID) {
 
   $result = curl_exec($ch);
 
-//  $result = '{"result": { "transactions": [ { "amount": 1000 }, { "amount": 2000 } ] } }';
-
   $jsonResponse = json_decode($result);  
 
   curl_close($ch);

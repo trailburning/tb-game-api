@@ -507,6 +507,9 @@ $app->get('/campaign/{campaignHashID}/summary', function (Request $request, Resp
   $campaignID = $hashids->decode($request->getAttribute('campaignHashID'))[0];
 
   $jsonResponse = getCampaignSummaryFromDB($campaignID);
+  if (count($jsonResponse)) {
+    $jsonResponse[0]['fundraising_currency_symbol'] = getCurrencySymbol($jsonResponse[0]['fundraising_currency']);
+  }
 
   return $response->withJSON($jsonResponse);
 });
