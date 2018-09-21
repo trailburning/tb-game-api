@@ -1,12 +1,7 @@
 <?php
-function connect_db() {
-  $connection = new mysqli($GLOBALS['db_server'], $GLOBALS['db_user'], $GLOBALS['db_pass'], $GLOBALS['db_name']);
-
-  return $connection;
-}
-
 function getResultsFromDB($strSQL) {
-  $db = connect_db();
+  $db = mysqliSingleton::init();
+
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;

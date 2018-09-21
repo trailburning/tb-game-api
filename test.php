@@ -13,6 +13,7 @@ include "lib/tbPlayer.php";
 include "lib/tbPlayerActivities.php";
 
 require_once('vendor/autoload.php');
+require_once 'lib/mysqliSingleton.php';
 
 const DEBUG = false;
 //const DEBUG = true;

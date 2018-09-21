@@ -32,6 +32,7 @@ include "lib/tbKPI.php";
 include "lib/tbHelper.php";
 
 require 'vendor/autoload.php';
+require_once 'lib/mysqliSingleton.php';
 require_once 'lib/mysql.php';
 
 $app = new \Slim\App;
