@@ -19,7 +19,7 @@ function addGameToDB($campaignID, $ownerPlayerID, $season, $type, $gameStart, $g
   date_default_timezone_set("UTC");
   $dtNow = date('Y-m-d H:i:s', time());
 
-  $db = mysqliSingleton::init();
+  $db = connect_db();
   if ($db->query('INSERT INTO games (created, campaignID, ownerPlayerID, season, type, game_start, game_end, levelID) VALUES ("' . $dtNow . '", ' . $campaignID . ', ' . $ownerPlayerID . ', ' . $season . ', "' . $type . '", "' . $gameStart . '", "' . $gameEnd . '", ' . $levelID . ')') === TRUE) {
     $lastInsertID = $db->insert_id;
 
