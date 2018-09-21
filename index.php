@@ -436,7 +436,9 @@ $app->get('/campaign/{campaignHashID}', function (Request $request, Response $re
 
   if ($campaignID) {
     $jsonResponse = getCampaignFromDB($campaignID);
-
+    if (count($jsonResponse)) {
+      $jsonResponse[0]['fundraising_currency_symbol'] = getCurrencySymbol($jsonResponse[0]['fundraising_currency']);
+    }
     return $response->withJSON($jsonResponse);
   }
 
@@ -685,8 +687,8 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/details', functio
     $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
     if (count($gamePlayerResults)) {
       $jsonResponse->fundraisingTarget = $gamePlayerResults[0]['fundraising_goal'];
-      $jsonResponse->currencySymbol = 'CHF';
       $jsonResponse->currencyCode = $gamePlayerResults[0]['fundraising_currency'];
+      $jsonResponse->currencySymbol = getCurrencySymbol($gamePlayerResults[0]['fundraising_currency']);
     }
   }
 
