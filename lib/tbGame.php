@@ -19,7 +19,7 @@ function addGameToDB($campaignID, $ownerPlayerID, $season, $type, $gameStart, $g
   date_default_timezone_set("UTC");
   $dtNow = date('Y-m-d H:i:s', time());
 
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   if ($db->query('INSERT INTO games (created, campaignID, ownerPlayerID, season, type, game_start, game_end, levelID) VALUES ("' . $dtNow . '", ' . $campaignID . ', ' . $ownerPlayerID . ', ' . $season . ', "' . $type . '", "' . $gameStart . '", "' . $gameEnd . '", ' . $levelID . ')') === TRUE) {
     $lastInsertID = $db->insert_id;
 
@@ -37,7 +37,7 @@ function addGameInviteToDB($gameID, $playerEmail) {
   date_default_timezone_set("UTC");
   $dtNow = date('Y-m-d H:i:s', time());
 
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $db->query('INSERT INTO gameInvitations (created, gameID, playerEmail) VALUES ("' . $dtNow . '", ' . $gameID . ', "' . $playerEmail . '")');
 
   return $ret;
@@ -49,7 +49,7 @@ function addPlayerGameInDB($gameID, $playerID) {
   $ret = null;
 
   // only set once
-  $db = connect_db();
+  $db = mysqliSingleton::init();
 
   $db->query('INSERT INTO gamePlayers (game, player) VALUES (' . $gameID . ', ' . $playerID . ')');
   
@@ -67,7 +67,7 @@ function getPlayerGameInvitationsFromDB($playerID) {
   date_default_timezone_set("UTC");
   $dtNow = new DateTime("now");
 
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $result = $db->query('SELECT gameInvitations.id, gameInvitations.created, games.ownerPlayerID, games.id as gameID, games.type, games.game_start, games.game_end, gameLevels.name FROM gameInvitations JOIN games ON gameInvitations.gameID = games.id JOIN campaigns ON games.campaignID = campaigns.id JOIN clients ON campaigns.clientID = clients.id JOIN gameLevels ON games.levelID = gameLevels.id JOIN players ON gameInvitations.playerEmail = players.email WHERE players.id = ' . $playerID . ' AND players.clientID = clients.id ORDER BY gameInvitations.created ASC');
   $rows = array();
   $index = 0;
@@ -98,30 +98,30 @@ function getPlayerGameInvitationsFromDB($playerID) {
 function removePlayerGameInvitationFromDB($invitationID) {
   require_once 'lib/mysql.php';
 
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $db->query('DELETE from gameInvitations WHERE id = ' . $invitationID);
 }
 
 function setPlayerGameStateInDB($gameID, $playerID, $state) {
   // only set once
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $db->query('UPDATE gamePlayers SET state = ' . $state . ' where game = ' . $gameID . ' and player = ' . $playerID);
 }
 
 function setPlayerGameActivityInDB($gameID, $playerID, $activity) {
   // only set once
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $db->query('UPDATE gamePlayers SET latest_activity = ' . $activity . ' where game = ' . $gameID . ' and player = ' . $playerID);
 }
 
 function setPlayerGameFundraisingPageInDB($gameID, $playerID, $fundraisingPageID, $fundraisingPage, $fundraisingGoal) {
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $db->query('UPDATE gamePlayers SET fundraising_pageID = "' . $fundraisingPageID . '", fundraising_page = "' . $fundraisingPage . '", fundraising_goal = ' . $fundraisingGoal . ' where game = ' . $gameID . ' and player = ' . $playerID);
 }
 
 function setPlayerGameAscentCompleteInDB($gameID, $playerID, $ascentCompleteActivityDate) {
   // only set once
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $result = $db->query('SELECT ascentCompleted FROM gamePlayers where game = ' . $gameID . ' and player = ' . $playerID);
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
     if (!$row['ascentCompleted']) {
@@ -131,7 +131,7 @@ function setPlayerGameAscentCompleteInDB($gameID, $playerID, $ascentCompleteActi
 }
 
 function setPlayerGameActivityTotalsInDB($gameID, $playerID, $ascent, $distance) {
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $db->query('UPDATE gamePlayers SET ascent = ' . $ascent . ', distance = ' . $distance . ' where game = ' . $gameID . ' and player = ' . $playerID);
 }
 
@@ -139,13 +139,13 @@ function setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $fundraisingGoa
   require_once 'lib/mysql.php';
 
   // only set once
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $db->query('UPDATE gamePlayers SET fundraising_goal = ' . $fundraisingGoal . ', fundraising_raised = ' . $fundraisingRaised . ', fundraising_currency = "' . $fundraisingCurrency . '", fundraising_charityOptIn = ' . $fundraisingCharityOptIn . ' where game = ' . $gameID . ' and player = ' . $playerID);
 }
 
 function setPlayerGameDistanceCompleteInDB($gameID, $playerID, $distanceCompleteActivityDate) {
   // only set once
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $result = $db->query('SELECT distanceCompleted FROM gamePlayers where game = ' . $gameID . ' and player = ' . $playerID);
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
     if (!$row['distanceCompleted']) {
@@ -158,7 +158,7 @@ function setPlayerGameMediaCaptureInDB($gameID, $playerID) {
   require_once 'lib/mysql.php';
 
   // only set once
-  $db = connect_db();
+  $db = mysqliSingleton::init();
 
   $result = $db->query('UPDATE gamePlayers SET bMediaCaptured = true WHERE game = ' . $gameID . ' and player = ' . $playerID);
 }
@@ -167,7 +167,7 @@ function setPlayerGameLatestMarkerInDB($gameID, $playerID, $markerID) {
   require_once 'lib/mysql.php';
 
   // only set once
-  $db = connect_db();
+  $db = mysqliSingleton::init();
 
   $result = $db->query('UPDATE gamePlayers SET latestMarkerID = "' . $markerID . '" WHERE game = ' . $gameID . ' and player = ' . $playerID);
 }
@@ -177,7 +177,7 @@ function getGamePlayersFromDB($gameID) {
 
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $result = $db->query('SELECT players.id, avatar, firstname, lastname, email, city, country, game_notifications, measurement, playerProviderID, playerProviderToken, last_activity, last_updated, gamePlayers.latestMarkerID, gamePlayers.latest_activity, gamePlayers.state, gamePlayers.fundraising_pageID, gamePlayers.fundraising_page FROM gamePlayers JOIN players ON gamePlayers.player = players.id WHERE game = ' . $gameID);
   $rows = array();
   $index = 0;
@@ -214,7 +214,7 @@ function getGamesFromDB() {
   date_default_timezone_set("UTC");
   $dtNow = new DateTime("now");
 
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $result = $db->query('SELECT games.id, campaignID, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, campaigns.email_template FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id order by game_end desc');
   $rows = array();
   $index = 0;
@@ -248,7 +248,7 @@ function getActiveGamesFromDB() {
   $dtNow = new DateTime("now");
   $formattedNow = $dtNow->format('Y-m-d\TH:i:s.000\Z');
 
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $strSQL = 'SELECT games.id, campaignID, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, campaigns.name as campaign_name, campaigns.fundraising_provider, campaigns.fundraising_page, campaigns.email_template, campaigns.email_welcome, campaigns.email_activity, campaigns.email_activity_broadcast, campaigns.email_inactivity, campaigns.email_summit, campaigns.email_summit_broadcast, campaigns.email_invite FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id WHERE game_start < "' . $formattedNow . '" AND game_end > "' . $formattedNow . '" order by game_end desc';
   $result = $db->query($strSQL);
 
@@ -283,7 +283,7 @@ function getGamesByCampaignFromDB($campaignID) {
   date_default_timezone_set("UTC");
   $dtNow = new DateTime("now");
 
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $result = $db->query('SELECT games.id, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID FROM games JOIN gameLevels ON games.levelID = gameLevels.id WHERE games.campaignID = ' . $campaignID . ' order by game_end desc');
   $rows = array();
   $index = 0;
@@ -315,7 +315,7 @@ function getGamesByPlayerFromDB($playerID) {
   date_default_timezone_set("UTC");
   $dtNow = new DateTime("now");
 
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $result = $db->query('SELECT gamePlayers.game, gamePlayers.fundraising_pageID, gamePlayers.fundraising_page, gamePlayers.fundraising_goal, games.ownerPlayerID, games.type, games.game_start, games.game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.multiplayer, campaigns.name as campaign_name, campaigns.fundraising_page as campaign_fundraising_page FROM gamePlayers join games on gamePlayers.game = games.id join gameLevels on games.levelID = gameLevels.id join campaigns on games.campaignID = campaigns.id where player = ' . $playerID . ' order by games.game_end desc');
   $rows = array();
   $index = 0;
@@ -345,7 +345,7 @@ function getGameFromDB($gameID) {
 
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $result = $db->query('SELECT games.id, campaignID, ownerPlayerID, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, gameLevels.mountainType, gameLevels.multiplayer, campaigns.name as campaign_name, campaigns.fundraising_provider, campaigns.fundraising_page, campaigns.email_template, campaigns.email_welcome, campaigns.email_activity, campaigns.email_activity_broadcast, campaigns.email_inactivity, campaigns.email_summit, campaigns.email_summit_broadcast, campaigns.email_invite FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id where games.id = ' . $gameID);
   $rows = array();
   $index = 0;
@@ -364,7 +364,7 @@ function getGameFromDB($gameID) {
 function getGamePlayerFromDB($gameID, $playerID) {
   require_once 'lib/mysql.php';
 
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $result = $db->query('SELECT fundraising_pageID, fundraising_page, fundraising_goal, fundraising_raised, fundraising_currency, bMediaCaptured, latestMarkerID, ascentCompleted, distanceCompleted, players.firstname, players.lastname, players.email, players.game_notifications, players.measurement FROM gamePlayers JOIN players ON players.id = gamePlayers.player where game = ' . $gameID . ' and player = ' . $playerID);
   $rows = array();
   $index = 0;

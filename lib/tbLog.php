@@ -25,6 +25,6 @@ function addLogToDB($nObject, $nActivity, $objectID) {
   date_default_timezone_set("UTC");
   $dtNow = date('Y-m-d H:i:s', time());
 
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $db->query('INSERT INTO log (created, object, activity, object_id) VALUES ("' . $dtNow . '", ' . $nObject . ', ' . $nActivity . ', ' . $objectID . ')');
 }

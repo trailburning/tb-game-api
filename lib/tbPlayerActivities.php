@@ -14,7 +14,7 @@ function getPlayerActivitiesFromDB($playerID, $dtFirstActivityAllowed, $dtLastAc
   // use UTC date
   date_default_timezone_set("UTC");
 
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $result = $db->query('SELECT activity, type, distance, total_elevation_gain, start_date FROM playerActivities where player = ' . $playerID . ' and start_date >= "' . $dtFirstActivityAllowed . '" and start_date <= "' . $dtLastActivityAllowed . '" order by start_date desc ');
   $rows = array();
   $index = 0;
@@ -37,7 +37,7 @@ function addPlayerActivitiesToDB($playerID, $jsonActivities) {
   require_once 'lib/mysql.php';
 
   if ($jsonActivities) {
-    $db = connect_db();
+    $db = mysqliSingleton::init();
     foreach($jsonActivities as $activity) {
       // first check we don't already have the activity
       $result = $db->query('SELECT player, activity FROM playerActivities where player = ' . $playerID . ' and activity = ' . $activity['id']);
