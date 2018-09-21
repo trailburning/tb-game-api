@@ -190,6 +190,7 @@ function getFundraisingCampaignLeaderboard($campaignID, $numPlayers) {
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
     $row['id'] = $hashids->encode($row['id']);
     $row['gameID'] = $hashids->encode($row['gameID']);
+    $row['fundraising_currency_symbol'] = getCurrencySymbol($row['fundraising_currency']);
 
     $rows[$index] = $row;
     $index++;
