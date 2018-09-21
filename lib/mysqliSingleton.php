@@ -19,7 +19,6 @@ class mysqliSingleton
         return self::$instance;
     }
 
-
     public function __call($name, $args)
     {
         if(method_exists($this->connection, $name))
