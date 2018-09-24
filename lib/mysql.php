@@ -6,7 +6,7 @@ function connect_db() {
 }
 
 function getResultsFromDB($strSQL) {
-  $db = connect_db();
+  $db = mysqliSingleton::init();
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
