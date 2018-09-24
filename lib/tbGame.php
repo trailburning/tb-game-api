@@ -51,9 +51,11 @@ function addPlayerGameInDB($gameID, $playerID) {
 
   // only set once
   $db = mysqliSingleton::init();
-
-  $db->query('INSERT INTO gamePlayers (game, player) VALUES (' . $gameID . ', ' . $playerID . ')');
+  $strSQL = 'INSERT INTO gamePlayers (game, player) VALUES (' . $gameID . ', ' . $playerID . ')';
+  $db->query($strSQL);
   
+  echo $strSQL;
+  return;
   $ret = getGamePlayerFromDB($gameID, $playerID);
 
   return $ret;
