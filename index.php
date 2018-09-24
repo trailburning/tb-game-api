@@ -813,7 +813,7 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
         if ($jsonResponse->pageId) {
           $jsonResponse->fundraising_page = $fundraisingPage;
           // store fundraising page
-          setPlayerGameFundraisingPageInDB($gameID, $playerID, $jsonResponse->pageId, $fundraisingPage, $data['targetAmount'], '£');
+          setPlayerGameFundraisingPageInDB($gameID, $playerID, $jsonResponse->pageId, $fundraisingPage, $data['targetAmount'], 'GBP');
         }
       }
 
