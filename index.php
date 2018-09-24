@@ -60,6 +60,9 @@ if (getenv("CLEARDB_DATABASE_URL")) {
 
 $app->get('/', function (Request $request, Response $response) {
   echo 'Trailburning® Platform GAME API<br/>';
+
+// mla test
+//    $lastInsertID = $db->insert_id();
 });
 
 $app->get('/worker', function (Request $request, Response $response) {
