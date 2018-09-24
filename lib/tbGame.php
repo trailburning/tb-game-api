@@ -54,8 +54,6 @@ function addPlayerGameInDB($gameID, $playerID) {
   $strSQL = 'INSERT INTO gamePlayers (game, player) VALUES (' . $gameID . ', ' . $playerID . ')';
   $db->query($strSQL);
   
-  echo $strSQL;
-  return;
   $ret = getGamePlayerFromDB($gameID, $playerID);
 
   return $ret;
