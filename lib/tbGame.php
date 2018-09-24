@@ -20,7 +20,8 @@ function addGameToDB($campaignID, $ownerPlayerID, $season, $type, $gameStart, $g
   $dtNow = date('Y-m-d H:i:s', time());
 
   $db = connect_db();
-  if ($db->query('INSERT INTO games (created, campaignID, ownerPlayerID, season, type, game_start, game_end, levelID) VALUES ("' . $dtNow . '", ' . $campaignID . ', ' . $ownerPlayerID . ', ' . $season . ', "' . $type . '", "' . $gameStart . '", "' . $gameEnd . '", ' . $levelID . ')') === TRUE) {
+  $strSQL = 'INSERT INTO games (created, campaignID, ownerPlayerID, season, type, game_start, game_end, levelID) VALUES ("' . $dtNow . '", ' . $campaignID . ', ' . $ownerPlayerID . ', ' . $season . ', "' . $type . '", "' . $gameStart . '", "' . $gameEnd . '", ' . $levelID . ')';
+  if ($db->query($strSQL) === TRUE) {
     $lastInsertID = $db->insert_id;
 
     $ret = getGameFromDB($lastInsertID);

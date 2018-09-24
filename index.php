@@ -268,7 +268,7 @@ $app->post('/game', function (Request $request, Response $response) {
   if (isset($data['gameDaysDuration'])) {
     $dtStartDate = new DateTime($data['gameStart']);
     $dtEndDate = new DateTime($dtStartDate->format('Y-m-d\TH:i:s.000\Z') . '+' . $data['gameDaysDuration'] . ' day');
-    $data['gameEnd'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
+    $data['gameEnd'] = $dtEndDate->format('Y-m-d H:i:s');
   }
 
   $jsonResponse = addGameToDB($campaignID, $ownerPlayerID, $data['season'], $data['type'], $data['gameStart'], $data['gameEnd'], $levelID);
