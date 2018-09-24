@@ -117,7 +117,10 @@ function setPlayerGameActivityInDB($gameID, $playerID, $activity) {
 
 function setPlayerGameFundraisingPageInDB($gameID, $playerID, $fundraisingPageID, $fundraisingPage, $fundraisingGoal, $fundraisingCurrency) {
   $db = mysqliSingleton::init();
-  $db->query('UPDATE gamePlayers SET fundraising_pageID = "' . $fundraisingPageID . '", fundraising_page = "' . $fundraisingPage . '", fundraising_goal = ' . $fundraisingGoal . ', fundraising_currency = "' . $fundraisingCurrency . '" where game = ' . $gameID . ' and player = ' . $playerID);
+  $strSQL = 'UPDATE gamePlayers SET fundraising_pageID = "' . $fundraisingPageID . '", fundraising_page = "' . $fundraisingPage . '", fundraising_goal = ' . $fundraisingGoal . ', fundraising_currency = "' . $fundraisingCurrency . '" where game = ' . $gameID . ' and player = ' . $playerID;
+  $db->query($strSQL);
+
+  echo $strSQL;
 }
 
 function setPlayerGameAscentCompleteInDB($gameID, $playerID, $ascentCompleteActivityDate) {
