@@ -20,7 +20,8 @@ function addGameToDB($campaignID, $ownerPlayerID, $season, $type, $gameStart, $g
   $dtNow = date('Y-m-d H:i:s', time());
 
   $db = connect_db();
-  if ($db->query('INSERT INTO games (created, campaignID, ownerPlayerID, season, type, game_start, game_end, levelID) VALUES ("' . $dtNow . '", ' . $campaignID . ', ' . $ownerPlayerID . ', ' . $season . ', "' . $type . '", "' . $gameStart . '", "' . $gameEnd . '", ' . $levelID . ')') === TRUE) {
+  $strSQL = 'INSERT INTO games (created, campaignID, ownerPlayerID, season, type, game_start, game_end, levelID) VALUES ("' . $dtNow . '", ' . $campaignID . ', ' . $ownerPlayerID . ', ' . $season . ', "' . $type . '", "' . $gameStart . '", "' . $gameEnd . '", ' . $levelID . ')';
+  if ($db->query($strSQL) === TRUE) {
     $lastInsertID = $db->insert_id;
 
     $ret = getGameFromDB($lastInsertID);
@@ -50,8 +51,8 @@ function addPlayerGameInDB($gameID, $playerID) {
 
   // only set once
   $db = mysqliSingleton::init();
-
-  $db->query('INSERT INTO gamePlayers (game, player) VALUES (' . $gameID . ', ' . $playerID . ')');
+  $strSQL = 'INSERT INTO gamePlayers (game, player) VALUES (' . $gameID . ', ' . $playerID . ')';
+  $db->query($strSQL);
   
   $ret = getGamePlayerFromDB($gameID, $playerID);
 
@@ -114,9 +115,10 @@ function setPlayerGameActivityInDB($gameID, $playerID, $activity) {
   $db->query('UPDATE gamePlayers SET latest_activity = ' . $activity . ' where game = ' . $gameID . ' and player = ' . $playerID);
 }
 
-function setPlayerGameFundraisingPageInDB($gameID, $playerID, $fundraisingPageID, $fundraisingPage, $fundraisingGoal) {
+function setPlayerGameFundraisingPageInDB($gameID, $playerID, $fundraisingPageID, $fundraisingPage, $fundraisingGoal, $fundraisingCurrency) {
   $db = mysqliSingleton::init();
-  $db->query('UPDATE gamePlayers SET fundraising_pageID = "' . $fundraisingPageID . '", fundraising_page = "' . $fundraisingPage . '", fundraising_goal = ' . $fundraisingGoal . ' where game = ' . $gameID . ' and player = ' . $playerID);
+  $strSQL = 'UPDATE gamePlayers SET fundraising_pageID = "' . $fundraisingPageID . '", fundraising_page = "' . $fundraisingPage . '", fundraising_goal = ' . $fundraisingGoal . ', fundraising_currency = "' . $fundraisingCurrency . '" where game = ' . $gameID . ' and player = ' . $playerID;
+  $db->query($strSQL);
 }
 
 function setPlayerGameAscentCompleteInDB($gameID, $playerID, $ascentCompleteActivityDate) {

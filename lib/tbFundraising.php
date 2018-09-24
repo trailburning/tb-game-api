@@ -73,10 +73,30 @@ function getFundraisingDonations($hashGameID, $hashPlayerID) {
 /* Start Support JustGiving */
 /* **************************************************************************** */
 function getFundraisingPlayer($fundraisingPlayerEmail, $fundraisingPlayerPassword) {
-  $client = new JustGivingClient(FUNDRAISING_API_URL, FUNDRAISING_API_KEY, 1, $fundraisingPlayerEmail, $fundraisingPlayerPassword);
-  $response = $client->Account->AccountDetails();
+  $url = FUNDRAISING_API_URL . 'v1/account/validate';
+ 
+  $jsonData = array(
+    'email' => $fundraisingPlayerEmail,
+    'Password' => $fundraisingPlayerPassword
+  );
 
-  return $response;
+  $ch = curl_init();  
+  curl_setopt($ch, CURLOPT_URL, $url);
+  $jsonDataEncoded = json_encode($jsonData);
+   
+  curl_setopt($ch, CURLOPT_POST, true);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonDataEncoded);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+  $contentType="application/json";
+  $stringForEnc = $fundraisingPlayerEmail.":".$fundraisingPlayerPassword;
+  $base64Credentials = base64_encode($stringForEnc);
+
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: '.$contentType, 'Accept: '.$contentType, 'Authorize: Basic '.$base64Credentials, 'Authorization: Basic '.$base64Credentials, 'x-api-key: '. FUNDRAISING_API_KEY));
+   
+  $result = curl_exec($ch);
+
+  return json_decode($result);
 }
 
 function createFundraisingPlayerLite($paramaObj) {

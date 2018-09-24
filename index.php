@@ -60,6 +60,9 @@ if (getenv("CLEARDB_DATABASE_URL")) {
 
 $app->get('/', function (Request $request, Response $response) {
   echo 'Trailburning® Platform GAME API<br/>';
+
+// mla test
+//    $lastInsertID = $db->insert_id();
 });
 
 $app->get('/worker', function (Request $request, Response $response) {
@@ -265,7 +268,7 @@ $app->post('/game', function (Request $request, Response $response) {
   if (isset($data['gameDaysDuration'])) {
     $dtStartDate = new DateTime($data['gameStart']);
     $dtEndDate = new DateTime($dtStartDate->format('Y-m-d\TH:i:s.000\Z') . '+' . $data['gameDaysDuration'] . ' day');
-    $data['gameEnd'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
+    $data['gameEnd'] = $dtEndDate->format('Y-m-d H:i:s');
   }
 
   $jsonResponse = addGameToDB($campaignID, $ownerPlayerID, $data['season'], $data['type'], $data['gameStart'], $data['gameEnd'], $levelID);
@@ -718,11 +721,12 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/donations', funct
 $app->get('/fundraiser/user/{email}/{password}', function (Request $request, Response $response) {
   $bExists = false;
 
-  if (getFundraisingPlayer($request->getAttribute('email'), $request->getAttribute('password'))) {
-    $bExists = true;
-  }
+  $jsonResponse = array();
 
-  $jsonResponse = array('exists' => $bExists);
+  $jsonPlayerResponse = getFundraisingPlayer($request->getAttribute('email'), $request->getAttribute('password'));
+  if ($jsonPlayerResponse) {
+    $jsonResponse = array('exists' => $jsonPlayerResponse->isValid);
+  }
 
   return $response->withJSON($jsonResponse);
 });
@@ -809,7 +813,7 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
         if ($jsonResponse->pageId) {
           $jsonResponse->fundraising_page = $fundraisingPage;
           // store fundraising page
-          setPlayerGameFundraisingPageInDB($gameID, $playerID, $jsonResponse->pageId, $fundraisingPage, $data['targetAmount']);
+          setPlayerGameFundraisingPageInDB($gameID, $playerID, $jsonResponse->pageId, $fundraisingPage, $data['targetAmount'], 'GBP');
         }
       }
 
