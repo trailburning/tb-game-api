@@ -94,9 +94,9 @@ function getFundraisingPlayer($fundraisingPlayerEmail, $fundraisingPlayerPasswor
 
   curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: '.$contentType, 'Accept: '.$contentType, 'Authorize: Basic '.$base64Credentials, 'Authorization: Basic '.$base64Credentials, 'x-api-key: '. FUNDRAISING_API_KEY));
    
-  $response = curl_exec($ch);
+  $result = curl_exec($ch);
 
-  return $response;
+  return json_decode($result);
 }
 
 function createFundraisingPlayerLite($paramaObj) {

@@ -721,11 +721,12 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/donations', funct
 $app->get('/fundraiser/user/{email}/{password}', function (Request $request, Response $response) {
   $bExists = false;
 
-  if (getFundraisingPlayer($request->getAttribute('email'), $request->getAttribute('password'))) {
-    $bExists = true;
-  }
+  $jsonResponse = array();
 
-  $jsonResponse = array('exists' => $bExists);
+  $jsonPlayerResponse = getFundraisingPlayer($request->getAttribute('email'), $request->getAttribute('password'));
+  if ($jsonPlayerResponse) {
+    $jsonResponse = array('exists' => $jsonPlayerResponse->isValid);
+  }
 
   return $response->withJSON($jsonResponse);
 });
