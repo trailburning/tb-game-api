@@ -31,7 +31,7 @@ function addPlayerToDB($clientID, $avatar, $firstname, $lastname, $email, $city,
 function getPlayerFromDBByEmail($clientID, $email) {
   require_once 'lib/mysql.php';
 
-  $db = mysqliSingleton::init();
+  $db = connect_db();
   $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE clientID = ' . $clientID . ' and email = "' . $email . '"');
   $rows = array();
   $index = 0;
@@ -46,7 +46,7 @@ function getPlayerFromDBByEmail($clientID, $email) {
 function getPlayerFromDBByToken($clientID, $token) {
   require_once 'lib/mysql.php';
 
-  $db = mysqliSingleton::init();
+  $db = connect_db();
   $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, game_notifications, measurement, playerProviderID, last_activity, last_updated FROM players WHERE clientID = ' . $clientID . ' and playerProviderToken = "' . $token . '"');
   $rows = array();
   $index = 0;
@@ -61,7 +61,7 @@ function getPlayerFromDBByToken($clientID, $token) {
 function getPlayerFromDBByProviderID($providerID) {
   require_once 'lib/mysql.php';
 
-  $db = mysqliSingleton::init();
+  $db = connect_db();
   $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE playerProviderID = "' . $providerID . '"');
   $rows = array();
   $index = 0;
@@ -76,7 +76,7 @@ function getPlayerFromDBByProviderID($providerID) {
 function getPlayerFromDB($playerID) {
   require_once 'lib/mysql.php';
 
-  $db = mysqliSingleton::init();
+  $db = connect_db();
   $result = $db->query('SELECT id, clientID, avatar, firstname, lastname, email, game_notifications, measurement, last_activity, last_updated, playerProviderToken FROM players where id = ' . $playerID);
   $rows = array();
   $index = 0;
@@ -93,7 +93,7 @@ function getPlayerDetailsFromDB($playerID) {
 
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
-  $db = mysqliSingleton::init();
+  $db = connect_db();
   $result = $db->query('SELECT id, avatar, firstname, lastname FROM players where id = ' . $playerID);
   $rows = array();
   $index = 0;
@@ -112,7 +112,7 @@ function getPlayersFromDBByCampaign($campaignID, $match) {
 
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
-  $db = mysqliSingleton::init();
+  $db = connect_db();
   $result = $db->query('SELECT players.id, players.firstname, players.lastname, games.id as gameID, games.type as game_type, games.game_start, games.game_end, gameLevels.name as level_name FROM players JOIN gamePlayers ON players.id = gamePlayers.player JOIN games ON gamePlayers.game = games.id JOIN gameLevels ON games.levelID = gameLevels.id WHERE games.campaignID = ' . $campaignID . ' AND (LOWER(players.firstname) LIKE "%' . $match . '%" OR LOWER(players.lastname) like "%' . $match . '%") ORDER BY lastname, games.game_start DESC');
   $rows = array();
   $index = 0;
@@ -130,28 +130,28 @@ function getPlayersFromDBByCampaign($campaignID, $match) {
 function updatePlayerLastUpdatedInDB($playerID, $dtLastUpdated) {
   require_once 'lib/mysql.php';
 
-  $db = mysqliSingleton::init();
+  $db = connect_db();
   $result = $db->query('update players set last_updated = "' . $dtLastUpdated . '" where id = ' . $playerID);
 }
 
 function updatePlayerLastActivityInDB($playerID, $dtLastActivity) {
   require_once 'lib/mysql.php';
 
-  $db = mysqliSingleton::init();
+  $db = connect_db();
   $result = $db->query('update players set last_activity = "' . $dtLastActivity . '" where id = ' . $playerID);
 }
 
 function updatePlayerPreferencesInDB($playerID, $bReceiveEmail) {
   require_once 'lib/mysql.php';
 
-  $db = mysqliSingleton::init();
+  $db = connect_db();
   $result = $db->query('update players set game_notifications = ' . $bReceiveEmail . ' where id = ' . $playerID);
 }
 
 function updatePlayerDetailsInDB($avatar, $firstname, $lastname, $email, $city, $country, $token) {
   require_once 'lib/mysql.php';
 
-  $db = mysqliSingleton::init();
+  $db = connect_db();
   $result = $db->query('update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where email = "' . $email . '"');
 }
 
@@ -173,7 +173,7 @@ function updatePlayerBlankDetails($playerProviderID) {
   // used when provider requires data to be blanked - hello GDPR!
   require_once 'lib/mysql.php';
 
-  $db = mysqliSingleton::init();
+  $db = connect_db();
   $result = $db->query('UPDATE players SET avatar = "", firstname = "", lastname = "", email = "", city = "", country = "" WHERE playerProviderID = "' . $playerProviderID . '"');
 }
 
