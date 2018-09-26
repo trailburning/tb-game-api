@@ -89,6 +89,7 @@ function getCustomPlayersFromDB($clientID) {
 
   $db = mysqliSingleton::init();
   $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE clientID = ' . $clientID . ' and lastname = "Allbeury"');
+//  $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE clientID = ' . $clientID . ' and created > "2018-09-15" order by created asc');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -105,6 +106,9 @@ function sendTestEmail($strEmailTemplate, $jsonEmail, $player) {
 
   $strSubject = $arrEmail->title;
 
+  echo $arrEmail->message;
+  return;
+
   // now send an email
   $result = sendEmail($strEmailTemplate, $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 
@@ -112,11 +116,10 @@ function sendTestEmail($strEmailTemplate, $jsonEmail, $player) {
   $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
-
 $clientID = '2';
 $jsonPlayerResponse = getCustomPlayersFromDB($clientID);
 if (count($jsonPlayerResponse)) {
-  $jsonEmail = '{"title": "Unexpected Problem", "image": "http://tbassets2.imgix.net/images/brands/mountainrush/edm/djJrblYlXV/challenge_activity_682x300.jpg?q=80", "message": "<p>[PLAYER_FIRSTNAME],</p><p>During the recent launch of the <a href=\"https://wwf.org.uk/climbforyourworld\">Climb For Your World</a> challenge we experienced a technical problem with the fundraising integration.</p><p>This problem has now been resolved and you can now add fundraising at your leisure.</p><p>Simply visit <a href=\"https://wwf.org.uk/climbforyourworld\">Climb For Your World</a> and sign in, then proceed to your challenge and click ENABLE FUNDRAISING.</p><p>If you have any questions please <a href=\"mailto:support@mountainrush.co.uk\">contact</a> us!</p>", "preferences": "Want to change how you receive these emails?<br>You can [PREFERENCES_LINK]."}';
+  $jsonEmail = '{"title": "Sorry for the inconvenience,<br/>we had an unexpected problem", "image": "http://tbassets2.imgix.net/images/brands/mountainrush/edm/djJrblYlXV/challenge_activity_682x300.jpg?q=80", "message": "<p>[PLAYER_FIRSTNAME],</p><p>During the recent launch of the <a href=\"https://wwf.org.uk/climbforyourworld\">Climb For Your World</a> campaign we experienced a technical problem with the fundraising integration.</p><p>This problem has been resolved and you can now add fundraising at your leisure.</p><p>Simply visit <a href=\"https://wwf.org.uk/climbforyourworld\">Climb For Your World</a> and sign in, then proceed to your challenge and click ENABLE FUNDRAISING.</p><p>If you have any questions please <a href=\"mailto:support@mountainrush.co.uk\">contact</a> us!</p>", "preferences": ""}';
 
   foreach ($jsonPlayerResponse as $player) {
     echo 'p:' . $player['firstname'] . ' ' . $player['lastname'] . '<br/>';
