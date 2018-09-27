@@ -437,8 +437,10 @@ $app->get('/campaign/{campaignHashID}', function (Request $request, Response $re
   $hashCampaignID = $request->getAttribute('campaignHashID');
   $campaignID = $hashids->decode($hashCampaignID)[0];
 
+  $db = connect_db();
+
   if ($campaignID) {
-    $jsonResponse = getCampaignFromDB($campaignID);
+    $jsonResponse = getCampaignFromDB($db, $campaignID);
     if (count($jsonResponse)) {
       $jsonResponse[0]['fundraising_currency_symbol'] = getCurrencySymbol($jsonResponse[0]['fundraising_currency']);
     }
@@ -651,8 +653,10 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
   $json = $request->getBody();
   $data = json_decode($json, true); 
 
+  $db = connect_db();
+
   // get campaign
-  $jsonCampaign = getCampaignFromDB($campaignID);
+  $jsonCampaign = getCampaignFromDB($db, $campaignID);
   if (count($jsonCampaign)) {
     // get player game details
     $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
@@ -784,8 +788,10 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
   $json = $request->getBody();
   $data = json_decode($json, true); 
 
+  $db = connect_db();
+
   // get campaign
-  $jsonCampaign = getCampaignFromDB($campaignID);
+  $jsonCampaign = getCampaignFromDB($db, $campaignID);
   if (count($jsonCampaign)) {
     // get player game details
     $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);

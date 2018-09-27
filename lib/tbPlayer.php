@@ -18,7 +18,7 @@ function addPlayerToDB($clientID, $avatar, $firstname, $lastname, $email, $city,
   $db = connect_db();
   if ($db->query('INSERT INTO players (created, clientID, avatar, firstname, lastname, email, city, country, game_notifications, playerProviderID, playerProviderToken) VALUES ("' . $dtNow . '", ' . $clientID . ', "' . $avatar . '", "' . $firstname . '", "' . $lastname . '", "' . $email. '", "' . $city . '", "' . $country. '", 1, "' . $providerID . '", "' . $providerToken . '")') === TRUE) {
     $lastInsertID = $db->insert_id;
-    $ret = getPlayerFromDB($lastInsertID);
+    $ret = getPlayerFromDB($db, $lastInsertID);
   }
   else {
     // insert failed so the email has already been used, let's try an update
@@ -73,10 +73,7 @@ function getPlayerFromDBByProviderID($providerID) {
   return $rows;
 }
 
-function getPlayerFromDB($playerID) {
-  require_once 'lib/mysql.php';
-
-  $db = connect_db();
+function getPlayerFromDB($db, $playerID) {
   $result = $db->query('SELECT id, clientID, avatar, firstname, lastname, email, game_notifications, measurement, last_activity, last_updated, playerProviderToken FROM players where id = ' . $playerID);
   $rows = array();
   $index = 0;
