@@ -385,8 +385,10 @@ function getGamePlayerFromDB($gameID, $playerID) {
 function getGamePlayerActivityPhotos($gameID, $playerID, $activityID) {
   $ret = [];
 
+  $db = connect_db();
+
   // first find last update date
-  $results = getPlayerFromDB($playerID);
+  $results = getPlayerFromDB($db, $playerID);
   if (count($results) != 0) {
     $token = $results[0]['playerProviderToken'];
     try {
@@ -406,8 +408,10 @@ function getGamePlayerActivityPhotos($gameID, $playerID, $activityID) {
 function getGamePlayerActivityComments($gameID, $playerID, $activityID) {
   $ret = [];
 
+  $db = connect_db();
+
   // first find last update date
-  $results = getPlayerFromDB($playerID);
+  $results = getPlayerFromDB($db, $playerID);
   if (count($results) != 0) {
     $token = $results[0]['playerProviderToken'];
     try {

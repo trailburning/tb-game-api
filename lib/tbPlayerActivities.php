@@ -70,8 +70,10 @@ function getPlayerActivities($playerID, $startDate, $endDate, $activityType) {
   date_default_timezone_set("UTC");
   $dtNow = date('Y-m-d H:i:s', time());
 
+  $db = connect_db();
+
   // first find last update date
-  $results = getPlayerFromDB($playerID);
+  $results = getPlayerFromDB($db, $playerID);
   if (count($results) != 0) {
     $token = $results[0]['playerProviderToken'];
 
