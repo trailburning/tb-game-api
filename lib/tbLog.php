@@ -18,13 +18,17 @@ define('LOG_ACTIVITY_INVITATION_REJECT', 102);
 
 define('LOG_ACTIVITY_GAME_ACTIVITY', 200);
 
-function addLogToDB($nObject, $nActivity, $objectID) {
+define('LOG_FUNDRAISING_USER_QUERY_SUCCESS', 300);
+define('LOG_FUNDRAISING_USER_QUERY_FAIL', 301);
+define('LOG_FUNDRAISING_USER_CREATE_SUCCESS', 302);
+define('LOG_FUNDRAISING_USER_CREATE_FAIL', 303);
+
+function addLogToDB($db, $nObject, $nActivity, $objectID) {
   require_once 'lib/mysql.php';
 
   // use UTC date
   date_default_timezone_set("UTC");
   $dtNow = date('Y-m-d H:i:s', time());
 
-  $db = mysqliSingleton::init();
   $db->query('INSERT INTO log (created, object, activity, object_id) VALUES ("' . $dtNow . '", ' . $nObject . ', ' . $nActivity . ', ' . $objectID . ')');
 }

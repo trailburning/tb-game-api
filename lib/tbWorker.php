@@ -5,6 +5,8 @@ function processGamePlayer($gameID, $game, $gamePlayerID, $gamePlayer) {
   $dtNow = date('Y-m-d\TH:i:s.000\Z', time());
   $dtNowDate = new DateTime($dtNow);
 
+  $db = connect_db();  
+
   if (DEBUG) echo 'Player:'. $gamePlayerID . ' : ' .  $gamePlayer['firstname'] . ' ' . $gamePlayer['lastname'] . '<br/>';
 
   // does player have a new activity?
@@ -18,7 +20,7 @@ function processGamePlayer($gameID, $game, $gamePlayerID, $gamePlayer) {
       setPlayerGameActivityInDB($gameID, $gamePlayerID, 0);
       // check activity type matches game type
       if ($activity['type'] == $game['type']) {
-        addLogToDB(LOG_OBJECT_PLAYER, LOG_ACTIVITY_GAME_ACTIVITY, $gamePlayerID);
+        addLogToDB($db, LOG_OBJECT_PLAYER, LOG_ACTIVITY_GAME_ACTIVITY, $gamePlayerID);
 
         // activiy puts player back to active if they were inactive
         if ($gamePlayer['state'] == GAME_PLAYER_PLAYING_NOT_ACTIVE_STATE) {

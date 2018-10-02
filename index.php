@@ -136,13 +136,15 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
   $json = $request->getBody();
   $data = json_decode($json, true); 
 
+  $db = connect_db();
+
   switch ($data['object_type']) {
     case 'athlete':
       if ($data['updates']['authorized'] == 'false') {
         $jsonPlayerResponse = getPlayerFromDBByProviderID($data['owner_id']);
         if (count($jsonPlayerResponse)) {
           foreach ($jsonPlayerResponse as $player) {
-            addLogToDB(LOG_OBJECT_PLAYER_PROVIDER, LOG_ACTIVITY_DELETE, $player['id']);
+            addLogToDB($db, LOG_OBJECT_PLAYER_PROVIDER, LOG_ACTIVITY_DELETE, $player['id']);
           }
         }
         // now blank player (or players)
@@ -264,6 +266,8 @@ $app->post('/game', function (Request $request, Response $response) {
   $ownerPlayerID = $hashids->decode($data['ownerPlayerID'])[0];
   $levelID = $hashids->decode($data['levelID'])[0];
 
+  $db = connect_db();
+
   // do we want to calc the end date=
   if (isset($data['gameDaysDuration'])) {
     $dtStartDate = new DateTime($data['gameStart']);
@@ -273,7 +277,7 @@ $app->post('/game', function (Request $request, Response $response) {
 
   $jsonResponse = addGameToDB($campaignID, $ownerPlayerID, $data['season'], $data['type'], $data['gameStart'], $data['gameEnd'], $levelID);
   $gameID = $hashids->decode($jsonResponse[0]['id'])[0];
-  addLogToDB(LOG_OBJECT_GAME, LOG_ACTIVITY_CREATE, $gameID);
+  addLogToDB($db, LOG_OBJECT_GAME, LOG_ACTIVITY_CREATE, $gameID);
 
   return $response->withJSON($jsonResponse);
 });
@@ -331,6 +335,8 @@ $app->post('/game/{gameHashID}/invite', function (Request $request, Response $re
   $json = $request->getBody();
   $data = json_decode($json, true); 
 
+  $db = connect_db();
+
   // get game
   $jsonGamesResponse = getGameFromDB($gameID);
   if (count($jsonGamesResponse)) {
@@ -350,7 +356,7 @@ $app->post('/game/{gameHashID}/invite', function (Request $request, Response $re
 
         $jsonEmail = $game['email_invite'];
         sendInviteEmail($jsonEmail, $game, $invitingPlayer, $player);        
-        addLogToDB(LOG_OBJECT_PLAYER, LOG_ACTIVITY_INVITATION_SENT, $invitingPlayerID);
+        addLogToDB($db, LOG_OBJECT_PLAYER, LOG_ACTIVITY_INVITATION_SENT, $invitingPlayerID);
       }
     }
   }
@@ -370,9 +376,11 @@ $app->post('/game/{gameHashID}/player/{playerHashID}/invite/{inviteHashID}/accep
   $hashInviteID = $request->getAttribute('inviteHashID');
   $inviteID = $hashids->decode($hashInviteID)[0];
 
+  $db = connect_db();
+
   $jsonPlayerResponse = addPlayerGameInDB($gameID, $playerID);
   removePlayerGameInvitationFromDB($inviteID);
-  addLogToDB(LOG_OBJECT_PLAYER, LOG_ACTIVITY_INVITATION_ACCEPT, $playerID);
+  addLogToDB($db, LOG_OBJECT_PLAYER, LOG_ACTIVITY_INVITATION_ACCEPT, $playerID);
 
   // now ping added player and say hi!
   $jsonGamesResponse = getGameFromDB($gameID);
@@ -400,8 +408,10 @@ $app->post('/game/{gameHashID}/player/{playerHashID}/invite/{inviteHashID}/rejec
   $hashInviteID = $request->getAttribute('inviteHashID');
   $inviteID = $hashids->decode($hashInviteID)[0];
 
+  $db = connect_db();
+
   removePlayerGameInvitationFromDB($inviteID);
-  addLogToDB(LOG_OBJECT_PLAYER, LOG_ACTIVITY_INVITATION_REJECT, $playerID);
+  addLogToDB($db, LOG_OBJECT_PLAYER, LOG_ACTIVITY_INVITATION_REJECT, $playerID);
 
   $jsonResponse = array();
 
@@ -722,20 +732,43 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/donations', funct
 /* **************************************************************************** */
 /* Start Support JustGiving */
 /* **************************************************************************** */
-$app->get('/fundraiser/user/{email}/{password}', function (Request $request, Response $response) {
+$app->get('/fundraiser/player/{playerHashID}/user/{email}/{password}', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashPlayerID = $request->getAttribute('playerHashID');
+
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
   $bExists = false;
 
   $jsonResponse = array();
 
+  $db = connect_db();
+
   $jsonPlayerResponse = getFundraisingPlayer($request->getAttribute('email'), $request->getAttribute('password'));
   if ($jsonPlayerResponse) {
     $jsonResponse = array('exists' => $jsonPlayerResponse->isValid);
+    if ($jsonPlayerResponse->isValid) {
+      addLogToDB($db, LOG_OBJECT_PLAYER_PROVIDER, LOG_FUNDRAISING_USER_QUERY_SUCCESS, $playerID);
+    }
+    else {
+      addLogToDB($db, LOG_OBJECT_PLAYER_PROVIDER, LOG_FUNDRAISING_USER_QUERY_FAIL, $playerID);
+    }
+  }
+  else {
+    addLogToDB($db, LOG_OBJECT_PLAYER_PROVIDER, LOG_FUNDRAISING_USER_QUERY_FAIL, $playerID);
   }
 
   return $response->withJSON($jsonResponse);
 });
 
-$app->post('/fundraiser/user', function (Request $request, Response $response) {
+$app->post('/fundraiser/player/{playerHashID}/user', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashPlayerID = $request->getAttribute('playerHashID');
+
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
   $json = $request->getBody();
   $data = json_decode($json, true); 
 
@@ -758,9 +791,17 @@ $app->post('/fundraiser/user', function (Request $request, Response $response) {
   return $response->withJSON($jsonResponse);
 });
 
-$app->post('/fundraiser/user/lite', function (Request $request, Response $response) {
+$app->post('/fundraiser/player/{playerHashID}/user/lite', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashPlayerID = $request->getAttribute('playerHashID');
+
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
   $json = $request->getBody();
   $data = json_decode($json, true); 
+
+  $db = connect_db();
 
   $paramaObj = (object) [
     'email' => $data['email'],
@@ -770,6 +811,12 @@ $app->post('/fundraiser/user/lite', function (Request $request, Response $respon
     'acceptTerms' => $data['acceptTerms']
   ];
   $jsonResponse = createFundraisingPlayerLite($paramaObj);
+  if ($jsonResponse) {
+    addLogToDB($db, LOG_OBJECT_PLAYER_PROVIDER, LOG_FUNDRAISING_USER_CREATE_SUCCESS, $playerID);
+  }
+  else {
+    addLogToDB($db, LOG_OBJECT_PLAYER_PROVIDER, LOG_FUNDRAISING_USER_CREATE_FAIL, $playerID);
+  }
 
   return $response->withJSON($jsonResponse);
 });
