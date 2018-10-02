@@ -748,7 +748,12 @@ $app->get('/fundraiser/player/{playerHashID}/user/{email}/{password}', function 
   $jsonPlayerResponse = getFundraisingPlayer($request->getAttribute('email'), $request->getAttribute('password'));
   if ($jsonPlayerResponse) {
     $jsonResponse = array('exists' => $jsonPlayerResponse->isValid);
-    addLogToDB($db, LOG_OBJECT_PLAYER_PROVIDER, LOG_FUNDRAISING_USER_QUERY_SUCCESS, $playerID);
+    if ($jsonPlayerResponse->isValid) {
+      addLogToDB($db, LOG_OBJECT_PLAYER_PROVIDER, LOG_FUNDRAISING_USER_QUERY_SUCCESS, $playerID);
+    }
+    else {
+      addLogToDB($db, LOG_OBJECT_PLAYER_PROVIDER, LOG_FUNDRAISING_USER_QUERY_FAIL, $playerID);
+    }
   }
   else {
     addLogToDB($db, LOG_OBJECT_PLAYER_PROVIDER, LOG_FUNDRAISING_USER_QUERY_FAIL, $playerID);
