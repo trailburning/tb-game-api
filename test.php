@@ -63,7 +63,7 @@ $hashids = new Hashids\Hashids('mountainrush', 10);
 $id = $hashids->encode(1);
 var_dump($id);
 
-$id = $hashids->decode('5pYoEpPrdW')[0];
+$id = $hashids->decode('0oLr2AnZzQ')[0];
 var_dump($id);
 
 //addLogToDB(LOG_OBJECT_GAME, LOG_ACTIVITY_CREATE, 2084);
@@ -81,7 +81,6 @@ var_dump($id);
 $activePlayerID = 164;
 $gameID = 2036;
 $LatestActivity = 1593291827;
-
 
 // custom email
 function getCustomPlayersFromDB($clientID) {
@@ -115,7 +114,7 @@ function sendTestEmail($strEmailTemplate, $jsonEmail, $player) {
   // MLA - test email
   $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
-
+/*
 $clientID = '2';
 $jsonPlayerResponse = getCustomPlayersFromDB($clientID);
 if (count($jsonPlayerResponse)) {
@@ -126,6 +125,7 @@ if (count($jsonPlayerResponse)) {
     sendTestEmail('EDM - Mountain Rush', $jsonEmail, $player);
   }
 }
+*/
 
 /*
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
