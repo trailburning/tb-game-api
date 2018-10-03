@@ -19,6 +19,9 @@ define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+use Strava\API\OAuth;
+use Strava\API\Exception;
+
 include "lib/tbLog.php";
 include "lib/tbEmail.php";
 include "lib/tbSocial.php";
@@ -60,9 +63,6 @@ if (getenv("CLEARDB_DATABASE_URL")) {
 
 $app->get('/', function (Request $request, Response $response) {
   echo 'Trailburning® Platform GAME API<br/>';
-
-// mla test
-//    $lastInsertID = $db->insert_id();
 });
 
 $app->get('/worker', function (Request $request, Response $response) {
@@ -187,6 +187,61 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
   header("HTTP/1.1 200 OK");
 
   return;
+});
+
+$app->get('/campaign/{campaignHashID}/strava/oauth', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashCampaignID = $request->getAttribute('campaignHashID');
+  $campaignID = $hashids->decode($hashCampaignID)[0];
+
+  $jsonResponse = array();
+
+  try {
+    $options = array(
+      'clientId'     => CLIENT_ID,
+      'clientSecret' => CLIENT_SECRET,
+      'redirectUri'  => 'https://mountainrush.co.uk/campaign/' . $campaignID . '/register'
+    );
+
+    $oauth = new OAuth($options);
+    $oauth_connect = $oauth->getAuthorizationUrl(array('scope' => 'public'));      
+
+    $jsonResponse['oauthConnectURL'] = $oauth_connect;
+  } catch(Exception $e) {
+    print $e->getMessage();
+  }
+
+  return $response->withJSON($jsonResponse);  
+});
+
+$app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashCampaignID = $request->getAttribute('campaignHashID');
+  $campaignID = $hashids->decode($hashCampaignID)[0];
+
+  $stravaCode = $request->getAttribute('stravaCode');
+
+  $jsonResponse = array();
+
+  try {
+    $options = array(
+      'clientId'     => CLIENT_ID,
+      'clientSecret' => CLIENT_SECRET,
+      'redirectUri'  => 'https://mountainrush.co.uk/campaign/' . $campaignID . '/register'
+    );
+
+    $oauth = new OAuth($options);
+    $oauth_connect = $oauth->getAuthorizationUrl(array('scope' => 'public'));      
+
+    $jsonResponse['oauthConnectURL'] = $oauth_connect;
+    $jsonResponse['token'] = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode));
+  } catch(Exception $e) {
+    print $e->getMessage();
+  }
+
+  return $response->withJSON($jsonResponse);  
 });
 
 $app->get('/game/{gameHashID}/socialimage', function (Request $request, Response $response) {
