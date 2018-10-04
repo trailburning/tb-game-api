@@ -219,7 +219,6 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $hashCampaignID = $request->getAttribute('campaignHashID');
-  $campaignID = $hashids->decode($hashCampaignID)[0];
 
   $stravaCode = $request->getAttribute('stravaCode');
 
@@ -229,7 +228,7 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
     $options = array(
       'clientId'     => CLIENT_ID,
       'clientSecret' => CLIENT_SECRET,
-      'redirectUri'  => 'https://mountainrush.co.uk/campaign/' . $campaignID . '/register'
+      'redirectUri'  => 'https://mountainrush.co.uk/campaign/' . $hashCampaignID . '/register'
     );
 
     $oauth = new OAuth($options);
