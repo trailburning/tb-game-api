@@ -193,7 +193,6 @@ $app->get('/campaign/{campaignHashID}/strava/oauth', function (Request $request,
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $hashCampaignID = $request->getAttribute('campaignHashID');
-  $campaignID = $hashids->decode($hashCampaignID)[0];
 
   $jsonResponse = array();
 
@@ -201,7 +200,7 @@ $app->get('/campaign/{campaignHashID}/strava/oauth', function (Request $request,
     $options = array(
       'clientId'     => CLIENT_ID,
       'clientSecret' => CLIENT_SECRET,
-      'redirectUri'  => 'https://mountainrush.co.uk/campaign/' . $campaignID . '/register'
+      'redirectUri'  => 'https://mountainrush.co.uk/campaign/' . $hashCampaignID . '/register'
     );
 
     $oauth = new OAuth($options);
