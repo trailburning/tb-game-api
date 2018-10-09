@@ -302,11 +302,13 @@ $app->get('/game/{gameHashID}/campaign', function (Request $request, Response $r
   $hashGameID = $request->getAttribute('gameHashID');
   $gameID = $hashids->decode($hashGameID)[0];
 
-  $jsonResponse = getCampaignByGameFromDB($gameID);
+  $jsonResponse = null;
 
-  $gameJSON = $response->withJSON($jsonResponse);
+  if ($gameID) {
+    $jsonResponse = getCampaignByGameFromDB($gameID);
+  }
 
-  return $gameJSON;
+  return $response->withJSON($jsonResponse);
 });
 
 $app->post('/game', function (Request $request, Response $response) {
