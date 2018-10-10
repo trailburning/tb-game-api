@@ -223,11 +223,13 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
 
   $jsonResponse = array();
 
+// 181010 mla - remove https until we get SSL sorted after transfer to Heroku
   try {
     $options = array(
       'clientId'     => CLIENT_ID,
       'clientSecret' => CLIENT_SECRET,
-      'redirectUri'  => 'https://mountainrush.co.uk/campaign/' . $hashCampaignID . '/register'
+      'redirectUri'  => 'http://mountainrush.co.uk/campaign/' . $hashCampaignID . '/register'
+//      'redirectUri'  => 'https://mountainrush.co.uk/campaign/' . $hashCampaignID . '/register'
     );
 
     $oauth = new OAuth($options);
