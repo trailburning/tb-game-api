@@ -202,7 +202,7 @@ $app->get('/campaign/{campaignHashID}/strava/oauth', function (Request $request,
     $options = array(
       'clientId'     => CLIENT_ID,
       'clientSecret' => CLIENT_SECRET,
-      'redirectUri'  => MR_SECURE_DOMAIN . '/campaign/' . $hashCampaignID . '/register'
+      'redirectUri'  => MR_SECURE_DOMAIN . 'campaign/' . $hashCampaignID . '/register'
     );
 
     $oauth = new OAuth($options);
@@ -229,7 +229,7 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
     $options = array(
       'clientId'     => CLIENT_ID,
       'clientSecret' => CLIENT_SECRET,
-      'redirectUri'  => MR_SECURE_DOMAIN . '/campaign/' . $hashCampaignID . '/register'
+      'redirectUri'  => MR_SECURE_DOMAIN . 'campaign/' . $hashCampaignID . '/register'
     );
 
     $oauth = new OAuth($options);
