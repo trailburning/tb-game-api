@@ -10,9 +10,7 @@ header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token , Autho
 header('Content-Type: application/json');
 
 define('MR_DOMAIN', 'http://mountainrush.co.uk/');
-// 181010 mla - remove https until we get SSL sorted after transfer to Heroku
-//define('MR_SECURE_DOMAIN', 'https://mountainrush.co.uk/');
-define('MR_SECURE_DOMAIN', 'http://mountainrush.co.uk/');
+define('MR_SECURE_DOMAIN', 'https://mountainrush.co.uk/');
 define('GAME_API_DOMAIN', 'https://tb-game-api.herokuapp.com/');
 
 define('CLIENT_ID', 15175);
