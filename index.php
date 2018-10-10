@@ -202,7 +202,7 @@ $app->get('/campaign/{campaignHashID}/strava/oauth', function (Request $request,
     $options = array(
       'clientId'     => CLIENT_ID,
       'clientSecret' => CLIENT_SECRET,
-      'redirectUri'  => 'https://mountainrush.co.uk/campaign/' . $hashCampaignID . '/register'
+      'redirectUri'  => MR_SECURE_DOMAIN . '/campaign/' . $hashCampaignID . '/register'
     );
 
     $oauth = new OAuth($options);
