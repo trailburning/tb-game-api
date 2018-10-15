@@ -187,6 +187,8 @@ function getGamePlayersFromDB($gameID) {
     $hashID = $hashids->encode($row['id']);
     $row['id'] = $hashID;
 
+    $row['fundraising_currency_symbol'] = getCurrencySymbol($row['fundraising_currency']);
+
     $rows[$index] = $row;
     $index++;
   }
