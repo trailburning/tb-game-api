@@ -367,7 +367,7 @@ function getGamePlayerFromDB($gameID, $playerID) {
   require_once 'lib/mysql.php';
 
   $db = mysqliSingleton::init();
-  $result = $db->query('SELECT fundraising_pageID, fundraising_page, fundraising_goal, fundraising_raised, fundraising_currency, bMediaCaptured, latestMarkerID, ascentCompleted, distanceCompleted, players.firstname, players.lastname, players.email, players.game_notifications, players.measurement FROM gamePlayers JOIN players ON players.id = gamePlayers.player where game = ' . $gameID . ' and player = ' . $playerID);
+  $result = $db->query('SELECT fundraising_pageID, fundraising_page, fundraising_goal, fundraising_raised, fundraising_currency, fundraising_msg, bMediaCaptured, latestMarkerID, ascentCompleted, distanceCompleted, players.avatar, players.firstname, players.lastname, players.email, players.game_notifications, players.measurement FROM gamePlayers JOIN players ON players.id = gamePlayers.player where game = ' . $gameID . ' and player = ' . $playerID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
