@@ -137,12 +137,12 @@ function setPlayerGameActivityTotalsInDB($gameID, $playerID, $ascent, $distance)
   $db->query('UPDATE gamePlayers SET ascent = ' . $ascent . ', distance = ' . $distance . ' where game = ' . $gameID . ' and player = ' . $playerID);
 }
 
-function setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $fundraisingGoal, $fundraisingRaised, $fundraisingCurrency, $fundraisingCharityOptIn) {
+function setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $fundraisingMsg, $fundraisingGoal, $fundraisingRaised, $fundraisingCurrency, $fundraisingCharityOptIn) {
   require_once 'lib/mysql.php';
 
   // only set once
   $db = mysqliSingleton::init();
-  $db->query('UPDATE gamePlayers SET fundraising_goal = ' . $fundraisingGoal . ', fundraising_raised = ' . $fundraisingRaised . ', fundraising_currency = "' . $fundraisingCurrency . '", fundraising_charityOptIn = ' . $fundraisingCharityOptIn . ' where game = ' . $gameID . ' and player = ' . $playerID);
+  $db->query('UPDATE gamePlayers SET fundraising_msg = "' . $fundraisingMsg . '", fundraising_goal = ' . $fundraisingGoal . ', fundraising_raised = ' . $fundraisingRaised . ', fundraising_currency = "' . $fundraisingCurrency . '", fundraising_charityOptIn = ' . $fundraisingCharityOptIn . ' where game = ' . $gameID . ' and player = ' . $playerID);
 }
 
 function setPlayerGameDistanceCompleteInDB($gameID, $playerID, $distanceCompleteActivityDate) {
@@ -370,6 +370,7 @@ function getGamePlayerFromDB($gameID, $playerID) {
 
   $db = mysqliSingleton::init();
   $result = $db->query('SELECT fundraising_pageID, fundraising_page, fundraising_goal, fundraising_raised, fundraising_currency, fundraising_msg, bMediaCaptured, latestMarkerID, ascentCompleted, distanceCompleted, players.avatar, players.firstname, players.lastname, players.email, players.game_notifications, players.measurement FROM gamePlayers JOIN players ON players.id = gamePlayers.player where game = ' . $gameID . ' and player = ' . $playerID);
+
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
