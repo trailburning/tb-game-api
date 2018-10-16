@@ -727,7 +727,7 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
     $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
     if (count($gamePlayerResults)) {
       // store fundraising details
-      setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $data['targetAmount'], 0, $data['currencyCode'], $data['charityOptIn']);
+      setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $data['supporterMsg'], $data['targetAmount'], 0, $data['currencyCode'], $data['charityOptIn']);
 
       $jsonResponse = null;
 
@@ -949,7 +949,7 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/page/{pageShortNa
   // update fundraising info in DB
   if ($jsonResponse) {
     // always set CharityOptIn to false as JustGiving maintain this internally
-    setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $jsonResponse->fundraisingTarget, $jsonResponse->totalRaisedOnline, $jsonResponse->currencyCode, 0);
+    setPlayerGameFundraisingDetailsInDB($gameID, $playerID, '', $jsonResponse->fundraisingTarget, $jsonResponse->totalRaisedOnline, $jsonResponse->currencyCode, 0);
   }
 
   return $response->withJSON($jsonResponse);
