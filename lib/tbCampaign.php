@@ -128,7 +128,13 @@ function getCampaignCodeFromDB($campaignID, $strCode) {
 }
 
 function getCampaignLanguagesFromDB($campaignID) {
+  require_once 'lib/mysql.php';
+
   $db = mysqliSingleton::init();
+
+echo 'SELECT languages.name, languages.description FROM campaignlanguages JOIN languages ON campaignlanguages.languageID = languages.id WHERE campaignlanguages.campaignID = ' . $campaignID;
+return;
+
   $result = $db->query('SELECT languages.name, languages.description FROM campaignlanguages JOIN languages ON campaignlanguages.languageID = languages.id WHERE campaignlanguages.campaignID = ' . $campaignID);
   $rows = array();
   $index = 0;
