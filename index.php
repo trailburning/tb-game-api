@@ -306,6 +306,11 @@ $app->get('/game/{gameHashID}/campaign', function (Request $request, Response $r
 
   if ($gameID) {
     $jsonResponse = getCampaignByGameFromDB($gameID);
+    if (count($jsonResponse)) {
+      $campaignID = $hashids->decode($jsonResponse[0]['id'])[0];
+      // add language data
+      $jsonResponse[0]['languages'] = getCampaignLanguagesFromDB($campaignID);    
+    }
   }
 
   return $response->withJSON($jsonResponse);
@@ -508,6 +513,8 @@ $app->get('/campaign/{campaignHashID}', function (Request $request, Response $re
     $jsonResponse = getCampaignFromDB($db, $campaignID);
     if (count($jsonResponse)) {
       $jsonResponse[0]['fundraising_currency_symbol'] = getCurrencySymbol($jsonResponse[0]['fundraising_currency']);
+      // add language data
+      $jsonResponse[0]['languages'] = getCampaignLanguagesFromDB($campaignID);
     }
     return $response->withJSON($jsonResponse);
   }
