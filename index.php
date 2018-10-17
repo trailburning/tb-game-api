@@ -945,11 +945,10 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/page/{pageShortNa
   $playerID = $hashids->decode($hashPlayerID)[0];
 
   $jsonResponse = getFundraisingPage($request->getAttribute('pageShortName'));
-
   // update fundraising info in DB
   if ($jsonResponse) {
     // always set CharityOptIn to false as JustGiving maintain this internally
-    setPlayerGameFundraisingDetailsInDB($gameID, $playerID, '', $jsonResponse->fundraisingTarget, $jsonResponse->totalRaisedOnline, $jsonResponse->currencyCode, 0);
+    setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $jsonResponse->story, $jsonResponse->fundraisingTarget, $jsonResponse->totalRaisedOnline, $jsonResponse->currencyCode, 0);
   }
 
   return $response->withJSON($jsonResponse);
