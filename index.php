@@ -1,5 +1,6 @@
 <?php
-error_reporting(E_ERROR);
+//error_reporting(E_ERROR);
+error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 header('Access-Control-Allow-Origin: *');
@@ -309,8 +310,7 @@ $app->get('/game/{gameHashID}/campaign', function (Request $request, Response $r
     if (count($jsonResponse)) {
       $campaignID = $hashids->decode($jsonResponse[0]['id'])[0];
       // add language data
-      // 181017 MLA - not working!
-//      $jsonResponse[0]['languages'] = getCampaignLanguagesFromDB($campaignID);    
+      $jsonResponse[0]['languages'] = getCampaignLanguagesFromDB($campaignID);    
     }
   }
 
@@ -515,8 +515,7 @@ $app->get('/campaign/{campaignHashID}', function (Request $request, Response $re
     if (count($jsonResponse)) {
       $jsonResponse[0]['fundraising_currency_symbol'] = getCurrencySymbol($jsonResponse[0]['fundraising_currency']);
       // add language data
-      // 181017 MLA - not working!      
-//      $jsonResponse[0]['languages'] = getCampaignLanguagesFromDB($campaignID);
+      $jsonResponse[0]['languages'] = getCampaignLanguagesFromDB($campaignID);
     }
     return $response->withJSON($jsonResponse);
   }
