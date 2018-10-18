@@ -1,6 +1,6 @@
 <?php
 //error_reporting(E_ERROR);
-error_reporting(E_ALL);
+error_reporting(E_ERROR);
 ini_set('display_errors', 1);
 
 header('Access-Control-Allow-Origin: *');
@@ -39,7 +39,13 @@ require 'vendor/autoload.php';
 require_once 'lib/mysqliSingleton.php';
 require_once 'lib/mysql.php';
 
-$app = new \Slim\App;
+$configuration = [
+    'settings' => [
+        'displayErrorDetails' => true,
+    ],
+];
+$c = new \Slim\Container($configuration);
+$app = new \Slim\App($c);
 
 const DEBUG = false;
 //const DEBUG = true;
