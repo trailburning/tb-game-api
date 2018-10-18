@@ -38,7 +38,7 @@ include "lib/tbHelper.php";
 require 'vendor/autoload.php';
 require_once 'lib/mysqliSingleton.php';
 require_once 'lib/mysql.php';
-
+/*
 $configuration = [
     'settings' => [
         'displayErrorDetails' => true,
@@ -46,6 +46,8 @@ $configuration = [
 ];
 $c = new \Slim\Container($configuration);
 $app = new \Slim\App($c);
+*/
+$app = new \Slim\App;
 
 const DEBUG = false;
 //const DEBUG = true;
