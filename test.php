@@ -87,8 +87,11 @@ function getCustomPlayersFromDB($clientID) {
   require_once 'lib/mysql.php';
 
   $db = mysqliSingleton::init();
-  $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE clientID = ' . $clientID . ' and lastname = "Allbeury"');
-//  $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE clientID = ' . $clientID . ' and created > "2018-09-15" order by created asc');
+  $strSQL = 'SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE clientID = ' . $clientID . ' and lastname = "Allbeury"';  
+
+//  $strSQL = 'SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated, gameplayers.fundraising_goal FROM players JOIN gameplayers ON gameplayers.player = players.id WHERE game_notifications = 1 and clientID = ' . $clientID . ' and created > "2018-09-01" and gameplayers.fundraising_goal = 0 order by created asc';
+
+  $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -106,7 +109,7 @@ function sendTestEmail($strEmailTemplate, $jsonEmail, $player) {
   $strSubject = $arrEmail->title;
 
   echo $arrEmail->message;
-  return;
+//  return;
 
   // now send an email
   $result = sendEmail($strEmailTemplate, $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
@@ -114,18 +117,18 @@ function sendTestEmail($strEmailTemplate, $jsonEmail, $player) {
   // MLA - test email
   $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
-/*
+
 $clientID = '2';
 $jsonPlayerResponse = getCustomPlayersFromDB($clientID);
 if (count($jsonPlayerResponse)) {
-  $jsonEmail = '{"title": "Sorry for the inconvenience,<br/>we had an unexpected problem", "image": "http://tbassets2.imgix.net/images/brands/mountainrush/edm/djJrblYlXV/challenge_activity_682x300.jpg?q=80", "message": "<p>[PLAYER_FIRSTNAME],</p><p>During the recent launch of the <a href=\"https://wwf.org.uk/climbforyourworld\">Climb For Your World</a> campaign we experienced a technical problem with the fundraising integration.</p><p>This problem has been resolved and you can now add fundraising at your leisure.</p><p>Simply visit <a href=\"https://wwf.org.uk/climbforyourworld\">Climb For Your World</a> and sign in, then proceed to your challenge and click ENABLE FUNDRAISING.</p><p>If you have any questions please <a href=\"mailto:support@mountainrush.co.uk\">contact</a> us!</p>", "preferences": ""}';
+  $jsonEmail = '{"title": "Fundraising for Climb For Your World", "image": "http://tbassets2.imgix.net/images/brands/mountainrush/edm/djJrblYlXV/challenge_activity_682x300.jpg?q=80", "message": "<p>Hi [PLAYER_FIRSTNAME],</p><p>We notice you recently started a WWF <a href=\"https://wwf.org.uk/climbforyourworld\">Climb For Your World</a> challenge, and as the developer of this challenge we\'re always looking for ways to improve the experience.</p><p>We notice that you didn\'t add fundraising to your challenge and would love to know why.</p><p>If you have a moment then please take this <a href=\"mailto:support@trailburning.com\">short survey</a> or <a href=\"mailto:support@trailburning.com\">contact</a> us with any issues you may have had, or suggestions to improve the experience.</p><p>The Mountain Rush Team</p>", "preferences": ""}';
 
   foreach ($jsonPlayerResponse as $player) {
     echo 'p:' . $player['firstname'] . ' ' . $player['lastname'] . '<br/>';
     sendTestEmail('EDM - Mountain Rush', $jsonEmail, $player);
   }
 }
-*/
+
 
 /*
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
