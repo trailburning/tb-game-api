@@ -85,6 +85,20 @@ function getPlayerFromDB($db, $playerID) {
   return $rows;
 }
 
+function getPlayerByIDFromDB($playerID) {
+  $db = connect_db();
+
+  $result = $db->query('SELECT id, clientID, avatar, firstname, lastname, email, game_notifications, measurement, last_activity, last_updated, playerProviderToken FROM players where id = ' . $playerID);
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
 function getPlayerDetailsFromDB($playerID) {
   require_once 'lib/mysql.php';
 
