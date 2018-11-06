@@ -41,7 +41,7 @@ function getPlayerGameProgress($playerID, $gameID) {
 function getCurrencySymbol($currencyCode) {
   $currencySymbol = '$';
 
-  switch ($currencyCode) {
+  switch (strtoupper($currencyCode)) {
     case 'GBP':
       $currencySymbol = '£';
       break;

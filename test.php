@@ -11,6 +11,8 @@ include "lib/tbSocial.php";
 include "lib/tbGame.php";
 include "lib/tbPlayer.php";
 include "lib/tbPlayerActivities.php";
+include "lib/tbFundraising.php";
+include "lib/tbHelper.php";
 
 require_once('vendor/autoload.php');
 require_once 'lib/mysqliSingleton.php';
@@ -73,7 +75,7 @@ var_dump($id);
 
 // MR
 //$activePlayerID = 36;
-//$gameID = 2041;
+$gameID = 2041;
 //$gameID = 2114; // 2 player
 //$LatestActivity = 1626880620;
 
@@ -117,7 +119,7 @@ function sendTestEmail($strEmailTemplate, $jsonEmail, $player) {
   // MLA - test email
   $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
-
+/*
 $clientID = '2';
 $jsonPlayerResponse = getCustomPlayersFromDB($clientID);
 if (count($jsonPlayerResponse)) {
@@ -128,9 +130,9 @@ if (count($jsonPlayerResponse)) {
     sendTestEmail('EDM - Mountain Rush', $jsonEmail, $player);
   }
 }
+*/
 
 
-/*
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
 $jsonGamesResponse = getGameFromDB($gameID);
@@ -189,5 +191,5 @@ if (count($jsonGamesResponse)) {
     }
   }
 }
-*/
+
 exit;
