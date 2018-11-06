@@ -59,9 +59,18 @@ function getFundraisingDonations($hashGameID, $hashPlayerID) {
 
   $result = curl_exec($ch);
 
+/*
+  $result = '{"result": {"transactions": [{"stored_anonymous_donation": null,"stored_customer_firstname": "","stored_customer_lastname": "","stored_customer_nickname": "Chumney Warner","stored_customer_additional_message": "This is amazing!","amount": 1000,"currency_identifier": "eur"},{"stored_anonymous_donation": null,"stored_customer_firstname": "Matt","stored_customer_lastname": "Allbeury","stored_customer_nickname": null,"stored_customer_additional_message": "This is fun!","amount": 2000,"currency_identifier": "chf"}]}}';  
+*/
+
   $jsonResponse = json_decode($result);  
 
   curl_close($ch);
+
+  // add currency symbols
+  foreach($jsonResponse->result->transactions as $transaction) {
+    $transaction->currency_symbol = getCurrencySymbol($transaction->currency_identifier);
+  }
   
   return $jsonResponse;
 }
