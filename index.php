@@ -510,6 +510,31 @@ $app->get('/client/{clientHashID}/playertoken/{token}', function (Request $reque
   }
 });
 
+/* 181106 mla - old version until browser cache expires */
+$app->get('/client/{clientHashID}/player/{token}', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashClientID = $request->getAttribute('clientHashID');
+  $clientID = $hashids->decode($hashClientID)[0];
+
+  $token = $request->getAttribute('token');
+  $jsonResponse = getPlayer($clientID, $token);
+  if (count($jsonResponse)) {
+
+    // add inviation data
+    $jsonResponse[0]['invitations'] = getPlayerGameInvitationsFromDB($jsonResponse[0]['id']);
+
+    // add game data
+    $jsonResponse[0]['games'] = getGamesByPlayerFromDB($jsonResponse[0]['id']);
+
+    $jsonResponse[0]['id'] = $hashids->encode($jsonResponse[0]['id']);
+    $jsonResponse[0]['clientID'] = $hashids->encode($jsonResponse[0]['clientID']);
+
+    return $response->withJSON($jsonResponse);
+  }
+});
+/* 181106 mla - new version */
+/*
 $app->get('/client/{clientHashID}/player/{playerHashID}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
@@ -537,7 +562,7 @@ $app->get('/client/{clientHashID}/player/{playerHashID}', function (Request $req
   }
   return null;
 });
-
+*/
 $app->get('/campaign/{campaignHashID}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
