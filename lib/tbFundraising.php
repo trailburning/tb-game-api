@@ -168,6 +168,10 @@ function createFundraisingPlayerPage($paramaObj) {
   $registerPageRequest->eventName = $paramaObj->eventName;
   $registerPageRequest->charityId = $paramaObj->charityID;
   $registerPageRequest->eventId = $paramaObj->eventID;
+  // do we have a supporter msg to use?
+  if ($registerPageRequest->supporterMsg != '') {
+    $registerPageRequest->pageStory = $registerPageRequest->supporterMsg;
+  }
   $registerPageRequest->targetAmount = $paramaObj->targetAmount;
   $registerPageRequest->justGivingOptIn = $paramaObj->justGivingOptIn;
   $registerPageRequest->charityOptIn = $paramaObj->charityOptIn;

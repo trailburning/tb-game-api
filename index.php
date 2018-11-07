@@ -980,6 +980,7 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
         'charityID' => $jsonCampaign[0]['fundraising_charity'],
         'eventID' => $jsonCampaign[0]['fundraising_event'],
         'targetAmount' => $data['targetAmount'],
+        'supporterMsg' => $data['supporterMsg'],
         'justGivingOptIn' => $data['justGivingOptIn'],
         'charityOptIn' => $data['charityOptIn'],
         'imageURL' => "http://tbassets2.imgix.net/images/brands/mountainrush/social/wwf/CFYW_Gorilla_JustGiving2.png"
