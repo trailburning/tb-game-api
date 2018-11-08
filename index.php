@@ -691,7 +691,7 @@ $app->post('/player/{playerHashID}', function (Request $request, Response $respo
   return $response->withJSON($jsonResponse);
 });
 
-$app->get('/client/{clientHashID}/player/{token}/update', function (Request $request, Response $response) {
+$app->get('/client/{clientHashID}/playertoken/{token}/update', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $hashClientID = $request->getAttribute('clientHashID');
