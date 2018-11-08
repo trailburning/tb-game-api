@@ -132,7 +132,7 @@ if (count($jsonPlayerResponse)) {
 }
 */
 
-
+/*
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
 $jsonGamesResponse = getGameFromDB($gameID);
@@ -191,5 +191,5 @@ if (count($jsonGamesResponse)) {
     }
   }
 }
-
+*/
 exit;
