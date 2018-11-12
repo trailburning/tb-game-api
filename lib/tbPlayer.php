@@ -58,6 +58,21 @@ function getPlayerFromDBByToken($clientID, $token) {
   return $rows;
 }
 
+function getPlayerFromDBByID($playerID) {
+  require_once 'lib/mysql.php';
+
+  $db = connect_db();
+  $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, game_notifications, measurement, playerProviderID, playerProviderToken, last_activity, last_updated FROM players WHERE id = ' . $playerID);
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
 function getPlayerFromDBByProviderID($providerID) {
   require_once 'lib/mysql.php';
 
@@ -166,9 +181,11 @@ function updatePlayerDetailsInDB($avatar, $firstname, $lastname, $email, $city, 
   $result = $db->query('update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where email = "' . $email . '"');
 }
 
-function updatePlayer($clientID, $token) {
-  $results = getPlayerFromDBByToken($clientID, $token);
+function updatePlayer($playerID) {
+  $results = getPlayerFromDBByID($playerID);
   if (count($results) != 0) {
+    $token = $results[0]['playerProviderToken'];
+
     // get from provider
     $adapter = new Pest('https://www.strava.com/api/v3');
     $service = new REST($token, $adapter);

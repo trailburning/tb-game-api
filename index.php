@@ -691,22 +691,23 @@ $app->post('/player/{playerHashID}', function (Request $request, Response $respo
   return $response->withJSON($jsonResponse);
 });
 
-$app->get('/client/{clientHashID}/playertoken/{token}/update', function (Request $request, Response $response) {
+$app->get('/player/{playerHashID}/update', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
-
-  $hashClientID = $request->getAttribute('clientHashID');
-  $clientID = $hashids->decode($hashClientID)[0];
   
-  $token = $request->getAttribute('token');
+  $hashPlayerID = $request->getAttribute('playerHashID');
+  $playerID = $hashids->decode($hashPlayerID)[0];
 
-  $jsonResponse = updatePlayer($clientID, $token);
-  $jsonResponse = getPlayer($clientID, $token);
+  $jsonResponse = updatePlayer($playerID);
+  $jsonResponse = getPlayerFromDBByID($playerID);
 
   // add game data
   $jsonResponse[0]['games'] = getGamesByPlayerFromDB($jsonResponse[0]['id']);
 
   $hashID = $hashids->encode($jsonResponse[0]['id']);
   $jsonResponse[0]['id'] = $hashID;
+
+  $hashClientID = $hashids->encode($jsonResponse[0]['clientID']);
+  $jsonResponse[0]['clientID'] = $hashClientID;
 
   return $response->withJSON($jsonResponse);
 });
