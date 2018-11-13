@@ -12,12 +12,12 @@ function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer) {
   // does player have a new activity?
   if ($gamePlayer['latest_activity']) {
     if (DEBUG) echo 'Player:' . $gamePlayer['latest_activity'] . '<br/>';
-    $log->info('Player Activity');
+    $log->warning('Player Activity');
     // check the activity exists
     $activity = getPlayerActivity($gamePlayer['playerProviderToken'], $gamePlayer['latest_activity']);
     if ($activity) {
       if (DEBUG) echo 'Found Player Activity<br/>';
-      $log->info('Player Activity - Found');
+      $log->warning('Player Activity - Found');
       // reset activity
       setPlayerGameActivityInDB($gameID, $gamePlayerID, 0);
       // check activity type matches game type
@@ -46,7 +46,7 @@ function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer) {
 
           foreach ($jsonPlayersResponse as $player) {
             if (DEBUG) echo 'PLAYER ACTIVITY EMAIL<br/>';
-            $log->info('Activity Email');
+            $log->warning('Activity Email');
             if ($player['game_notifications']) {
               $jsonEmail = $game['email_activity_broadcast'];
               if ($player['id'] == $gamePlayer['id']) {
@@ -73,7 +73,7 @@ function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer) {
     }
   }
   else {
-    $log->info('Player No Activity');
+    $log->warning('Player No Activity');
     // is player still playing?
     if ($gamePlayer['state'] == GAME_PLAYER_PLAYING_STATE) {
       if (DEBUG) echo 'check last activity<br/>';
@@ -138,7 +138,7 @@ function processActivity($log) {
   // use UTC date
   date_default_timezone_set("UTC");
 
-  $log->info('Start');
+  $log->warning('Start');
 
   // get all games
   $jsonGamesResponse = getActiveGamesFromDB();
@@ -158,7 +158,7 @@ function processActivity($log) {
     }
   }
 
-  $log->info('End');
+  $log->warning('End');
 
   return $jsonGamesResponse;  
 }
