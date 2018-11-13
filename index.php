@@ -70,8 +70,9 @@ $app->get('/', function (Request $request, Response $response) {
   $log = new Logger('tracker');
   $log->pushHandler(new StreamHandler('php://stderr', Logger::WARNING));
 
-  $log->warning('Foo');
-  $log->error('Bar');
+  $log->warning('Test Warning');
+  $log->error('Test Error');
+  $log->info('Test Info');
 });
 
 $app->get('/worker', function (Request $request, Response $response) {
