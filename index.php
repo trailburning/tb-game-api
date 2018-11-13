@@ -1,5 +1,4 @@
 <?php
-//error_reporting(E_ERROR);
 error_reporting(E_ERROR);
 ini_set('display_errors', 1);
 
@@ -16,6 +15,9 @@ define('GAME_API_DOMAIN', 'https://tb-game-api.herokuapp.com/');
 
 define('CLIENT_ID', 15175);
 define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
+
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
@@ -38,15 +40,7 @@ include "lib/tbHelper.php";
 require 'vendor/autoload.php';
 require_once 'lib/mysqliSingleton.php';
 require_once 'lib/mysql.php';
-/*
-$configuration = [
-    'settings' => [
-        'displayErrorDetails' => true,
-    ],
-];
-$c = new \Slim\Container($configuration);
-$app = new \Slim\App($c);
-*/
+
 $app = new \Slim\App;
 
 const DEBUG = false;
@@ -75,8 +69,12 @@ $app->get('/', function (Request $request, Response $response) {
 });
 
 $app->get('/worker', function (Request $request, Response $response) {
+  $log = new Logger('tracker');
+  $log->pushHandler(new StreamHandler('php://stderr', Logger::WARNING));
+//  $log->pushHandler(new StreamHandler(__DIR__.'/my_app.log', Logger::DEBUG));
+
   // process game activity
-  $jsonActivity = processActivity();
+  $jsonActivity = processActivity($log);
 
   // don't present full json as it's very large, just create something small!
   $jsonResponse = array('active_games' => count($jsonActivity));

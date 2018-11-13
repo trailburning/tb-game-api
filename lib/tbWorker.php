@@ -1,7 +1,7 @@
 <?php
 const DAYS_INACTIVE = 7;
 
-function processGamePlayer($gameID, $game, $gamePlayerID, $gamePlayer) {
+function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer) {
   $dtNow = date('Y-m-d\TH:i:s.000\Z', time());
   $dtNowDate = new DateTime($dtNow);
 
@@ -12,10 +12,12 @@ function processGamePlayer($gameID, $game, $gamePlayerID, $gamePlayer) {
   // does player have a new activity?
   if ($gamePlayer['latest_activity']) {
     if (DEBUG) echo 'Player:' . $gamePlayer['latest_activity'] . '<br/>';
+    $log->info('Player Activity');
     // check the activity exists
     $activity = getPlayerActivity($gamePlayer['playerProviderToken'], $gamePlayer['latest_activity']);
     if ($activity) {
       if (DEBUG) echo 'Found Player Activity<br/>';
+      $log->info('Player Activity - Found');
       // reset activity
       setPlayerGameActivityInDB($gameID, $gamePlayerID, 0);
       // check activity type matches game type
@@ -44,6 +46,7 @@ function processGamePlayer($gameID, $game, $gamePlayerID, $gamePlayer) {
 
           foreach ($jsonPlayersResponse as $player) {
             if (DEBUG) echo 'PLAYER ACTIVITY EMAIL<br/>';
+            $log->info('Activity Email');
             if ($player['game_notifications']) {
               $jsonEmail = $game['email_activity_broadcast'];
               if ($player['id'] == $gamePlayer['id']) {
@@ -70,6 +73,7 @@ function processGamePlayer($gameID, $game, $gamePlayerID, $gamePlayer) {
     }
   }
   else {
+    $log->info('Player No Activity');
     // is player still playing?
     if ($gamePlayer['state'] == GAME_PLAYER_PLAYING_STATE) {
       if (DEBUG) echo 'check last activity<br/>';
@@ -128,11 +132,13 @@ function processGamePlayer($gameID, $game, $gamePlayerID, $gamePlayer) {
   }
 }
 
-function processActivity() {
+function processActivity($log) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   // use UTC date
   date_default_timezone_set("UTC");
+
+  $log->info('Start');
 
   // get all games
   $jsonGamesResponse = getActiveGamesFromDB();
@@ -146,12 +152,13 @@ function processActivity() {
         // go through all active game players
         foreach ($jsonGamePlayersResponse as $gamePlayer) {
           $gamePlayerID = $hashids->decode($gamePlayer['id'])[0]; 
-          processGamePlayer($gameID, $game, $gamePlayerID, $gamePlayer);
+          processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer);
         }
       }
-      // a little sleep
-      sleep(0.1);
     }
   }
-  return $jsonGamesResponse;
+
+  $log->info('End');
+
+  return $jsonGamesResponse;  
 }
