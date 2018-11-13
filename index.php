@@ -66,12 +66,17 @@ if (getenv("CLEARDB_DATABASE_URL")) {
 
 $app->get('/', function (Request $request, Response $response) {
   echo 'Trailburning® Platform GAME API<br/>';
+
+  $log = new Logger('tracker');
+  $log->pushHandler(new StreamHandler('php://stderr', Logger::WARNING));
+
+  $log->warning('Foo');
+  $log->error('Bar');
 });
 
 $app->get('/worker', function (Request $request, Response $response) {
   $log = new Logger('tracker');
   $log->pushHandler(new StreamHandler('php://stderr', Logger::WARNING));
-//  $log->pushHandler(new StreamHandler(__DIR__.'/my_app.log', Logger::DEBUG));
 
   // process game activity
   $jsonActivity = processActivity($log);
