@@ -167,11 +167,12 @@ function updatePlayerLastActivityInDB($playerID, $dtLastActivity) {
   $result = $db->query('update players set last_activity = "' . $dtLastActivity . '" where id = ' . $playerID);
 }
 
-function updatePlayerPreferencesInDB($playerID, $bReceiveEmail) {
+function updatePlayerPreferencesInDB($playerID, $strEmail, $bReceiveEmail) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('update players set game_notifications = ' . $bReceiveEmail . ' where id = ' . $playerID);
+  $strSQL = 'update players set email = "' . $strEmail . '", game_notifications = ' . $bReceiveEmail . ' where id = ' . $playerID;
+  $result = $db->query($strSQL);
 }
 
 function updatePlayerDetailsInDB($avatar, $firstname, $lastname, $email, $city, $country, $token) {
