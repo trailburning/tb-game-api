@@ -678,12 +678,7 @@ $app->post('/player/{playerHashID}', function (Request $request, Response $respo
   $json = $request->getBody();
   $data = json_decode($json, true);
 
-  $bReceiveEmail = 0;
-  if ($data['receiveEmail']) {
-    $bReceiveEmail = 1;
-  }
-
-  $jsonResponse = updatePlayerPreferencesInDB($hashids->decode($hashPlayerID)[0], $bReceiveEmail);
+  $jsonResponse = updatePlayerPreferencesInDB($hashids->decode($hashPlayerID)[0], $data['email'], $data['receiveEmail']);
 
   return $response->withJSON($jsonResponse);
 });
