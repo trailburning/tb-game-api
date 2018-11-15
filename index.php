@@ -678,7 +678,10 @@ $app->post('/player/{playerHashID}', function (Request $request, Response $respo
   $json = $request->getBody();
   $data = json_decode($json, true);
 
-  $jsonResponse = updatePlayerPreferencesInDB($hashids->decode($hashPlayerID)[0], $data['email'], $data['receiveEmail']);
+  // try and update
+  if (!updatePlayerPreferencesInDB($hashids->decode($hashPlayerID)[0], $data['email'], $data['receiveEmail'])) {
+    $jsonResponse = array('error' => array('id' => 'UserEmailAlreadyExists'));
+  }
 
   return $response->withJSON($jsonResponse);
 });

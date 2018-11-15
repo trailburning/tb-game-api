@@ -170,9 +170,27 @@ function updatePlayerLastActivityInDB($playerID, $dtLastActivity) {
 function updatePlayerPreferencesInDB($playerID, $strEmail, $bReceiveEmail) {
   require_once 'lib/mysql.php';
 
+  $bRet = false;
+
   $db = connect_db();
-  $strSQL = 'update players set email = "' . $strEmail . '", game_notifications = ' . $bReceiveEmail . ' where id = ' . $playerID;
-  $result = $db->query($strSQL);
+  // first get player
+  $resultPlayer = $db->query('SELECT * FROM players WHERE id = ' . $playerID);
+  if (mysqli_num_rows($resultPlayer)) {
+    while ( $row = $resultPlayer->fetch_array(MYSQLI_ASSOC) ) {
+      // see if another player has already has the email address
+      $strSQL = 'SELECT * FROM players WHERE clientID = ' . $row['clientID'] . ' AND email = "' . $strEmail . '" and id != ' . $playerID;
+      $resultExistingPlayer = $db->query($strSQL);      
+      if (mysqli_num_rows($resultExistingPlayer)) {
+        $result = null;
+      }
+      else {
+        $strSQL = 'update players set email = "' . $strEmail . '", game_notifications = ' . $bReceiveEmail . ' where id = ' . $playerID;
+        $result = $db->query($strSQL);
+        $bRet = true;
+      }
+    }
+  }
+  return $bRet;
 }
 
 function updatePlayerDetailsInDB($avatar, $firstname, $lastname, $email, $city, $country, $token) {
