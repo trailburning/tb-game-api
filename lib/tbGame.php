@@ -29,6 +29,16 @@ function addGameToDB($campaignID, $ownerPlayerID, $season, $type, $gameStart, $g
   return $ret;
 }
 
+function removeGameFromDB($gameID) {
+  $db = connect_db();
+
+  $db->query('DELETE FROM gameinvitations WHERE gameID = ' . $gameID);
+  $db->query('DELETE FROM gameplayers WHERE game = ' . $gameID);
+  $db->query('DELETE FROM games WHERE id = ' . $gameID);
+
+  return null;
+}
+
 function addGameInviteToDB($gameID, $playerEmail) {
   require_once 'lib/mysql.php';
 
