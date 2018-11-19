@@ -221,7 +221,7 @@ function updatePlayerBlankDetails($playerProviderID) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('UPDATE players SET avatar = "", firstname = "", lastname = "", email = "", city = "", country = "" WHERE playerProviderID = "' . $playerProviderID . '"');
+  $result = $db->query('UPDATE players SET avatar = "", firstname = "", lastname = "", city = "", country = "" WHERE playerProviderID = "' . $playerProviderID . '"');
 }
 
 function getPlayer($clientID, $token) {
