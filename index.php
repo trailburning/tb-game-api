@@ -9,7 +9,6 @@ header('Access-Control-Max-Age: 1000');
 header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token , Authorization');
 header('Content-Type: application/json');
 
-define('MR_DOMAIN', 'http://www.mountainrush.co.uk/');
 define('MR_SECURE_DOMAIN', 'https://www.mountainrush.co.uk/');
 define('GAME_API_DOMAIN', 'https://tb-game-api.herokuapp.com/');
 
