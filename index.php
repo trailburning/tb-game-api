@@ -506,7 +506,6 @@ $app->get('/client/{clientHashID}/playertoken/{token}', function (Request $reque
   $token = $request->getAttribute('token');
   $jsonResponse = getPlayer($clientID, $token);
   if (count($jsonResponse)) {
-
     // add inviation data
     $jsonResponse[0]['invitations'] = getPlayerGameInvitationsFromDB($jsonResponse[0]['id']);
 

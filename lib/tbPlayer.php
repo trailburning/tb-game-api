@@ -15,15 +15,17 @@ function addPlayerToDB($clientID, $avatar, $firstname, $lastname, $email, $city,
   date_default_timezone_set("UTC");
   $dtNow = date('Y-m-d H:i:s', time());
 
-  $db = connect_db();
-  if ($db->query('INSERT INTO players (created, clientID, avatar, firstname, lastname, email, city, country, game_notifications, playerProviderID, playerProviderToken) VALUES ("' . $dtNow . '", ' . $clientID . ', "' . $avatar . '", "' . $firstname . '", "' . $lastname . '", "' . $email. '", "' . $city . '", "' . $country. '", 1, "' . $providerID . '", "' . $providerToken . '")') === TRUE) {
-    $lastInsertID = $db->insert_id;
-    $ret = getPlayerFromDB($db, $lastInsertID);
-  }
-  else {
+  if (doesClientPlayerProviderIDAlreadyExistInDB($clientID, $providerID)) {
     // insert failed so the email has already been used, let's try an update
     updatePlayerDetailsInDB($avatar, $firstname, $lastname, $email, $city, $country, $providerToken);
-    $ret = getPlayerFromDBByEmail($clientID, $email);
+    $ret = getClientPlayerFromDBByProviderID($clientID, $providerID);
+  }
+  else {
+    $db = connect_db();
+    if ($db->query('INSERT INTO players (created, clientID, avatar, firstname, lastname, email, city, country, game_notifications, playerProviderID, playerProviderToken) VALUES ("' . $dtNow . '", ' . $clientID . ', "' . $avatar . '", "' . $firstname . '", "' . $lastname . '", "' . $email. '", "' . $city . '", "' . $country. '", 1, "' . $providerID . '", "' . $providerToken . '")') === TRUE) {
+      $lastInsertID = $db->insert_id;
+      $ret = getPlayerFromDB($db, $lastInsertID);
+    }
   }
   return $ret;
 }
@@ -33,6 +35,21 @@ function getPlayerFromDBByEmail($clientID, $email) {
 
   $db = connect_db();
   $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE clientID = ' . $clientID . ' and email = "' . $email . '"');
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
+function getClientPlayerFromDBByProviderID($clientID, $playerProviderID) {
+  require_once 'lib/mysql.php';
+
+  $db = connect_db();
+  $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, last_activity, last_updated FROM players WHERE clientID = ' . $clientID . ' and playerProviderID = "' . $playerProviderID . '"');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -167,9 +184,35 @@ function updatePlayerLastActivityInDB($playerID, $dtLastActivity) {
   $result = $db->query('update players set last_activity = "' . $dtLastActivity . '" where id = ' . $playerID);
 }
 
-function updatePlayerPreferencesInDB($playerID, $strEmail, $bReceiveEmail) {
-  require_once 'lib/mysql.php';
+function doesClientPlayerProviderIDAlreadyExistInDB($clientID, $playerProviderID) {
+  $bRet = false;
 
+  $db = connect_db();
+
+  // see if another player already has the email address
+  $strSQL = 'SELECT * FROM players WHERE clientID = ' . $clientID . ' AND playerProviderID = "' . $playerProviderID . '"';
+  $resultExistingPlayer = $db->query($strSQL);      
+  if (mysqli_num_rows($resultExistingPlayer)) {
+    $bRet = true;
+  }
+  return $bRet;
+}
+
+function doesPlayerEmailAlreadyExistInDB($playerID, $clientID, $strEmail) {
+  $bRet = false;
+
+  $db = connect_db();
+
+  // see if another player already has the email address
+  $strSQL = 'SELECT * FROM players WHERE clientID = ' . $clientID . ' AND email = "' . $strEmail . '" and id != ' . $playerID;
+  $resultExistingPlayer = $db->query($strSQL);      
+  if (mysqli_num_rows($resultExistingPlayer)) {
+    $bRet = true;
+  }
+  return $bRet;
+}
+
+function updatePlayerPreferencesInDB($playerID, $strEmail, $bReceiveEmail) {
   $bRet = false;
 
   $db = connect_db();
@@ -177,10 +220,7 @@ function updatePlayerPreferencesInDB($playerID, $strEmail, $bReceiveEmail) {
   $resultPlayer = $db->query('SELECT * FROM players WHERE id = ' . $playerID);
   if (mysqli_num_rows($resultPlayer)) {
     while ( $row = $resultPlayer->fetch_array(MYSQLI_ASSOC) ) {
-      // see if another player has already has the email address
-      $strSQL = 'SELECT * FROM players WHERE clientID = ' . $row['clientID'] . ' AND email = "' . $strEmail . '" and id != ' . $playerID;
-      $resultExistingPlayer = $db->query($strSQL);      
-      if (mysqli_num_rows($resultExistingPlayer)) {
+      if (doesPlayerEmailAlreadyExistInDB($playerID, $row['clientID'], $strEmail)) {
         $result = null;
       }
       else {
