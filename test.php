@@ -61,7 +61,7 @@ sendActivityEmail($game, $player, $activePlayer);
 
 $hashids = new Hashids\Hashids('mountainrush', 10);
 
-$id = $hashids->encode(1);
+$id = $hashids->encode(4841);
 var_dump($id);
 
 $id = $hashids->decode('0oLr2AnZzQ')[0];
@@ -114,7 +114,7 @@ function sendTestEmail($strEmailTemplate, $jsonEmail, $player) {
   // now send an email
   $result = sendEmail($strEmailTemplate, $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
-
+/*
 $clientID = '2';
 $jsonPlayerResponse = getCustomPlayersFromDB($clientID);
 if (count($jsonPlayerResponse)) {
@@ -125,7 +125,7 @@ if (count($jsonPlayerResponse)) {
     sendTestEmail('EDM - Mountain Rush', $jsonEmail, $player);
   }
 }
-
+*/
 
 /*
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
