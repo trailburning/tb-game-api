@@ -20,6 +20,14 @@ function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer) {
 //      $log->warning('Player Activity - Found');
       // reset activity
       setPlayerGameActivityInDB($gameID, $gamePlayerID, 0);
+
+      // 181129 mla - this will replace exisiting check, just needs a test..
+
+      // check activity type matches game type
+      // see if type is part of recorded type, so 'Ride' will also work with 'VirtualRide'
+//      $pos = strpos($activity['type'], $game['type']);
+//      if ($pos !== false) {
+
       // check activity type matches game type
       if ($activity['type'] == $game['type']) {
         addLogToDB($db, LOG_OBJECT_PLAYER, LOG_ACTIVITY_GAME_ACTIVITY, $gamePlayerID);
