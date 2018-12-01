@@ -3,6 +3,7 @@ use Imgix\UrlBuilder;
 
 function buildSocialGameImage($paramaObj) {
   $builder = new UrlBuilder("tbassets2.imgix.net");
+  $builder->setUseHttps(true);
 
   // bottom left data
   $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed Demi,Bold", "txtclr" => 'fff', "txtpad" => 0, "txtsize" => 55, "txt64" => $paramaObj->mountain);
@@ -55,6 +56,7 @@ function buildSocialGameImage($paramaObj) {
 
 function buildSocialGameProgressImage($paramaObj) {
   $builder = new UrlBuilder("tbassets2.imgix.net");
+  $builder->setUseHttps(true);
 
   // bottom left data
   $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed,Bold", "txtclr" => 'FFFFFF', "txtpad" => 0, "txtsize" => 56, "txt64" => $paramaObj->ascent . 'm');
@@ -81,6 +83,7 @@ function buildSocialGameProgressImage($paramaObj) {
 
 function buildSocialGameGoalImage($paramaObj) {
   $builder = new UrlBuilder("tbassets2.imgix.net");
+  $builder->setUseHttps(true);
 
   // bottom left data
   $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed,Bold", "txtclr" => 'FFFFFF', "txtpad" => 0, "txtsize" => 56, "txt64" => $paramaObj->ascent . 'm');
