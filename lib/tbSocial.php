@@ -1,12 +1,16 @@
 <?php
 use Imgix\UrlBuilder;
 
-function getChallengeDescription($gameType) {
-  $gameDescription = 'climb challenge';
+function getChallengeShortDescription($gameType) {
+  $gameDescription = 'climb';
   if ($gameType != 'All') {
-    $gameDescription = strtolower($gameType) . ' challenge';
+    $gameDescription = strtolower($gameType);
   }
   return $gameDescription;
+}
+
+function getChallengeDescription($gameType) {
+  return getChallengeShortDescription($gameType) . ' challenge';
 }
 
 function buildSocialGameImage($paramaObj) {
@@ -70,7 +74,7 @@ function buildSocialGameProgressImage($paramaObj) {
   $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed,Bold", "txtclr" => 'FFFFFF', "txtpad" => 0, "txtsize" => 56, "txt64" => $paramaObj->ascent . 'm');
   $txtMountain = $builder->createURL("~text", $params);
 
-  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed,Medium", "txtclr" => 'FFFFFF', "txtpad" => 0, "txtsize" => 45, "txt64" => strtoupper($paramaObj->mountain . ' ' . $paramaObj->type));
+  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed,Medium", "txtclr" => 'FFFFFF', "txtpad" => 0, "txtsize" => 45, "txt64" => strtoupper($paramaObj->mountain . ' ' . $paramaObj->challenge));
   $txtCountry = $builder->createURL("~text", $params);
 
   $params = array("w" => 896, "h" => 101, "markx" => 84, "marky" => 14, "mark64" => $txtMountain,
@@ -97,7 +101,7 @@ function buildSocialGameGoalImage($paramaObj) {
   $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed,Bold", "txtclr" => 'FFFFFF', "txtpad" => 0, "txtsize" => 56, "txt64" => $paramaObj->ascent . 'm');
   $txtMountain = $builder->createURL("~text", $params);
 
-  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed,Medium", "txtclr" => 'FFFFFF', "txtpad" => 0, "txtsize" => 45, "txt64" => strtoupper($paramaObj->mountain . ' ' . $paramaObj->type));
+  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed,Medium", "txtclr" => 'FFFFFF', "txtpad" => 0, "txtsize" => 45, "txt64" => strtoupper($paramaObj->mountain . ' ' . $paramaObj->challenge));
   $txtCountry = $builder->createURL("~text", $params);
 
   $params = array("w" => 896, "h" => 101, "markx" => 84, "marky" => 14, "mark64" => $txtMountain,
@@ -146,7 +150,7 @@ function generateGameProgressSocialImage($gameID, $progress) {
       'region' => strtolower($arrResponse[0]['region']),
       'ascent' => $arrResponse[0]['ascent'],
       'type' => $arrResponse[0]['type'],
-      'challenge' => getChallengeDescription($arrResponse[0]['type']),
+      'challenge' => getChallengeShortDescription($arrResponse[0]['type']),
       'progress' => $progress
     ];
 
@@ -171,7 +175,7 @@ function generateGameGoalSocialImage($gameID, $goal) {
       'region' => strtolower($arrResponse[0]['region']),
       'ascent' => $arrResponse[0]['ascent'],
       'type' => $arrResponse[0]['type'],
-      'challenge' => getChallengeDescription($arrResponse[0]['type']),
+      'challenge' => getChallengeShortDescription($arrResponse[0]['type']),
       'goal' => $goal
     ];
 
