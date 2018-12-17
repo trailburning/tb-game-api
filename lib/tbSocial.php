@@ -1,6 +1,14 @@
 <?php
 use Imgix\UrlBuilder;
 
+function getChallengeDescription($gameType) {
+  $gameDescription = 'climb challenge';
+  if ($gameType != 'All') {
+    $gameDescription = strtolower($gameType) . ' challenge';
+  }
+  return $gameDescription;
+}
+
 function buildSocialGameImage($paramaObj) {
   $builder = new UrlBuilder("tbassets2.imgix.net");
   $builder->setUseHttps(true);
@@ -118,11 +126,12 @@ function generateGameSocialImage($gameID) {
       'mountain' => $arrResponse[0]['name'],
       'region' => strtolower($arrResponse[0]['region']),
       'ascent' => $arrResponse[0]['ascent'],
-      'challenge' => strtolower($arrResponse[0]['type']) . ' challenge',
+      'challenge' => getChallengeDescription($arrResponse[0]['type']),
       'progress' => 0
     ];
     $ret = buildSocialGameImage($paramaObj);
   }
+
   return $ret;
 }
 
@@ -137,7 +146,7 @@ function generateGameProgressSocialImage($gameID, $progress) {
       'region' => strtolower($arrResponse[0]['region']),
       'ascent' => $arrResponse[0]['ascent'],
       'type' => $arrResponse[0]['type'],
-      'challenge' => strtolower($arrResponse[0]['type']) . ' challenge ',
+      'challenge' => getChallengeDescription($arrResponse[0]['type']),
       'progress' => $progress
     ];
 
@@ -162,7 +171,7 @@ function generateGameGoalSocialImage($gameID, $goal) {
       'region' => strtolower($arrResponse[0]['region']),
       'ascent' => $arrResponse[0]['ascent'],
       'type' => $arrResponse[0]['type'],
-      'challenge' => strtolower($arrResponse[0]['type']) . ' challenge ',
+      'challenge' => getChallengeDescription($arrResponse[0]['type']),
       'goal' => $goal
     ];
 
