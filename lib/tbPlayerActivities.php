@@ -19,10 +19,10 @@ function getPlayerActivitiesFromDB($playerID, $dtFirstActivityAllowed, $dtLastAc
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
-    // only get activities of the correct type
+    // only get activities of the correct type unless the game is 'all'
     // see if type is part of recorded type, so 'Ride' will also work with 'VirtualRide'
     $pos = strpos($row['type'], $activityType);
-    if ($pos !== false) {
+    if ($pos !== false || ($activityType == 'All')) {
       // format as UTC
       $dtStartDate = new DateTime($row['start_date']);
       $row['start_date'] = $dtStartDate->format('Y-m-d\TH:i:s.000\Z');

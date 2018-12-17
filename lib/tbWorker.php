@@ -21,15 +21,10 @@ function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer) {
       // reset activity
       setPlayerGameActivityInDB($gameID, $gamePlayerID, 0);
 
-      // 181129 mla - this will replace exisiting check, just needs a test..
-
-      // check activity type matches game type
+      // check activity type matches game type unless the game is 'all'
       // see if type is part of recorded type, so 'Ride' will also work with 'VirtualRide'
-//      $pos = strpos($activity['type'], $game['type']);
-//      if ($pos !== false) {
-
-      // check activity type matches game type
-      if ($activity['type'] == $game['type']) {
+      $pos = strpos($activity['type'], $game['type']);
+      if ($pos !== false || ($game == 'All')) {
         addLogToDB($db, LOG_OBJECT_PLAYER, LOG_ACTIVITY_GAME_ACTIVITY, $gamePlayerID);
 
         // activiy puts player back to active if they were inactive
