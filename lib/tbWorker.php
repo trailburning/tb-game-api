@@ -24,7 +24,7 @@ function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer) {
       // check activity type matches game type unless the game is 'all'
       // see if type is part of recorded type, so 'Ride' will also work with 'VirtualRide'
       $pos = strpos($activity['type'], $game['type']);
-      if ($pos !== false || ($game == 'All')) {
+      if ($pos !== false || ($game['type'] == 'All')) {
         addLogToDB($db, LOG_OBJECT_PLAYER, LOG_ACTIVITY_GAME_ACTIVITY, $gamePlayerID);
 
         // activiy puts player back to active if they were inactive
