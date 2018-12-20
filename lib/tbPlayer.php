@@ -252,7 +252,8 @@ function updatePlayer($playerID) {
     $client = new Client($service);
     $activities = $client->getAthlete();
 
-    updatePlayerDetailsInDB($activities['profile'], $activities['firstname'], $activities['lastname'], $activities['email'], $activities['city'], $activities['country'], $token);
+    // 181220 MLA - note that from 190116 Strava will no longer return email addresses so we now set blank.
+    updatePlayerDetailsInDB($activities['profile'], $activities['firstname'], $activities['lastname'], '', $activities['city'], $activities['country'], $token);
   }
 }
 
@@ -274,7 +275,8 @@ function getPlayer($clientID, $token) {
     $client = new Client($service);
     $athlete = $client->getAthlete();
 
-    addPlayerToDB($clientID, $athlete['profile'], $athlete['firstname'], $athlete['lastname'], $athlete['email'], $athlete['city'], $athlete['country'], $athlete['id'], $token);
+    // 181220 MLA - note that from 190116 Strava will no longer return email addresses so we now set blank.
+    addPlayerToDB($clientID, $athlete['profile'], $athlete['firstname'], $athlete['lastname'], '', $athlete['city'], $athlete['country'], $athlete['id'], $token);
 
     $results = getPlayerFromDBByToken($clientID, $token);
   }
