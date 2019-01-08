@@ -147,15 +147,25 @@ function processActivity($log) {
   $jsonGamesResponse = getActiveGamesFromDB();
   if (count($jsonGamesResponse)) {
     foreach ($jsonGamesResponse as $game) {      
-      if (DEBUG) echo '<br/>Game:' . $game['id'] . '<br/>';
       $gameID = $hashids->decode($game['id'])[0];
+      $nPlayersSummited = 0;
       // get game players
       $jsonGamePlayersResponse = getGamePlayersFromDB($gameID);
+      if (DEBUG) echo '<br/>Game: ' . $game['id'] . ' Players: ' . count($jsonGamePlayersResponse) . '<br/>';
       if (count($jsonGamePlayersResponse)) {
         // go through all active game players
         foreach ($jsonGamePlayersResponse as $gamePlayer) {
           $gamePlayerID = $hashids->decode($gamePlayer['id'])[0]; 
           processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer);
+
+          if ($gamePlayer['state'] == GAME_PLAYER_SUMMITED_STATE) {
+            $nPlayersSummited++;
+          }
+        }
+        // have all players summited?
+        if (count($jsonGamePlayersResponse) == $nPlayersSummited) {
+          // close game
+          setGameToCloseInDB($gameID);
         }
       }
     }
