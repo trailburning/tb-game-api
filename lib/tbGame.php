@@ -54,6 +54,17 @@ function addGameInviteToDB($gameID, $playerEmail) {
   return $ret;
 }
 
+function setGameToCloseInDB($gameID) {
+  // use UTC date
+  date_default_timezone_set("UTC");
+  $dtNow = date('Y-m-d H:i:s', time());
+
+  // only set once
+  $db = mysqliSingleton::init();
+  $strSQL = 'UPDATE games SET game_end = "' . $dtNow . '" where id = ' . $gameID;
+  $db->query($strSQL);
+}
+
 function addPlayerGameInDB($gameID, $playerID) {
   require_once 'lib/mysql.php';
 
