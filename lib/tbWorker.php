@@ -140,6 +140,7 @@ function processActivity($log) {
 
   // use UTC date
   date_default_timezone_set("UTC");
+  $dtNow = new DateTime("now");
 
 //  $log->warning('Start');
 
@@ -167,6 +168,15 @@ function processActivity($log) {
           // close game
           setGameToCloseInDB($gameID);
         }
+      }
+
+      // process game state
+      $dtGameEndDate = new DateTime($game['game_end']);
+      if (($game['state'] == GAME_READY_STATE) && ($dtNow > $dtGameEndDate)) {
+        // 190212 MLA - insert send game email here!
+        // ***********************************
+
+        setGameStateInDB($gameID, GAME_COMPLETE_STATE);
       }
     }
   }
