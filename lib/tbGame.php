@@ -10,6 +10,9 @@ const STATE_GAME_OVER = 'complete';
 const STATE_GAME_ACTIVE = 'active';
 const STATE_GAME_PENDING = 'pending';
 
+const GAME_READY_STATE = 0;
+const GAME_COMPLETE_STATE = 100;
+
 function addGameToDB($campaignID, $ownerPlayerID, $season, $type, $gameStart, $gameEnd, $levelID) {
   require_once 'lib/mysql.php';
 
@@ -20,7 +23,7 @@ function addGameToDB($campaignID, $ownerPlayerID, $season, $type, $gameStart, $g
   $dtNow = date('Y-m-d H:i:s', time());
 
   $db = connect_db();
-  $strSQL = 'INSERT INTO games (created, campaignID, ownerPlayerID, season, type, game_start, game_end, levelID) VALUES ("' . $dtNow . '", ' . $campaignID . ', ' . $ownerPlayerID . ', ' . $season . ', "' . $type . '", "' . $gameStart . '", "' . $gameEnd . '", ' . $levelID . ')';
+  $strSQL = 'INSERT INTO games (created, campaignID, ownerPlayerID, season, type, game_start, game_end, levelID, state) VALUES ("' . $dtNow . '", ' . $campaignID . ', ' . $ownerPlayerID . ', ' . $season . ', "' . $type . '", "' . $gameStart . '", "' . $gameEnd . '", ' . $levelID . ', ' . GAME_READY_STATE . ')';
   if ($db->query($strSQL) === TRUE) {
     $lastInsertID = $db->insert_id;
 
@@ -62,6 +65,12 @@ function setGameToCloseInDB($gameID) {
   // only set once
   $db = mysqliSingleton::init();
   $strSQL = 'UPDATE games SET game_end = "' . $dtNow . '" where id = ' . $gameID;
+  $db->query($strSQL);
+}
+
+function setGameStateInDB($gameID, $state) {
+  $db = mysqliSingleton::init();
+  $strSQL = 'UPDATE games SET state = ' . $state . ' WHERE id = ' . $gameID;
   $db->query($strSQL);
 }
 
@@ -274,7 +283,7 @@ function getActiveGamesFromDB() {
   $formattedNow = $dtNow->format('Y-m-d\TH:i:s.000\Z');
 
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT games.id, campaignID, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, campaigns.name as campaign_name, campaigns.fundraising_provider, campaigns.fundraising_page, campaigns.email_template, campaigns.email_welcome, campaigns.email_activity, campaigns.email_activity_broadcast, campaigns.email_inactivity, campaigns.email_summit, campaigns.email_summit_broadcast, campaigns.email_invite FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id WHERE game_start < "' . $formattedNow . '" AND game_end > "' . $formattedNow . '" order by game_end desc';
+  $strSQL = 'SELECT games.id, campaignID, season, type, game_start, game_end, state, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, campaigns.name as campaign_name, campaigns.fundraising_provider, campaigns.fundraising_page, campaigns.email_template, campaigns.email_welcome, campaigns.email_activity, campaigns.email_activity_broadcast, campaigns.email_inactivity, campaigns.email_summit, campaigns.email_summit_broadcast, campaigns.email_invite FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id WHERE state = ' . GAME_READY_STATE . ' order by game_end desc';
   $result = $db->query($strSQL);
 
   $rows = array();
