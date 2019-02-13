@@ -25,6 +25,19 @@ function sendWelcomeEmail($jsonEmail, $game, $player) {
   $result = sendEmail($game['email_template'], $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
+function sendFinishedEmail($jsonEmail, $game, $player) {
+  $jsonEmail = replaceTags($jsonEmail, $game, $player, $player, null);
+  $arrEmail = json_decode($jsonEmail);
+
+  $strSubject = $game['campaign_name'] . ' - ' . $arrEmail->title;
+
+  // now send an email
+  $result = sendEmail($game['email_template'], $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+
+  // MLA - test email
+  $result = sendEmail($game['email_template'], $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+}
+
 function sendInactivityEmail($jsonEmail, $game, $activePlayer) {
   $jsonEmail = replaceTags($jsonEmail, $game, $activePlayer, $activePlayer, null);
   $arrEmail = json_decode($jsonEmail);
@@ -72,8 +85,8 @@ function replaceTags($strText, $game, $player, $activePlayer, $activity) {
     $gameType = strtolower($game['type']);
   }
 
-  $tags = array('[CAMPAIGN_ID]', '[INVITE_LINK]', '[GAME_LINK]', '[PLAYER_LINK]', '[PLAYER_FIRSTNAME]', '[PLAYER_LASTNAME]', '[ACTIVE_PLAYER_LINK]', '[ACTIVE_PLAYER_FIRSTNAME]', '[ACTIVE_PLAYER_LASTNAME]', '[GAME_TYPE]', '[GAME_NAME]', '[ACTIVITY_ELEVATION]', '[PREFERENCES_LINK]', '[FUNDRAISING_LINK]');
-  $replaceTags = array($game['campaignID'], '<a href=\"' . MR_SECURE_DOMAIN . 'campaign/' . $game['campaignID'] . '/invite\">here</a>', '<a href=\"' . MR_SECURE_DOMAIN . 'game/' . $game['id'] . '\">here</a>', '<a href=\"' . MR_SECURE_DOMAIN . 'game/' . $game['id'] . '/player/' . $player['id'] . '\">here</a>', $player['firstname'], $player['lastname'], '<a href=\"' . MR_SECURE_DOMAIN . 'game/' . $game['id'] . '/player/' . $activePlayer['id'] . '\">here</a>', $activePlayer['firstname'], $activePlayer['lastname'], $gameType, $game['name'], floor($activity['total_elevation_gain']), '<a href=\"' . MR_SECURE_DOMAIN . 'campaign/' . $game['campaignID'] . '/preferences\">update your preferences</a>', '<a href=\"' . $game['fundraising_page'] . $activePlayer['fundraising_page'] . '\">' . $game['fundraising_provider'] . '</a>');
+  $tags = array('[CAMPAIGN_ID]', '[INVITE_LINK]', '[GAME_LINK]', '[PLAYER_LINK]', '[PLAYER_FIRSTNAME]', '[PLAYER_LASTNAME]', '[ACTIVE_PLAYER_LINK]', '[ACTIVE_PLAYER_FIRSTNAME]', '[ACTIVE_PLAYER_LASTNAME]', '[GAME_TYPE]', '[GAME_NAME]', '[ACTIVITY_ELEVATION]', '[PROFILE_LINK]', '[PREFERENCES_LINK]', '[FUNDRAISING_LINK]');
+  $replaceTags = array($game['campaignID'], '<a href=\"' . MR_SECURE_DOMAIN . 'campaign/' . $game['campaignID'] . '/invite\">here</a>', '<a href=\"' . MR_SECURE_DOMAIN . 'game/' . $game['id'] . '\">here</a>', '<a href=\"' . MR_SECURE_DOMAIN . 'game/' . $game['id'] . '/player/' . $player['id'] . '\">here</a>', $player['firstname'], $player['lastname'], '<a href=\"' . MR_SECURE_DOMAIN . 'game/' . $game['id'] . '/player/' . $activePlayer['id'] . '\">here</a>', $activePlayer['firstname'], $activePlayer['lastname'], $gameType, $game['name'], floor($activity['total_elevation_gain']), '<a href=\"' . MR_SECURE_DOMAIN . 'campaign/' . $game['campaignID'] . '/profile\">profile</a>', '<a href=\"' . MR_SECURE_DOMAIN . 'campaign/' . $game['campaignID'] . '/preferences\">update your preferences</a>', '<a href=\"' . $game['fundraising_page'] . $activePlayer['fundraising_page'] . '\">' . $game['fundraising_provider'] . '</a>');
 
   return str_replace($tags, $replaceTags, $strText);
 }
