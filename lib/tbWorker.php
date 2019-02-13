@@ -1,7 +1,7 @@
 <?php
 const DAYS_INACTIVE = 7;
 
-function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer) {
+function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer, $bGameCompleted) {
   $dtNow = date('Y-m-d\TH:i:s.000\Z', time());
   $dtNowDate = new DateTime($dtNow);
 
@@ -133,6 +133,13 @@ function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer) {
       }
     }
   }
+
+  // process completed game
+  if ($bGameCompleted) {
+    if (DEBUG) echo 'GAME FINISHED<br/>';
+    $jsonEmail = $game['email_finished'];
+    sendFinishedEmail($jsonEmail, $game, $player, $gamePlayer);
+  }
 }
 
 function processActivity($log) {
@@ -149,7 +156,17 @@ function processActivity($log) {
   if (count($jsonGamesResponse)) {
     foreach ($jsonGamesResponse as $game) {      
       $gameID = $hashids->decode($game['id'])[0];
+      $bGameCompleted = false;
       $nPlayersSummited = 0;
+
+      // process game state
+      $dtGameEndDate = new DateTime($game['game_end']);
+      if (($game['state'] == GAME_READY_STATE) && ($dtNow > $dtGameEndDate)) {
+        $bGameCompleted = true;
+
+        setGameStateInDB($gameID, GAME_COMPLETE_STATE);
+      }
+
       // get game players
       $jsonGamePlayersResponse = getGamePlayersFromDB($gameID);
       if (DEBUG) echo '<br/>Game: ' . $game['id'] . ' Players: ' . count($jsonGamePlayersResponse) . '<br/>';
@@ -157,7 +174,7 @@ function processActivity($log) {
         // go through all active game players
         foreach ($jsonGamePlayersResponse as $gamePlayer) {
           $gamePlayerID = $hashids->decode($gamePlayer['id'])[0]; 
-          processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer);
+          processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer, $bGameCompleted);
 
           if ($gamePlayer['state'] == GAME_PLAYER_SUMMITED_STATE) {
             $nPlayersSummited++;
@@ -168,15 +185,6 @@ function processActivity($log) {
           // close game
           setGameToCloseInDB($gameID);
         }
-      }
-
-      // process game state
-      $dtGameEndDate = new DateTime($game['game_end']);
-      if (($game['state'] == GAME_READY_STATE) && ($dtNow > $dtGameEndDate)) {
-        // 190212 MLA - insert send game email here!
-        // ***********************************
-
-        setGameStateInDB($gameID, GAME_COMPLETE_STATE);
       }
     }
   }
