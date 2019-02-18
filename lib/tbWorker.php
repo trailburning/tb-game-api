@@ -138,7 +138,7 @@ function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer, $bG
   if ($bGameCompleted) {
     if (DEBUG) echo 'GAME FINISHED<br/>';
     $jsonEmail = $game['email_finished'];
-    sendFinishedEmail($jsonEmail, $game, $player, $gamePlayer);
+    sendFinishedEmail($jsonEmail, $game, $gamePlayer);
   }
 }
 
