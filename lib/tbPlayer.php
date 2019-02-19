@@ -260,6 +260,8 @@ function updatePlayer($playerID) {
     $client = new Client($service);
     $activities = $client->getAthlete();
 
+    echo $activities;
+
     updatePlayerDetailsWithoutEmailInDB($activities['profile'], $activities['firstname'], $activities['lastname'], $activities['city'], $activities['country'], $token);
   }
 }
