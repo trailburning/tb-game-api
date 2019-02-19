@@ -241,6 +241,13 @@ function updatePlayerDetailsInDB($avatar, $firstname, $lastname, $email, $city, 
   $result = $db->query('update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where email = "' . $email . '"');
 }
 
+function updatePlayerDetailsWithoutEmailInDB($avatar, $firstname, $lastname, $city, $country, $token) {
+  require_once 'lib/mysql.php';
+
+  $db = connect_db();
+  $result = $db->query('update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where email = "' . $email . '"');
+}
+
 function updatePlayer($playerID) {
   $results = getPlayerFromDBByID($playerID);
   if (count($results) != 0) {
@@ -253,8 +260,7 @@ function updatePlayer($playerID) {
     $client = new Client($service);
     $activities = $client->getAthlete();
 
-    // 181220 MLA - note that from 190116 Strava will no longer return email addresses so we now set blank.
-    updatePlayerDetailsInDB($activities['profile'], $activities['firstname'], $activities['lastname'], '', $activities['city'], $activities['country'], $token);
+    updatePlayerDetailsWithoutEmailInDB($activities['profile'], $activities['firstname'], $activities['lastname'], $activities['city'], $activities['country'], $token);
   }
 }
 
