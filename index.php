@@ -46,8 +46,8 @@ $settings =  [
   ],
 ];
 
-//$app = new \Slim\App($settings);
-$app = new \Slim\App;
+$app = new \Slim\App($settings);
+//$app = new \Slim\App;
 
 const DEBUG = false;
 //const DEBUG = true;

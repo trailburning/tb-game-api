@@ -245,7 +245,7 @@ function updatePlayerDetailsWithoutEmailInDB($avatar, $firstname, $lastname, $ci
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where email = "' . $email . '"');
+  $result = $db->query('update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", city = "' . $city . '", country = "' . $country . '" where playerProviderToken = "' . $token . '"');
 }
 
 function updatePlayer($playerID) {

@@ -61,7 +61,7 @@ sendActivityEmail($game, $player, $activePlayer);
 
 $hashids = new Hashids\Hashids('mountainrush', 10);
 
-$id = $hashids->encode(4911);
+$id = $hashids->encode(126);
 var_dump($id);
 
 $id = $hashids->decode('0oLr2AnZzQ')[0];
@@ -126,7 +126,7 @@ if (count($jsonPlayerResponse)) {
   }
 }
 */
-
+/*
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
 $jsonGamesResponse = getGameFromDB($gameID);
@@ -189,5 +189,5 @@ if (count($jsonGamesResponse)) {
     }
   }
 }
-
+*/
 exit;
