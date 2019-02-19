@@ -40,6 +40,13 @@ require 'vendor/autoload.php';
 require_once 'lib/mysqliSingleton.php';
 require_once 'lib/mysql.php';
 
+$settings =  [
+  'settings' => [
+    'displayErrorDetails' => true,
+  ],
+];
+
+//$app = new \Slim\App($settings);
 $app = new \Slim\App;
 
 const DEBUG = false;
