@@ -881,7 +881,7 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
 
   $donation = array(
     'currency' => $data['currency'],
-    'amount' => round($data['amount'] / 1000),
+    'amount' => round($data['amount'] / 100),
     'donor' => $data['donor'],
   );
 
