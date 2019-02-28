@@ -863,6 +863,43 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/donations', funct
 
   return $response->withJSON($jsonResponse);
 });
+
+/* 190228 MLA - ideally this should be called by RaiseNow callback and not posted from the client */
+$app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{playerHashID}/donation', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashCampaignID = $request->getAttribute('campaignHashID');
+  $hashGameID = $request->getAttribute('gameHashID');
+  $hashPlayerID = $request->getAttribute('playerHashID');
+
+  $campaignID = $hashids->decode($hashCampaignID)[0];
+  $gameID = $hashids->decode($hashGameID)[0];
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
+  $json = $request->getBody();
+  $data = json_decode($json, true); 
+
+  $donation = array(
+    'currency' => $data['currency'],
+    'amount' => round($data['amount'] / 1000),
+    'donor' => $data['donor'],
+  );
+
+  $jsonGamesResponse = getGameFromDB($gameID);
+  if (count($jsonGamesResponse)) {
+    $game = $jsonGamesResponse[0];
+
+    $jsonPlayersResponse = getPlayerFromDBByID($playerID);
+    if (count($jsonPlayersResponse)) {
+      $player = $jsonPlayersResponse[0];
+
+      if ($player['game_notifications']) {
+        $jsonEmail = $game['email_fundraising_donation'];        
+        sendFundraisingDonationEmail($jsonEmail, $game, $player, $donation);
+      }
+    }
+  }
+});
 /* **************************************************************************** */
 /* End Support RaiseNow */
 /* **************************************************************************** */

@@ -77,6 +77,20 @@ function sendSummitEmail($jsonEmail, $game, $player, $activePlayer) {
   $result = sendEmail($game['email_template'], $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
+function sendFundraisingDonationEmail($jsonEmail, $game, $activePlayer, $donation) {
+  $jsonEmail = replaceDonationTags($jsonEmail, $donation);
+  $jsonEmail = replaceTags($jsonEmail, $game, $activePlayer, $activePlayer, null);
+  $arrEmail = json_decode($jsonEmail);
+
+  $strSubject = $game['campaign_name'] . ' - ' . $arrEmail->title;
+
+  // now send an email
+  $result = sendEmail($game['email_template'], $strSubject, $activePlayer['email'], $activePlayer['firstname'] . ' ' . $activePlayer['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+
+  // MLA - test email
+  $result = sendEmail($game['email_template'], $strSubject . ' DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+}
+
 function replaceTags($strText, $game, $player, $activePlayer, $activity) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
@@ -100,10 +114,20 @@ function replacePlayerTags($strText, $player) {
   return str_replace($tags, $replaceTags, $strText);
 }
 
+function replaceDonationTags($strText, $donation) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $tags = array('[DONATION_CURRENCY]', '[DONATION_AMOUNT]', '[DONATION_DONOR]');
+  $replaceTags = array(getCurrencySymbol($donation['currency']), $donation['amount'], $donation['donor']);
+
+  return str_replace($tags, $replaceTags, $strText);
+}
+
 function sendEmail($strEmailTemplate, $strSubject, $strToEmail, $strToName, $strImage, $strMsgTitle, $strMsgContent, $strPreferences) {
 
   if (DEBUG) {
     echo 'sendEmail:' . $strToEmail . ' : SEND OFF<br/>';
+    echo $strMsgContent;
     return;
   }
 

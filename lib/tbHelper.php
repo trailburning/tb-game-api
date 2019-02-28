@@ -43,14 +43,17 @@ function getCurrencySymbol($currencyCode) {
 
   switch (strtoupper($currencyCode)) {
     case 'GBP':
+    case 'gbp':
       $currencySymbol = '£';
       break;
 
     case 'EUR':
+    case 'eur':
       $currencySymbol = '€';
       break;
 
     case 'CHF':
+    case 'chf':
       $currencySymbol = 'CHF';
       break;
   }
