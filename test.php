@@ -83,6 +83,11 @@ $activePlayerID = 164;
 $gameID = 2036;
 $LatestActivity = 1593291827;
 
+// RaiseNow Test
+$activePlayerID = 281;
+$gameID = 5231;
+$LatestActivity = 2160862798;
+
 // custom email
 function getCustomPlayersFromDB($clientID) {
   require_once 'lib/mysql.php';
@@ -126,7 +131,7 @@ if (count($jsonPlayerResponse)) {
   }
 }
 */
-/*
+
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
 $jsonGamesResponse = getGameFromDB($gameID);
@@ -155,6 +160,18 @@ if (count($jsonGamesResponse)) {
           $activePlayer = $player;
         }
 
+        if ($player['id'] == $activePlayer['id']) {
+          // fundraising donation email
+          $jsonEmail = $game['email_fundraising_donation'];
+
+          $donation = array(
+            'currency' => 'eur',
+            'amount' => 10,
+            'donor' => 'Hello World',
+          );
+//          sendFundraisingDonationEmail($jsonEmail, $game, $player, $donation);
+        }
+
         if ($player['game_notifications']) {
           $activity = getPlayerActivity($activePlayer['playerProviderToken'], $LatestActivity);
           if ($activity) {
@@ -172,7 +189,7 @@ if (count($jsonGamesResponse)) {
 
           // completed email
           $jsonEmail = $game['email_finished'];
-          sendFinishedEmail($jsonEmail, $game, $player, $activePlayer);
+//          sendFinishedEmail($jsonEmail, $game, $player, $activePlayer);
 
           // inactivity email
           $jsonEmail = $game['email_inactivity'];
@@ -189,5 +206,5 @@ if (count($jsonGamesResponse)) {
     }
   }
 }
-*/
+
 exit;
