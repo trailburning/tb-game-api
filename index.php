@@ -899,6 +899,10 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
       }
     }
   }
+
+  $jsonResponse = array();  
+
+  return $response->withJSON($jsonResponse);
 });
 /* **************************************************************************** */
 /* End Support RaiseNow */
