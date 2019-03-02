@@ -1,83 +1,83 @@
 <?php
-function sendInviteEmail($jsonEmail, $game, $player, $activePlayer) {
+function sendInviteEmail($strEmailTemplate, $jsonEmail, $game, $player, $activePlayer) {
   $jsonEmail = replaceTags($jsonEmail, $game, $player, $activePlayer, null);
   $arrEmail = json_decode($jsonEmail);
 
   $strSubject = $game['campaign_name'] . ' - ' . $arrEmail->title;
 
   // now send an email
-  $result = sendEmail($game['email_template'], $strSubject, $activePlayer['email'], $activePlayer['firstname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($strEmailTemplate, $strSubject, $activePlayer['email'], $activePlayer['firstname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 
   // MLA - test email
-  $result = sendEmail($game['email_template'], $strSubject . ' DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
-function sendWelcomeEmail($jsonEmail, $game, $player) {
+function sendWelcomeEmail($strEmailTemplate, $jsonEmail, $game, $player) {
   $jsonEmail = replaceTags($jsonEmail, $game, $player, $player, null);
   $arrEmail = json_decode($jsonEmail);
 
   $strSubject = $game['campaign_name'] . ' - ' . $arrEmail->title;
 
   // now send an email
-  $result = sendEmail($game['email_template'], $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($strEmailTemplate, $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 
   // MLA - test email
-  $result = sendEmail($game['email_template'], $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
-function sendFinishedEmail($jsonEmail, $game, $player) {
+function sendFinishedEmail($strEmailTemplate, $jsonEmail, $game, $player) {
   $jsonEmail = replaceTags($jsonEmail, $game, $player, $player, null);
   $arrEmail = json_decode($jsonEmail);
 
   $strSubject = $game['campaign_name'] . ' - ' . $arrEmail->title;
 
   // now send an email
-  $result = sendEmail($game['email_template'], $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($strEmailTemplate, $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 
   // MLA - test email
-  $result = sendEmail($game['email_template'], $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
-function sendInactivityEmail($jsonEmail, $game, $activePlayer) {
+function sendInactivityEmail($strEmailTemplate, $jsonEmail, $game, $activePlayer) {
   $jsonEmail = replaceTags($jsonEmail, $game, $activePlayer, $activePlayer, null);
   $arrEmail = json_decode($jsonEmail);
 
   $strSubject = $game['campaign_name'] . ' - ' . $arrEmail->title;
 
   // now send an email
-  $result = sendEmail($game['email_template'], $strSubject, $activePlayer['email'], $activePlayer['firstname'] . ' ' . $activePlayer['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($strEmailTemplate, $strSubject, $activePlayer['email'], $activePlayer['firstname'] . ' ' . $activePlayer['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 
   // MLA - test email
-  $result = sendEmail($game['email_template'], $strSubject . ' DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
-function sendActivityEmail($jsonEmail, $game, $player, $activePlayer, $activity) {
+function sendActivityEmail($strEmailTemplate, $jsonEmail, $game, $player, $activePlayer, $activity) {
   $jsonEmail = replaceTags($jsonEmail, $game, $player, $activePlayer, $activity);
   $arrEmail = json_decode($jsonEmail);
 
   $strSubject = $game['campaign_name'] . ' - ' . $arrEmail->title;
 
   // now send an email
-  $result = sendEmail($game['email_template'], $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($strEmailTemplate, $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 
   // MLA - test email
-  $result = sendEmail($game['email_template'], $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
-function sendSummitEmail($jsonEmail, $game, $player, $activePlayer) {
+function sendSummitEmail($strEmailTemplate, $jsonEmail, $game, $player, $activePlayer) {
   $jsonEmail = replaceTags($jsonEmail, $game, $player, $activePlayer, null);
   $arrEmail = json_decode($jsonEmail);
 
   $strSubject = $game['campaign_name'] . ' - ' . $arrEmail->title;
 
   // now send an email
-  $result = sendEmail($game['email_template'], $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($strEmailTemplate, $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 
   // MLA - test email
-  $result = sendEmail($game['email_template'], $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
-function sendFundraisingDonationEmail($jsonEmail, $game, $activePlayer, $donation) {
+function sendFundraisingDonationEmail($strEmailTemplate, $jsonEmail, $game, $activePlayer, $donation) {
   $jsonEmail = replaceDonationTags($jsonEmail, $donation);
   $jsonEmail = replaceTags($jsonEmail, $game, $activePlayer, $activePlayer, null);
   $arrEmail = json_decode($jsonEmail);
@@ -85,10 +85,10 @@ function sendFundraisingDonationEmail($jsonEmail, $game, $activePlayer, $donatio
   $strSubject = $game['campaign_name'] . ' - ' . $arrEmail->title;
 
   // now send an email
-  $result = sendEmail($game['email_template'], $strSubject, $activePlayer['email'], $activePlayer['firstname'] . ' ' . $activePlayer['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($strEmailTemplate, $strSubject, $activePlayer['email'], $activePlayer['firstname'] . ' ' . $activePlayer['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 
   // MLA - test email
-  $result = sendEmail($game['email_template'], $strSubject . ' DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
+  $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
 function replaceTags($strText, $game, $player, $activePlayer, $activity) {
@@ -127,7 +127,7 @@ function sendEmail($strEmailTemplate, $strSubject, $strToEmail, $strToName, $str
 
   if (DEBUG) {
     echo 'sendEmail:' . $strToEmail . ' : SEND OFF<br/>';
-    echo $strMsgContent;
+    echo 'msg:' . $strMsgContent . '<br/>';
     return;
   }
 

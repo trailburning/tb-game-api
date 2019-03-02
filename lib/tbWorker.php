@@ -1,7 +1,7 @@
 <?php
 const DAYS_INACTIVE = 7;
 
-function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer, $bGameCompleted) {
+function processGamePlayer($log, $campaign, $gameID, $game, $gamePlayerID, $gamePlayer, $bGameCompleted) {
   $dtNow = date('Y-m-d\TH:i:s.000\Z', time());
   $dtNowDate = new DateTime($dtNow);
 
@@ -51,11 +51,11 @@ function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer, $bG
             if (DEBUG) echo 'PLAYER ACTIVITY EMAIL<br/>';
 //            $log->warning('Activity Email');
             if ($player['game_notifications']) {
-              $jsonEmail = $game['email_activity_broadcast'];
+              $jsonEmail = $campaign['email_activity_broadcast'];
               if ($player['id'] == $gamePlayer['id']) {
-                $jsonEmail = $game['email_activity'];
+                $jsonEmail = $campaign['email_activity'];
               }              
-              sendActivityEmail($jsonEmail, $game, $player, $gamePlayer, $activity);
+              sendActivityEmail($campaign['email_template'], $jsonEmail, $game, $player, $gamePlayer, $activity);
             }
               
             // has player summited and not already been processed?
@@ -63,11 +63,11 @@ function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer, $bG
               if (DEBUG) echo 'PLAYER SUMMIT EMAIL<br/>';
               setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_SUMMITED_STATE);
               if ($gamePlayer['game_notifications']) {
-                $jsonEmail = $game['email_summit_broadcast'];
+                $jsonEmail = $campaign['email_summit_broadcast'];
                 if ($player['id'] == $gamePlayer['id']) {
-                  $jsonEmail = $game['email_summit'];
+                  $jsonEmail = $campaign['email_summit'];
                 }
-                sendSummitEmail($jsonEmail, $game, $player, $gamePlayer);
+                sendSummitEmail($campaign['email_template'], $jsonEmail, $game, $player, $gamePlayer);
               }
             }
           }
@@ -98,8 +98,8 @@ function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer, $bG
         setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_PLAYING_NOT_ACTIVE_STATE);        
         if (DEBUG) echo 'MOTIVATE EMAIL<br/>';      
         if ($gamePlayer['game_notifications']) {
-          $jsonEmail = $game['email_inactivity'];          
-          sendInactivityEmail($jsonEmail, $game, $gamePlayer);
+          $jsonEmail = $campaign['email_inactivity'];          
+          sendInactivityEmail($campaign['email_template'], $jsonEmail, $game, $gamePlayer);
         }
       }
       else { // has player summited?
@@ -121,11 +121,11 @@ function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer, $bG
               if (DEBUG) echo 'PLAYER SUMMIT EMAIL<br/>';
               setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_SUMMITED_STATE);
               if ($gamePlayer['game_notifications']) {
-                $jsonEmail = $game['email_summit_broadcast'];
+                $jsonEmail = $campaign['email_summit_broadcast'];
                 if ($player['id'] == $gamePlayer['id']) {
-                  $jsonEmail = $game['email_summit'];
+                  $jsonEmail = $campaign['email_summit'];
                 }
-                sendSummitEmail($jsonEmail, $game, $player, $gamePlayer);
+                sendSummitEmail($campaign['email_template'], $jsonEmail, $game, $player, $gamePlayer);
               }
             }
           }
@@ -137,8 +137,8 @@ function processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer, $bG
   // process completed game
   if ($bGameCompleted) {
     if (DEBUG) echo 'GAME FINISHED<br/>';
-    $jsonEmail = $game['email_finished'];
-    sendFinishedEmail($jsonEmail, $game, $gamePlayer);
+    $jsonEmail = $campaign['email_finished'];
+    sendFinishedEmail($campaign['email_template'], $jsonEmail, $game, $gamePlayer);
   }
 }
 
@@ -151,39 +151,47 @@ function processActivity($log) {
 
 //  $log->warning('Start');
 
-  // get all games
-  $jsonGamesResponse = getActiveGamesFromDB();
-  if (count($jsonGamesResponse)) {
-    foreach ($jsonGamesResponse as $game) {      
-      $gameID = $hashids->decode($game['id'])[0];
-      $bGameCompleted = false;
-      $nPlayersSummited = 0;
+  // get all campaigns
+  $jsonCampaignsResponse = getCampaignsFromDB();
+  if (count($jsonCampaignsResponse)) {
+    foreach ($jsonCampaignsResponse as $campaign) {      
+      $campaignID = $hashids->decode($campaign['id'])[0];
 
-      // process game state
-      $dtGameEndDate = new DateTime($game['game_end']);
-      if (($game['state'] == GAME_READY_STATE) && ($dtNow > $dtGameEndDate)) {
-        $bGameCompleted = true;
+      // get all campaign games
+      $jsonGamesResponse = getActiveGamesByCampaignIDFromDB($campaignID);
+      if (count($jsonGamesResponse)) {
+        foreach ($jsonGamesResponse as $game) {      
+          $gameID = $hashids->decode($game['id'])[0];
+          $bGameCompleted = false;
+          $nPlayersSummited = 0;
 
-        setGameStateInDB($gameID, GAME_COMPLETE_STATE);
-      }
+          // process game state
+          $dtGameEndDate = new DateTime($game['game_end']);
+          if (($game['state'] == GAME_READY_STATE) && ($dtNow > $dtGameEndDate)) {
+            $bGameCompleted = true;
 
-      // get game players
-      $jsonGamePlayersResponse = getGamePlayersFromDB($gameID);
-      if (DEBUG) echo '<br/>Game: ' . $game['id'] . ' Players: ' . count($jsonGamePlayersResponse) . '<br/>';
-      if (count($jsonGamePlayersResponse)) {
-        // go through all active game players
-        foreach ($jsonGamePlayersResponse as $gamePlayer) {
-          $gamePlayerID = $hashids->decode($gamePlayer['id'])[0]; 
-          processGamePlayer($log, $gameID, $game, $gamePlayerID, $gamePlayer, $bGameCompleted);
-
-          if ($gamePlayer['state'] == GAME_PLAYER_SUMMITED_STATE) {
-            $nPlayersSummited++;
+            setGameStateInDB($gameID, GAME_COMPLETE_STATE);
           }
-        }
-        // have all players summited?
-        if (count($jsonGamePlayersResponse) == $nPlayersSummited) {
-          // close game
-          setGameToCloseInDB($gameID);
+
+          // get game players
+          $jsonGamePlayersResponse = getGamePlayersFromDB($gameID);
+          if (DEBUG) echo '<br/>Game: ' . $game['id'] . ' Players: ' . count($jsonGamePlayersResponse) . '<br/>';
+          if (count($jsonGamePlayersResponse)) {
+            // go through all active game players
+            foreach ($jsonGamePlayersResponse as $gamePlayer) {
+              $gamePlayerID = $hashids->decode($gamePlayer['id'])[0]; 
+              processGamePlayer($log, $campaign, $gameID, $game, $gamePlayerID, $gamePlayer, $bGameCompleted);
+
+              if ($gamePlayer['state'] == GAME_PLAYER_SUMMITED_STATE) {
+                $nPlayersSummited++;
+              }
+            }
+            // have all players summited?
+            if (count($jsonGamePlayersResponse) == $nPlayersSummited) {
+              // close game
+              setGameToCloseInDB($gameID);
+            }
+          }
         }
       }
     }
@@ -191,5 +199,5 @@ function processActivity($log) {
 
 //  $log->warning('End');
 
-  return $jsonGamesResponse;  
+  return $jsonCampaignsResponse;  
 }
