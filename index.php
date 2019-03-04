@@ -885,17 +885,21 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
     'donor' => $data['donor'],
   );
 
-  $jsonGamesResponse = getGameFromDB($gameID);
-  if (count($jsonGamesResponse)) {
-    $game = $jsonGamesResponse[0];
-
-    $jsonPlayersResponse = getPlayerFromDBByID($playerID);
-    if (count($jsonPlayersResponse)) {
-      $player = $jsonPlayersResponse[0];
-
-      if ($player['game_notifications']) {
-        $jsonEmail = $game['email_fundraising_donation'];        
-        sendFundraisingDonationEmail($jsonEmail, $game, $player, $donation);
+  $db = connect_db();
+  // get campaign
+  $jsonCampaign = getCampaignFromDB($db, $campaignID);
+  if (count($jsonCampaign)) {
+    $campaign = $jsonCampaign[0];
+    $jsonGamesResponse = getGameFromDB($gameID);
+    if (count($jsonGamesResponse)) {
+      $game = $jsonGamesResponse[0];
+      $jsonPlayersResponse = getPlayerFromDBByID($playerID);
+      if (count($jsonPlayersResponse)) {
+        $player = $jsonPlayersResponse[0];
+        if ($player['game_notifications']) {
+          $jsonEmail = $campaign['email_fundraising_donation'];        
+          sendFundraisingDonationEmail($campaign['email_template'], $jsonEmail, $game, $player, $donation);
+        }
       }
     }
   }
