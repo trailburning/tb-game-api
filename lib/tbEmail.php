@@ -7,9 +7,6 @@ function sendInviteEmail($strEmailTemplate, $jsonEmail, $game, $player, $activeP
 
   // now send an email
   $result = sendEmail($strEmailTemplate, $strSubject, $activePlayer['email'], $activePlayer['firstname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
-
-  // MLA - test email
-  $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
 function sendWelcomeEmail($strEmailTemplate, $jsonEmail, $game, $player) {
@@ -20,9 +17,6 @@ function sendWelcomeEmail($strEmailTemplate, $jsonEmail, $game, $player) {
 
   // now send an email
   $result = sendEmail($strEmailTemplate, $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
-
-  // MLA - test email
-  $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
 function sendFinishedEmail($strEmailTemplate, $jsonEmail, $game, $player) {
@@ -33,9 +27,6 @@ function sendFinishedEmail($strEmailTemplate, $jsonEmail, $game, $player) {
 
   // now send an email
   $result = sendEmail($strEmailTemplate, $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
-
-  // MLA - test email
-  $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
 function sendInactivityEmail($strEmailTemplate, $jsonEmail, $game, $activePlayer) {
@@ -46,9 +37,6 @@ function sendInactivityEmail($strEmailTemplate, $jsonEmail, $game, $activePlayer
 
   // now send an email
   $result = sendEmail($strEmailTemplate, $strSubject, $activePlayer['email'], $activePlayer['firstname'] . ' ' . $activePlayer['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
-
-  // MLA - test email
-  $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
 function sendActivityEmail($strEmailTemplate, $jsonEmail, $game, $player, $activePlayer, $activity) {
@@ -59,9 +47,6 @@ function sendActivityEmail($strEmailTemplate, $jsonEmail, $game, $player, $activ
 
   // now send an email
   $result = sendEmail($strEmailTemplate, $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
-
-  // MLA - test email
-  $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
 function sendSummitEmail($strEmailTemplate, $jsonEmail, $game, $player, $activePlayer) {
@@ -72,9 +57,6 @@ function sendSummitEmail($strEmailTemplate, $jsonEmail, $game, $player, $activeP
 
   // now send an email
   $result = sendEmail($strEmailTemplate, $strSubject, $player['email'], $player['firstname'] . ' ' . $player['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
-
-  // MLA - test email
-  $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $player['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
 function sendFundraisingDonationEmail($strEmailTemplate, $jsonEmail, $game, $activePlayer, $donation) {
@@ -86,9 +68,6 @@ function sendFundraisingDonationEmail($strEmailTemplate, $jsonEmail, $game, $act
 
   // now send an email
   $result = sendEmail($strEmailTemplate, $strSubject, $activePlayer['email'], $activePlayer['firstname'] . ' ' . $activePlayer['lastname'], $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
-
-  // MLA - test email
-  $result = sendEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $activePlayer['email'], 'mallbeury@mac.com', 'Matt Allbeury', $arrEmail->image, $arrEmail->title, $arrEmail->message, $arrEmail->preferences);
 }
 
 function replaceTags($strText, $game, $player, $activePlayer, $activity) {
@@ -123,6 +102,48 @@ function replaceDonationTags($strText, $donation) {
   return str_replace($tags, $replaceTags, $strText);
 }
 
+function BuildEmail($strEmailTemplate, $strSubject, $strToEmail, $strToName, $strImage, $strMsgTitle, $strMsgContent, $strPreferences) {
+
+  $template_content = array(
+    array(
+      'name' => 'msg_image',
+      'content' => '<img src="' . $strImage . '" width="682" style="max-width:682px; padding-bottom: 0; display: inline !important; vertical-align: bottom;" class="mcnImage" alt="Play Mountain Rush">'
+    ),
+    array(
+      'name' => 'msg_title',
+      'content' => $strMsgTitle
+    ),
+    array(
+      'name' => 'msg_content',
+      'content' => $strMsgContent
+    ),
+    array(
+      'name' => 'msg_preferences',
+      'content' => $strPreferences
+    )
+  );
+  $message = array(
+    'subject' => $strSubject,
+    'from_email' => 'support@mountainrush.co.uk',
+    'from_name' => 'Mountain Rush',
+    'to' => array(
+      array(
+        'email' => $strToEmail,
+        'name' => $strToName,
+        'type' => 'to'
+      )
+    ),
+    'headers' => array('Reply-To' => 'support@mountainrush.co.uk')
+  );
+
+  $email = array(
+    'template_content' => $template_content,
+    'message' => $message
+  );
+
+  return $email; 
+}
+
 function sendEmail($strEmailTemplate, $strSubject, $strToEmail, $strToName, $strImage, $strMsgTitle, $strMsgContent, $strPreferences) {
 
   if (DEBUG) {
@@ -133,42 +154,17 @@ function sendEmail($strEmailTemplate, $strSubject, $strToEmail, $strToName, $str
 
   try {
     $mandrill = new Mandrill('kRr66_sxVLQJwehdLnakqg');
-
-    $template_content = array(
-      array(
-        'name' => 'msg_image',
-        'content' => '<img src="' . $strImage . '" width="682" style="max-width:682px; padding-bottom: 0; display: inline !important; vertical-align: bottom;" class="mcnImage" alt="Play Mountain Rush">'
-      ),
-      array(
-        'name' => 'msg_title',
-        'content' => $strMsgTitle
-      ),
-      array(
-        'name' => 'msg_content',
-        'content' => $strMsgContent
-      ),
-      array(
-        'name' => 'msg_preferences',
-        'content' => $strPreferences
-      )
-    );
-    $message = array(
-      'subject' => $strSubject,
-      'from_email' => 'support@mountainrush.co.uk',
-      'from_name' => 'Mountain Rush',
-      'to' => array(
-        array(
-          'email' => $strToEmail,
-          'name' => $strToName,
-          'type' => 'to'
-        )
-      ),
-      'headers' => array('Reply-To' => 'support@mountainrush.co.uk')
-    );
     $async = false;
     $ip_pool = '';
     $send_at = '';
-    $result = $mandrill->messages->sendTemplate($strEmailTemplate, $template_content, $message, $async, $ip_pool, $send_at);
+
+    // Build and send TEST email
+    $email = BuildEmail($strEmailTemplate, $strSubject . ' DUPLICATE ' . $strToEmail, 'mallbeury@mac.com', 'Matt Allbeury', $strImage, $strMsgTitle, $strMsgContent, $strPreferences);
+    $mandrill->messages->sendTemplate($strEmailTemplate, $email['template_content'], $email['message'], $async, $ip_pool, $send_at);
+
+    // Build and send email
+    $email = BuildEmail($strEmailTemplate, $strSubject, $strToEmail, $strToName, $strImage, $strMsgTitle, $strMsgContent, $strPreferences);
+    $result = $mandrill->messages->sendTemplate($strEmailTemplate, $email['template_content'], $email['message'], $async, $ip_pool, $send_at);
 
     return $result;
   } catch(Mandrill_Error $e) {

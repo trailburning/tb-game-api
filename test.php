@@ -142,11 +142,9 @@ $jsonGamesResponse = getGameFromDB($gameID);
 if (count($jsonGamesResponse)) {
   foreach ($jsonGamesResponse as $game) {
     $campaignID = $hashids->decode($game['campaignID'])[0];
-
     $jsonCampaignResponse = getCampaignFromDB($db, $campaignID);
     if (count($jsonCampaignResponse)) {
       $campaign = $jsonCampaignResponse[0];
-
       if (count($jsonPlayerResponse)) {
         // send invite
         $jsonInvitingPlayerResponse = getPlayerDetailsFromDB(67);
@@ -159,7 +157,7 @@ if (count($jsonGamesResponse)) {
 
           // invite email
           $jsonEmail = $campaign['email_invite'];
-          sendInviteEmail($campaign['email_template'], $jsonEmail, $game, $invitingPlayer, $player);
+//          sendInviteEmail($campaign['email_template'], $jsonEmail, $game, $invitingPlayer, $player);
         }
 
         $activePlayer = null;
@@ -179,7 +177,7 @@ if (count($jsonGamesResponse)) {
               'amount' => 10,
               'donor' => 'Hello World',
             );
-            sendFundraisingDonationEmail($campaign['email_template'], $jsonEmail, $game, $player, $donation);
+//            sendFundraisingDonationEmail($campaign['email_template'], $jsonEmail, $game, $player, $donation);
           }
 
           if ($player['game_notifications']) {
@@ -190,7 +188,7 @@ if (count($jsonGamesResponse)) {
               if ($player['id'] == $activePlayer['id']) {
                 $jsonEmail = $campaign['email_activity'];
               }
-              sendActivityEmail($campaign['email_template'], $jsonEmail, $game, $player, $activePlayer, $activity);
+//              sendActivityEmail($campaign['email_template'], $jsonEmail, $game, $player, $activePlayer, $activity);
             }
 
             // welcome email
@@ -199,18 +197,18 @@ if (count($jsonGamesResponse)) {
 
             // completed email
             $jsonEmail = $campaign['email_finished'];
-            sendFinishedEmail($campaign['email_template'], $jsonEmail, $game, $player, $activePlayer);
+//            sendFinishedEmail($campaign['email_template'], $jsonEmail, $game, $player, $activePlayer);
 
             // inactivity email
             $jsonEmail = $campaign['email_inactivity'];
-            sendInactivityEmail($campaign['email_template'], $jsonEmail, $game, $activePlayer);
+//            sendInactivityEmail($campaign['email_template'], $jsonEmail, $game, $activePlayer);
 
             // summit email
             $jsonEmail = $campaign['email_summit_broadcast'];
             if ($player['id'] == $activePlayer['id']) {
               $jsonEmail = $campaign['email_summit'];
             }
-            sendSummitEmail($campaign['email_template'], $jsonEmail, $game, $player, $activePlayer);
+//            sendSummitEmail($campaign['email_template'], $jsonEmail, $game, $player, $activePlayer);
           }
         }
       }
