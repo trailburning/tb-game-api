@@ -145,70 +145,76 @@ if (count($jsonGamesResponse)) {
     $jsonCampaignResponse = getCampaignFromDB($db, $campaignID);
     if (count($jsonCampaignResponse)) {
       $campaign = $jsonCampaignResponse[0];
-      if (count($jsonPlayerResponse)) {
-        // send invite
-        $jsonInvitingPlayerResponse = getPlayerDetailsFromDB(67);
-        foreach ($jsonInvitingPlayerResponse as $invitingPlayer) {
-          $player = array();
-          $player['id'] = 0;
-          $player['firstname'] = 'Matt';
-          $player['lastname'] = '';
-          $player['email'] = 'mallbeury@mac.com';
 
-          // invite email
-          $jsonEmail = $campaign['email_invite'];
-//          sendInviteEmail($campaign['email_template'], $jsonEmail, $game, $invitingPlayer, $player);
-        }
+      $jsonCampaignEmailsResponse = getCampaignEmailsFromDB($campaignID);
+      if (count($jsonCampaignEmailsResponse)) {
+        $campaignEmails = $jsonCampaignEmailsResponse[0];        
 
-        $activePlayer = null;
-        foreach ($jsonPlayerResponse as $player) {
-          $playerID = $hashids->decode($player['id'])[0];
+        if (count($jsonPlayerResponse)) {
+          // send invite
+          $jsonInvitingPlayerResponse = getPlayerDetailsFromDB(67);
+          foreach ($jsonInvitingPlayerResponse as $invitingPlayer) {
+            $player = array();
+            $player['id'] = 0;
+            $player['firstname'] = 'Matt';
+            $player['lastname'] = '';
+            $player['email'] = 'mallbeury@mac.com';
 
-          if ($playerID == $activePlayerID) {
-            $activePlayer = $player;
+            // invite email
+            $jsonEmail = $campaignEmails['email_invite'];
+  //          sendInviteEmail($campaignEmails['email_template'], $jsonEmail, $game, $invitingPlayer, $player);
           }
 
-          if ($player['id'] == $activePlayer['id']) {
-            // fundraising donation email
-            $jsonEmail = $campaign['email_fundraising_donation'];
+          $activePlayer = null;
+          foreach ($jsonPlayerResponse as $player) {
+            $playerID = $hashids->decode($player['id'])[0];
 
-            $donation = array(
-              'currency' => 'eur',
-              'amount' => 10,
-              'donor' => 'Hello World',
-            );
-//            sendFundraisingDonationEmail($campaign['email_template'], $jsonEmail, $game, $player, $donation);
-          }
-
-          if ($player['game_notifications']) {
-            $activity = getPlayerActivity($activePlayer['playerProviderToken'], $LatestActivity);
-            if ($activity) {
-              // activity email
-              $jsonEmail = $campaign['email_activity_broadcast'];
-              if ($player['id'] == $activePlayer['id']) {
-                $jsonEmail = $campaign['email_activity'];
-              }
-//              sendActivityEmail($campaign['email_template'], $jsonEmail, $game, $player, $activePlayer, $activity);
+            if ($playerID == $activePlayerID) {
+              $activePlayer = $player;
             }
 
-            // welcome email
-            $jsonEmail = $campaign['email_welcome'];
-            sendWelcomeEmail($campaign['email_template'], $jsonEmail, $game, $player);
-
-            // completed email
-            $jsonEmail = $campaign['email_finished'];
-//            sendFinishedEmail($campaign['email_template'], $jsonEmail, $game, $player, $activePlayer);
-
-            // inactivity email
-            $jsonEmail = $campaign['email_inactivity'];
-//            sendInactivityEmail($campaign['email_template'], $jsonEmail, $game, $activePlayer);
-
-            // summit email
-            $jsonEmail = $campaign['email_summit_broadcast'];
             if ($player['id'] == $activePlayer['id']) {
-              $jsonEmail = $campaign['email_summit'];
+              // fundraising donation email
+              $jsonEmail = $campaignEmails['email_fundraising_donation'];
+
+              $donation = array(
+                'currency' => 'eur',
+                'amount' => 10,
+                'donor' => 'Hello World',
+              );
+  //            sendFundraisingDonationEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $donation);
             }
-//            sendSummitEmail($campaign['email_template'], $jsonEmail, $game, $player, $activePlayer);
+
+            if ($player['game_notifications']) {
+              $activity = getPlayerActivity($activePlayer['playerProviderToken'], $LatestActivity);
+              if ($activity) {
+                // activity email
+                $jsonEmail = $campaign['email_activity_broadcast'];
+                if ($player['id'] == $activePlayer['id']) {
+                  $jsonEmail = $campaign['email_activity'];
+                }
+  //              sendActivityEmail($campaign['email_template'], $jsonEmail, $game, $player, $activePlayer, $activity);
+              }
+
+              // welcome email
+              $jsonEmail = $campaignEmails['email_welcome'];
+              sendWelcomeEmail($campaignEmails['email_template'], $jsonEmail, $game, $player);
+
+              // completed email
+              $jsonEmail = $campaignEmails['email_finished'];
+  //            sendFinishedEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $activePlayer);
+
+              // inactivity email
+              $jsonEmail = $campaignEmails['email_inactivity'];
+  //            sendInactivityEmail($campaignEmails['email_template'], $jsonEmail, $game, $activePlayer);
+
+              // summit email
+              $jsonEmail = $campaignEmails['email_summit_broadcast'];
+              if ($player['id'] == $activePlayer['id']) {
+                $jsonEmail = $campaignEmails['email_summit'];
+              }
+  //            sendSummitEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $activePlayer);
+            }
           }
         }
       }
