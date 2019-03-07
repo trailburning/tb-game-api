@@ -315,13 +315,14 @@ $app->get('/game/{gameHashID}/campaign', function (Request $request, Response $r
   $gameID = $hashids->decode($hashGameID)[0];
 
   $jsonResponse = null;
-
   if ($gameID) {
-    $jsonResponse = getCampaignByGameFromDB($gameID);
-    if (count($jsonResponse)) {
-      $campaignID = $hashids->decode($jsonResponse[0]['id'])[0];
+    $jsonCampaignResponse = getCampaignByGameFromDB($gameID);
+    if (count($jsonCampaignResponse)) {
+      $campaignID = $hashids->decode($jsonCampaignResponse[0]['id'])[0];
       // add language data
-      $jsonResponse[0]['languages'] = getCampaignLanguagesFromDB($campaignID);    
+      $jsonCampaignResponse[0]['languages'] = getCampaignLanguagesFromDB($campaignID);    
+      
+      $jsonResponse = $jsonCampaignResponse;
     }
   }
 
