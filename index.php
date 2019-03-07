@@ -382,11 +382,17 @@ $app->post('/game/{gameHashID}/player/{playerHashID}', function (Request $reques
   $jsonGamesResponse = getGameFromDB($gameID);
   if (count($jsonGamesResponse)) {
     foreach ($jsonGamesResponse as $game) {
-      if (count($jsonPlayerResponse)) {
-        foreach ($jsonPlayerResponse as $player) {
-          if ($player['game_notifications']) {
-            $jsonEmail = $game['email_welcome'];
-            sendWelcomeEmail($jsonEmail, $game, $player);
+      $campaignID = $hashids->decode($game['campaignID'])[0];
+      $jsonCampaignEmailsResponse = getCampaignEmailsFromDB($campaignID);
+      if (count($jsonCampaignEmailsResponse)) {
+        $campaignEmails = $jsonCampaignEmailsResponse[0];        
+
+        if (count($jsonPlayerResponse)) {
+          foreach ($jsonPlayerResponse as $player) {
+            if ($player['game_notifications']) {
+              $jsonEmail = $campaignEmails['email_welcome'];
+              sendWelcomeEmail($campaignEmails['email_template'], $jsonEmail, $game, $player);
+            }
           }
         }
       }
@@ -429,20 +435,26 @@ $app->post('/game/{gameHashID}/invite', function (Request $request, Response $re
     foreach ($jsonGamesResponse as $game) {
       $invitingPlayerID = $hashids->decode($game['ownerPlayerID'])[0];
 
-      addGameInviteToDB($gameID, $data['email']);
-      // get inviting player
-      $jsonInvitingPlayerResponse = getPlayerDetailsFromDB($invitingPlayerID);
-      foreach ($jsonInvitingPlayerResponse as $invitingPlayer) {
-        // send invite
-        $player = array();
-        $player['id'] = 0;
-        $player['firstname'] = $data['name'];
-        $player['lastname'] = '';
-        $player['email'] = $data['email'];
+      $campaignID = $hashids->decode($game['campaignID'])[0];
+      $jsonCampaignEmailsResponse = getCampaignEmailsFromDB($campaignID);
+      if (count($jsonCampaignEmailsResponse)) {
+        $campaignEmails = $jsonCampaignEmailsResponse[0];        
 
-        $jsonEmail = $game['email_invite'];
-        sendInviteEmail($jsonEmail, $game, $invitingPlayer, $player);        
-        addLogToDB($db, LOG_OBJECT_PLAYER, LOG_ACTIVITY_INVITATION_SENT, $invitingPlayerID);
+        addGameInviteToDB($gameID, $data['email']);
+        // get inviting player
+        $jsonInvitingPlayerResponse = getPlayerDetailsFromDB($invitingPlayerID);
+        foreach ($jsonInvitingPlayerResponse as $invitingPlayer) {
+          // send invite
+          $player = array();
+          $player['id'] = 0;
+          $player['firstname'] = $data['name'];
+          $player['lastname'] = '';
+          $player['email'] = $data['email'];
+
+          $jsonEmail = $campaignEmails['email_invite'];
+          sendInviteEmail($campaignEmails['email_template'], $jsonEmail, $game, $invitingPlayer, $player);        
+          addLogToDB($db, LOG_OBJECT_PLAYER, LOG_ACTIVITY_INVITATION_SENT, $invitingPlayerID);
+        }        
       }
     }
   }
@@ -472,11 +484,16 @@ $app->post('/game/{gameHashID}/player/{playerHashID}/invite/{inviteHashID}/accep
   $jsonGamesResponse = getGameFromDB($gameID);
   if (count($jsonGamesResponse)) {
     foreach ($jsonGamesResponse as $game) {
-      if (count($jsonPlayerResponse)) {
-        foreach ($jsonPlayerResponse as $player) {
-          if ($player['game_notifications']) {
-            $jsonEmail = $game['email_welcome'];
-            sendWelcomeEmail($jsonEmail, $game, $player);
+      $campaignID = $hashids->decode($game['campaignID'])[0];
+      $jsonCampaignEmailsResponse = getCampaignEmailsFromDB($campaignID);
+      if (count($jsonCampaignEmailsResponse)) {
+        $campaignEmails = $jsonCampaignEmailsResponse[0];        
+        if (count($jsonPlayerResponse)) {
+          foreach ($jsonPlayerResponse as $player) {
+            if ($player['game_notifications']) {
+              $jsonEmail = $campaignEmails['email_welcome'];
+              sendWelcomeEmail($campaignEmails['email_template'], $jsonEmail, $game, $player);
+            }
           }
         }
       }
@@ -578,6 +595,7 @@ $app->get('/client/{clientHashID}/player/{playerHashID}', function (Request $req
   return null;
 });
 */
+
 $app->get('/campaign/{campaignHashID}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
@@ -592,6 +610,8 @@ $app->get('/campaign/{campaignHashID}', function (Request $request, Response $re
       $jsonResponse[0]['fundraising_currency_symbol'] = getCurrencySymbol($jsonResponse[0]['fundraising_currency']);
       // add language data
       $jsonResponse[0]['languages'] = getCampaignLanguagesFromDB($campaignID);
+
+      $jsonResponse[0]['emails'] = getCampaignEmailsFromDB($campaignID);
     }
     return $response->withJSON($jsonResponse);
   }
@@ -890,15 +910,22 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
   $jsonCampaign = getCampaignFromDB($db, $campaignID);
   if (count($jsonCampaign)) {
     $campaign = $jsonCampaign[0];
-    $jsonGamesResponse = getGameFromDB($gameID);
-    if (count($jsonGamesResponse)) {
-      $game = $jsonGamesResponse[0];
-      $jsonPlayersResponse = getPlayerFromDBByID($playerID);
-      if (count($jsonPlayersResponse)) {
-        $player = $jsonPlayersResponse[0];
-        if ($player['game_notifications']) {
-          $jsonEmail = $campaign['email_fundraising_donation'];        
-          sendFundraisingDonationEmail($campaign['email_template'], $jsonEmail, $game, $player, $donation);
+
+    // get campaign emails
+    $jsonCampaignEmailsResponse = getCampaignEmailsFromDB($campaignID);
+    if (count($jsonCampaignEmailsResponse)) {
+      // 190307 mla - currentl uses 1st emails but should use lang to pick correct ones.
+      $campaignEmails = $jsonCampaignEmailsResponse[0];
+      $jsonGamesResponse = getGameFromDB($gameID);
+      if (count($jsonGamesResponse)) {
+        $game = $jsonGamesResponse[0];
+        $jsonPlayersResponse = getPlayerFromDBByID($playerID);
+        if (count($jsonPlayersResponse)) {
+          $player = $jsonPlayersResponse[0];
+          if ($player['game_notifications']) {
+            $jsonEmail = $campaignEmails['email_fundraising_donation'];        
+            sendFundraisingDonationEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $donation);
+          }
         }
       }
     }

@@ -3,7 +3,7 @@ function getCampaignsFromDB() {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT clients.id as clientID, clients.name as client_name, clients.shortname as client_shortname, campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.juicer_feed, campaigns.fundraising_currency, campaigns.fundraising_minimum, campaigns.fundraising_provider, campaigns.fundraising_donation, campaigns.fundraising_page, campaigns.fundraising_charity, campaigns.fundraising_event, campaigns.invitation_code, campaigns.email_template, campaigns.email_welcome, campaigns.email_finished, campaigns.email_activity, campaigns.email_activity_broadcast, campaigns.email_inactivity, campaigns.email_summit, campaigns.email_summit_broadcast, campaigns.email_invite, campaigns.email_fundraising_donation FROM campaigns JOIN clients ON campaigns.clientID = clients.id';
+  $strSQL = 'SELECT clients.id as clientID, clients.name as client_name, clients.shortname as client_shortname, campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.juicer_feed, campaigns.fundraising_currency, campaigns.fundraising_minimum, campaigns.fundraising_provider, campaigns.fundraising_donation, campaigns.fundraising_page, campaigns.fundraising_charity, campaigns.fundraising_event, campaigns.invitation_code FROM campaigns JOIN clients ON campaigns.clientID = clients.id';
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
@@ -21,7 +21,7 @@ function getCampaignsFromDB() {
 function getCampaignFromDB($db, $campaignID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
-  $result = $db->query('SELECT clients.id as clientID, clients.name as client_name, clients.shortname as client_shortname, campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.juicer_feed, campaigns.fundraising_currency, campaigns.fundraising_minimum, campaigns.fundraising_provider, campaigns.fundraising_donation, campaigns.fundraising_page, campaigns.fundraising_charity, campaigns.fundraising_event, campaigns.invitation_code, campaigns.email_template, campaigns.email_welcome, campaigns.email_finished, campaigns.email_activity, campaigns.email_activity_broadcast, campaigns.email_inactivity, campaigns.email_summit, campaigns.email_summit_broadcast, campaigns.email_invite, campaigns.email_fundraising_donation FROM campaigns JOIN clients ON campaigns.clientID = clients.id WHERE campaigns.id = ' . $campaignID);
+  $result = $db->query('SELECT clients.id as clientID, clients.name as client_name, clients.shortname as client_shortname, campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.juicer_feed, campaigns.fundraising_currency, campaigns.fundraising_minimum, campaigns.fundraising_provider, campaigns.fundraising_donation, campaigns.fundraising_page, campaigns.fundraising_charity, campaigns.fundraising_event, campaigns.invitation_code FROM campaigns JOIN clients ON campaigns.clientID = clients.id WHERE campaigns.id = ' . $campaignID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -151,6 +151,19 @@ function getCampaignLanguagesFromDB($campaignID) {
 
   $db = mysqliSingleton::init();
   $result = $db->query('SELECT languages.name, languages.description FROM campaignlanguages JOIN languages ON campaignlanguages.languageID = languages.id WHERE campaignlanguages.campaignID = ' . $campaignID);
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
+function getCampaignEmailsFromDB($campaignID) {
+  $db = mysqliSingleton::init();
+  $result = $db->query('SELECT languages.name as language_name, campaignemails.email_template, campaignemails.email_welcome, campaignemails.email_finished, campaignemails.email_activity, campaignemails.email_activity_broadcast, campaignemails.email_inactivity, campaignemails.email_summit, campaignemails.email_summit_broadcast, campaignemails.email_invite, campaignemails.email_fundraising_donation FROM campaignemails JOIN languages ON campaignemails.languageID = languages.id WHERE campaignID = ' . $campaignID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
