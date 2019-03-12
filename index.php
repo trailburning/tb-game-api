@@ -266,18 +266,26 @@ $app->get('/game/{gameHashID}/socialimage/progress/{progress}', function (Reques
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $hashGameID = $request->getAttribute('gameHashID');
+  $gameID = $hashids->decode($hashGameID)[0];
 
-  $strProgress = '£ ' . $request->getAttribute('progress');
-  echo generateGameProgressSocialImage($hashids->decode($hashGameID)[0], $strProgress);
+  $jsonCampaignResponse = getCampaignByGameFromDB($gameID);
+  if (count($jsonCampaignResponse)) {
+    $strProgress = getCurrencySymbol($jsonCampaignResponse[0]['fundraising_currency']) . ' ' . $request->getAttribute('progress');
+    echo generateGameProgressSocialImage($gameID, $strProgress);
+  }
 });
 
 $app->get('/game/{gameHashID}/socialimage/goal/{goal}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $hashGameID = $request->getAttribute('gameHashID');
+  $gameID = $hashids->decode($hashGameID)[0];
 
-  $strGoal = '£ ' . $request->getAttribute('goal');
-  echo generateGameGoalSocialImage($hashids->decode($hashGameID)[0], $strGoal);
+  $jsonCampaignResponse = getCampaignByGameFromDB($gameID);
+  if (count($jsonCampaignResponse)) {
+    $strGoal = getCurrencySymbol($jsonCampaignResponse[0]['fundraising_currency']) . ' ' . $request->getAttribute('goal');
+    echo generateGameGoalSocialImage($gameID, $strGoal);
+  }
 });
 
 $app->get('/game/{gameHashID}', function (Request $request, Response $response) {
