@@ -152,7 +152,26 @@ function getPlayerDetailsFromDB($playerID) {
   return $rows;
 }
 
-function getPlayersFromDBByCampaign($campaignID, $match) {
+function getPlayersFromDBByClient($clientID, $match) {
+  require_once 'lib/mysql.php';
+
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $db = connect_db();
+  $result = $db->query('SELECT id, firstname, lastname, email, city, country FROM players WHERE players.clientID = ' . $clientID . ' AND (LOWER(players.firstname) LIKE "%' . $match . '%" OR LOWER(players.lastname) like "%' . $match . '%") ORDER BY lastname DESC');
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $row['id'] = $hashids->encode($row['id']);
+
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
+function getPlayerGamesFromDBByCampaign($campaignID, $match) {
   require_once 'lib/mysql.php';
 
   $hashids = new Hashids\Hashids('mountainrush', 10);

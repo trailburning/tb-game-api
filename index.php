@@ -653,13 +653,24 @@ $app->post('/campaign/{campaignHashID}/checkinvite', function (Request $request,
   return $response->withJSON($jsonResponse);
 });
 
-$app->get('/campaign/{campaignHashID}/players/{match}', function (Request $request, Response $response) {
+$app->get('/client/{clientHashID}/players/{match}', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashClientID = $request->getAttribute('clientHashID');
+  $clientID = $hashids->decode($hashClientID)[0];
+
+  $jsonResponse = getPlayersFromDBByClient($clientID, $request->getAttribute('match'));
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->get('/campaign/{campaignHashID}/playergames/{match}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $hashCampaignID = $request->getAttribute('campaignHashID');
   $campaignID = $hashids->decode($hashCampaignID)[0];
 
-  $jsonResponse = getPlayersFromDBByCampaign($campaignID, $request->getAttribute('match'));
+  $jsonResponse = getPlayerGamesFromDBByCampaign($campaignID, $request->getAttribute('match'));
 
   return $response->withJSON($jsonResponse);
 });
