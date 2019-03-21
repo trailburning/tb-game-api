@@ -395,7 +395,8 @@ function getGameFromDB($gameID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = mysqliSingleton::init();
-  $result = $db->query('SELECT games.id, campaignID, ownerPlayerID, season, type, game_start, game_end, state, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, gameLevels.mountainType, gameLevels.multiplayer, gameLevels.sponsored, campaigns.name as campaign_name, campaigns.fundraising_provider, campaigns.fundraising_currency, campaigns.fundraising_page FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id where games.id = ' . $gameID);
+  $strSQL = 'SELECT games.id, campaignID, ownerPlayerID, season, type, game_start, game_end, games.name, games.description, games.photo, state, gameLevels.name as level_name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, gameLevels.mountainType, gameLevels.multiplayer, gameLevels.sponsored, campaigns.name as campaign_name, campaigns.fundraising_provider, campaigns.fundraising_currency, campaigns.fundraising_page FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id where games.id = ' . $gameID;
+  $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {

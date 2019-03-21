@@ -127,7 +127,7 @@ function generateGameSocialImage($gameID) {
   if (count($arrResponse)) {
     $paramaObj = (object) [
       'journeyID' => $arrResponse[0]['journeyID'],
-      'mountain' => $arrResponse[0]['name'],
+      'mountain' => $arrResponse[0]['level_name'],
       'region' => strtolower($arrResponse[0]['region']),
       'ascent' => $arrResponse[0]['ascent'],
       'challenge' => getChallengeDescription($arrResponse[0]['type']),
@@ -146,7 +146,7 @@ function generateGameProgressSocialImage($gameID, $progress) {
   if (count($arrResponse)) {
     $paramaObj = (object) [
       'journeyID' => $arrResponse[0]['journeyID'],
-      'mountain' => $arrResponse[0]['name'],
+      'mountain' => $arrResponse[0]['level_name'],
       'region' => strtolower($arrResponse[0]['region']),
       'ascent' => $arrResponse[0]['ascent'],
       'type' => $arrResponse[0]['type'],
@@ -171,7 +171,7 @@ function generateGameGoalSocialImage($gameID, $goal) {
   if (count($arrResponse)) {
     $paramaObj = (object) [
       'journeyID' => $arrResponse[0]['journeyID'],
-      'mountain' => $arrResponse[0]['name'],
+      'mountain' => $arrResponse[0]['level_name'],
       'region' => strtolower($arrResponse[0]['region']),
       'ascent' => $arrResponse[0]['ascent'],
       'type' => $arrResponse[0]['type'],
