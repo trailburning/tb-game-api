@@ -7,7 +7,8 @@
     "monolog/monolog": "1.24.0",
     "hashids/hashids": "^2.0",
     "imgix/imgix-php": "dev-master",
-    "mandrill/mandrill": "1.0.*"
+    "mandrill/mandrill": "1.0.*",
+    "aws/aws-sdk-php": "~3.0"
   },
   "require-dev": {
     "heroku/heroku-buildpack-php": "*"
