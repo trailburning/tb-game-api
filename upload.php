@@ -21,15 +21,16 @@ $s3 = new Aws\S3\S3Client([
     ]
 ]);
 
-echo 'T1';
-echo $_SERVER['REQUEST_METHOD'];
-echo isset($_FILES['upload_file']);
-echo $_FILES['upload_file']['error'];
-echo $_FILES['upload_file']['name'];
+echo 'T1' . '<br/>';
+echo $_SERVER['REQUEST_METHOD'] . '<br/>';
+echo isset($_FILES['upload_file']) . '<br/>';
+echo $_FILES['upload_file']['error'] . '<br/>';
+echo is_uploaded_file($_FILES['upload_file']['tmp_name']) . '<br/>';
+echo $_FILES['upload_file']['name'] . '<br/>';
 
 if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['upload_file']) && $_FILES['upload_file']['error'] == UPLOAD_ERR_OK && is_uploaded_file($_FILES['upload_file']['tmp_name'])) {
 
-  echo 'T2';
+  echo 'T2' . '<br/>';
 
   try {
     // FIXME: do not use 'name' for upload (that's the original filename from the user's computer)
