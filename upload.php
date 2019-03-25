@@ -30,12 +30,8 @@ else {
 
 // this will simply read AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY from env vars
 $s3 = new Aws\S3\S3Client([
-    'version'  => 'latest',
-    'region'   => $region,
-    'credentials' => [
-        'key'    => "AKIAIXMLDHGL6NFDSGFQ",
-        'secret' => "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"
-    ]
+  'version'  => 'latest',
+  'region'   => $region
 ]);
 
 if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['upload_file']) && $_FILES['upload_file']['error'] == UPLOAD_ERR_OK && is_uploaded_file($_FILES['upload_file']['tmp_name'])) {
