@@ -18,6 +18,16 @@ else {
   echo 'NO CLEARDB_DATABASE_URL<br/>'; 
 }
 
+// when local use dotenv
+if (getenv("CLEARDB_DATABASE_URL")) {
+  echo 'remote<br/>';  
+}
+else {
+  $dotenv = Dotenv\Dotenv::create(__DIR__);
+  $dotenv->load();
+  echo 'local<br/>';
+}
+
 // this will simply read AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY from env vars
 $s3 = new Aws\S3\S3Client([
     'version'  => 'latest',
