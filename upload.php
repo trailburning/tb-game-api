@@ -1,8 +1,10 @@
 <?php
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Credentials: true');
-header('Access-Control-Allow-Methods: GET,PUT,POST,DELETE,OPTIONS');
-header("Access-Control-Allow-Headers: Origin,X-Requested-With,Content-Type,Accept,content-type,application/json");
+header("Access-Control-Allow-Credentials: true");
+header('Access-Control-Allow-Methods: GET, PUT, POST, DELETE, OPTIONS');
+header('Access-Control-Max-Age: 1000');
+header('Access-Control-Allow-Headers: Origin, Content-Type, X-Auth-Token , Authorization');
+header('Content-Type: application/json');
 
 require 'vendor/autoload.php';
 
@@ -11,18 +13,8 @@ require 'vendor/autoload.php';
 $bucket = 'trailburning-media';
 $region = 'eu-west-1';
 
-if (getenv("CLEARDB_DATABASE_URL")) {
-  echo 'CLEARDB_DATABASE_URL<br/>';
-}
-else {
-  echo 'NO CLEARDB_DATABASE_URL<br/>'; 
-}
-
 // when local use dotenv
-if (getenv("CLEARDB_DATABASE_URL")) {
-  echo 'remote<br/>';  
-}
-else {
+if (!getenv("CLEARDB_DATABASE_URL")) {
   $dotenv = Dotenv\Dotenv::create(__DIR__);
   $dotenv->load();
   echo 'local<br/>';
@@ -34,7 +26,6 @@ $s3 = new Aws\S3\S3Client([
   'region'   => $region
 ]);
 
-echo 'err:' . $_FILES['upload_file']['error'] . '<br/>';
 if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['upload_file']) && $_FILES['upload_file']['error'] == UPLOAD_ERR_OK && is_uploaded_file($_FILES['upload_file']['tmp_name'])) {
 
   try {
@@ -48,7 +39,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['upload_file']) && $_FI
   }
 }
 else {
-  echo 'err:' . $_FILES['upload_file']['error'] . '<br/>';
   switch ($_FILES['upload_file']['error']) {
     case UPLOAD_ERR_INI_SIZE:
       echo 'File too big';
