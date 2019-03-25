@@ -34,6 +34,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['upload_file']) && $_FI
   }
 }
 else {
+  echo 'err:' . $_FILES['upload_file']['error'] . '<br/>';
   switch ($_FILES['upload_file']['error']) {
     case UPLOAD_ERR_INI_SIZE:
       echo 'File too big';
