@@ -1,7 +1,8 @@
 <?php
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST');
-header("Access-Control-Allow-Headers: X-Requested-With");
+header('Access-Control-Allow-Credentials: true');
+header('Access-Control-Allow-Methods: GET,PUT,POST,DELETE,OPTIONS');
+header("Access-Control-Allow-Headers: Origin,X-Requested-With,Content-Type,Accept,content-type,application/json");
 
 require 'vendor/autoload.php';
 
