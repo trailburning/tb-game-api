@@ -34,6 +34,7 @@ $s3 = new Aws\S3\S3Client([
   'region'   => $region
 ]);
 
+echo 'err:' . $_FILES['upload_file']['error'] . '<br/>';
 if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['upload_file']) && $_FILES['upload_file']['error'] == UPLOAD_ERR_OK && is_uploaded_file($_FILES['upload_file']['tmp_name'])) {
 
   try {
