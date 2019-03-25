@@ -11,6 +11,13 @@ require 'vendor/autoload.php';
 $bucket = 'trailburning-media';
 $region = 'eu-west-1';
 
+if (getenv("CLEARDB_DATABASE_URL")) {
+  echo 'CLEARDB_DATABASE_URL<br/>';
+}
+else {
+  echo 'NO CLEARDB_DATABASE_URL<br/>'; 
+}
+
 // when local use dotenv
 if (getenv("NODE_ENV") != "staging" && getenv("NODE_ENV") != "production") {
   $dotenv = Dotenv\Dotenv::create(__DIR__);
