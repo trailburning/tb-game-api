@@ -25,6 +25,7 @@ use Strava\API\OAuth;
 use Strava\API\Exception;
 
 include "lib/tbLog.php";
+include "lib/tbAssets.php";
 include "lib/tbEmail.php";
 include "lib/tbSocial.php";
 include "lib/tbCampaign.php";
@@ -68,6 +69,10 @@ if (getenv("CLEARDB_DATABASE_URL")) {
   $GLOBALS['db_user'] = $url["user"];
   $GLOBALS['db_pass'] = $url["pass"];
   $GLOBALS['db_name'] = substr($url["path"], 1);
+}
+else {
+  $dotenv = Dotenv\Dotenv::create(__DIR__);
+  $dotenv->load();  
 }
 
 $app->get('/', function (Request $request, Response $response) {
@@ -199,6 +204,10 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
   header("HTTP/1.1 200 OK");
 
   return;
+});
+
+$app->post('/upload', function (Request $request, Response $response) {
+  uploadAsset();
 });
 
 $app->get('/campaign/{campaignHashID}/strava/oauth', function (Request $request, Response $response) {
