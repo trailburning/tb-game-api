@@ -11,6 +11,13 @@ require 'vendor/autoload.php';
 $bucket = 'trailburning-media';
 $region = 'eu-west-1';
 
+if (getenv("CLEARDB_DATABASE_URL")) {
+  echo 'CLEARDB_DATABASE_URL<br/>';
+}
+else {
+  echo 'NO CLEARDB_DATABASE_URL<br/>'; 
+}
+
 // this will simply read AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY from env vars
 $s3 = new Aws\S3\S3Client([
     'version'  => 'latest',
