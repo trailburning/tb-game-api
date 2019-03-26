@@ -206,10 +206,6 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
   return;
 });
 
-$app->post('/upload', function (Request $request, Response $response) {
-  uploadAsset();
-});
-
 $app->get('/campaign/{campaignHashID}/strava/oauth', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
@@ -261,6 +257,15 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
   }
 
   return $response->withJSON($jsonResponse);  
+});
+
+$app->post('/campaign/{campaignHashID}/game/{gameHashID}/upload', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashCampaignID = $request->getAttribute('campaignHashID');
+  $hashGameID = $request->getAttribute('gameHashID');
+
+  uploadAsset($hashCampaignID, $hashGameID);
 });
 
 $app->get('/game/{gameHashID}/socialimage', function (Request $request, Response $response) {
