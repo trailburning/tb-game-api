@@ -206,10 +206,6 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
   return;
 });
 
-$app->post('/upload', function (Request $request, Response $response) {
-  uploadAsset();
-});
-
 $app->get('/campaign/{campaignHashID}/strava/oauth', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
@@ -261,6 +257,15 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
   }
 
   return $response->withJSON($jsonResponse);  
+});
+
+$app->post('/campaign/{campaignHashID}/game/{gameHashID}/upload', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashCampaignID = $request->getAttribute('campaignHashID');
+  $hashGameID = $request->getAttribute('gameHashID');
+
+  uploadAsset($hashCampaignID, $hashGameID);
 });
 
 $app->get('/game/{gameHashID}/socialimage', function (Request $request, Response $response) {
@@ -316,6 +321,9 @@ $app->get('/game/{gameHashID}', function (Request $request, Response $response) 
   $jsonResponse[0]['game_start'] = $dtStartDate->format('Y-m-d\TH:i:s.000\Z');
   $dtEndDate = new DateTime($jsonResponse[0]['game_end']);
   $jsonResponse[0]['game_end'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
+
+  // add media data
+  $jsonResponse[0]['media'] = getGameAssetsFromDB($gameID);
 
   // add player data
   $jsonResponse[0]['players'] = getGamePlayersFromDB($gameID);
