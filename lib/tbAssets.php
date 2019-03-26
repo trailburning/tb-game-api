@@ -18,6 +18,26 @@ function addGameAssetToDB($gameID, $name) {
   return $ret;
 }
 
+function getGameAssetsFromDB($gameID) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $db = mysqliSingleton::init();
+  $strSQL = 'SELECT id, created, name FROM gameMedia WHERE gameID = ' . $gameID . ' ORDER BY created DESC';
+  $result = $db->query($strSQL);
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $hashID = $hashids->encode($row['id']);
+    $row['id'] = $hashID;
+
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
+
 function uploadAsset($hashCampaignID, $hashGameID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 

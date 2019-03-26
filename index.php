@@ -322,6 +322,9 @@ $app->get('/game/{gameHashID}', function (Request $request, Response $response) 
   $dtEndDate = new DateTime($jsonResponse[0]['game_end']);
   $jsonResponse[0]['game_end'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
 
+  // add media data
+  $jsonResponse[0]['media'] = getGameAssetsFromDB($gameID);
+
   // add player data
   $jsonResponse[0]['players'] = getGamePlayersFromDB($gameID);
 
