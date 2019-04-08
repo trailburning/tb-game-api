@@ -296,7 +296,7 @@ function getActiveGamesByCampaignIDFromDB($campaignID) {
   $formattedNow = $dtNow->format('Y-m-d\TH:i:s.000\Z');
 
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT games.id, campaignID, season, type, game_start, game_end, state, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, campaigns.name as campaign_name, campaigns.fundraising_provider, campaigns.fundraising_page FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id WHERE campaigns.id = ' . $campaignID . ' AND state = ' . GAME_READY_STATE . ' order by game_end desc';
+  $strSQL = 'SELECT games.id, campaignID, season, type, game_start, game_end, state, gameLevels.name as level_name, gameLevels.region, gameLevels.ascent, gameLevels.journeyID, campaigns.name as campaign_name, campaigns.fundraising_provider, campaigns.fundraising_page FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id WHERE campaigns.id = ' . $campaignID . ' AND state = ' . GAME_READY_STATE . ' order by game_end desc';
 
   $result = $db->query($strSQL);
 
