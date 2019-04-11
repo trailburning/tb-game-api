@@ -907,6 +907,18 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/details', functio
   return $response->withJSON($jsonResponse);
 });
 
+$app->get('/game/{gameHashID}/fundraiser/donations', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashGameID = $request->getAttribute('gameHashID');
+
+  $gameID = $hashids->decode($hashGameID)[0];
+
+  $jsonResponse = getGameFundraisingDonations($hashGameID);
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/donations', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
@@ -916,7 +928,7 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/donations', funct
   $gameID = $hashids->decode($hashGameID)[0];
   $playerID = $hashids->decode($hashPlayerID)[0];
 
-  $jsonResponse = getFundraisingDonations($hashGameID, $hashPlayerID);
+  $jsonResponse = getGamePlayerFundraisingDonations($hashGameID, $hashPlayerID);
 
   return $response->withJSON($jsonResponse);
 });
