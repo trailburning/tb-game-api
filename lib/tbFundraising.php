@@ -7,8 +7,7 @@ define('FUNDRAISING_API_URL', 'https://api.justgiving.com/');
 define('FUNDRAISING_API_KEY', 'aca65145');
 define('FUNDRAISING_EMAIL', 'support@trailburning.com');
 define('FUNDRAISING_PASSWORD', 'helloworld');
-
-define('FUNDRAISING_RAISENOW_PASSWORD', 'helloworld');
+define('FUNDRAISING_RAISENOW_PASSWORD', 'matt@trailburning.com:M0r3I5B3tt3r!');
 
 /* **************************************************************************** */
 /* Start Support RaiseNow */
