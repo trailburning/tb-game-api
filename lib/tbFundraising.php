@@ -7,6 +7,7 @@ define('FUNDRAISING_API_URL', 'https://api.justgiving.com/');
 define('FUNDRAISING_API_KEY', 'aca65145');
 define('FUNDRAISING_EMAIL', 'support@trailburning.com');
 define('FUNDRAISING_PASSWORD', 'helloworld');
+define('FUNDRAISING_RAISENOW_PASSWORD', 'matt@trailburning.com:M0r3I5B3tt3r!');
 
 /* **************************************************************************** */
 /* Start Support RaiseNow */
@@ -26,7 +27,7 @@ function getFundraisingDetails($hashGameID, $hashPlayerID) {
   curl_setopt($ch, CURLOPT_URL, $url);  
   curl_setopt($ch, CURLOPT_SSLVERSION, 1); 
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($ch, CURLOPT_USERPWD, "matt@trailburning.com:M0r3I5B3tt3r!");
+  curl_setopt($ch, CURLOPT_USERPWD, FUNDRAISING_RAISENOW_PASSWORD);
   curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 
   $result = curl_exec($ch);
@@ -47,14 +48,38 @@ function getFundraisingDetails($hashGameID, $hashPlayerID) {
   return $jsonResponse;
 }
 
-function getFundraisingDonations($hashGameID, $hashPlayerID) {
+function getGameFundraisingDonations($hashGameID) {
+  $url = 'https://api.raisenow.com/epayment/api/amp-v6a6sz/transactions/search?sort[0][field_name]=created&sort[0][order]=desc&displayed_fields=stored_anonymous_donation,stored_customer_firstname,stored_customer_lastname,stored_customer_nickname,stored_customer_additional_message,amount,currency_identifier&filters[0][field_name]=stored_TBGameID&filters[0][type]=fulltext&filters[0][value]='. $hashGameID;
+
+  $ch = curl_init();  
+  curl_setopt($ch, CURLOPT_URL, $url);  
+  curl_setopt($ch, CURLOPT_SSLVERSION, 1); 
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_USERPWD, FUNDRAISING_RAISENOW_PASSWORD);
+  curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+
+  $result = curl_exec($ch);
+
+  $jsonResponse = json_decode($result);  
+
+  curl_close($ch);
+
+  // add currency symbols
+  foreach($jsonResponse->result->transactions as $transaction) {
+    $transaction->currency_symbol = getCurrencySymbol($transaction->currency_identifier);
+  }
+  
+  return $jsonResponse;
+}
+
+function getGamePlayerFundraisingDonations($hashGameID, $hashPlayerID) {
   $url = 'https://api.raisenow.com/epayment/api/amp-v6a6sz/transactions/search?sort[0][field_name]=created&sort[0][order]=desc&displayed_fields=stored_anonymous_donation,stored_customer_firstname,stored_customer_lastname,stored_customer_nickname,stored_customer_additional_message,amount,currency_identifier&filters[0][field_name]=stored_TBPlayerID&filters[0][type]=fulltext&filters[0][value]=' . $hashPlayerID . '&filters[1][field_name]=stored_TBGameID&filters[1][type]=fulltext&filters[1][value]='. $hashGameID;
 
   $ch = curl_init();  
   curl_setopt($ch, CURLOPT_URL, $url);  
   curl_setopt($ch, CURLOPT_SSLVERSION, 1); 
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  curl_setopt($ch, CURLOPT_USERPWD, "matt@trailburning.com:M0r3I5B3tt3r!");
+  curl_setopt($ch, CURLOPT_USERPWD, FUNDRAISING_RAISENOW_PASSWORD);
   curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 
   $result = curl_exec($ch);
