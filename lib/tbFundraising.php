@@ -232,6 +232,20 @@ function getFundraisingEventLeaderboard($eventId) {
 /* End Support JustGiving */
 /* **************************************************************************** */
 
+function getFundraisingGameShoppingList($gameID) {
+  $db = mysqliSingleton::init();
+  $strSQL = 'SELECT fundraisingshoppinglist.amount, fundraisingshoppinglist.buy, fundraisingshoppinglist.title, fundraisingshoppinglist.description, fundraisingshoppinglist.image FROM fundraisingshoppinglist JOIN fundraisingshoppinglistgamelevels ON fundraisingshoppinglistgamelevels.fundraisingShoppingListID = fundraisingshoppinglist.id JOIN games ON games.levelID = fundraisingshoppinglistgamelevels.gameLevelID WHERE games.ID = ' . $gameID;
+  $result = $db->query($strSQL);
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
 function getFundraisingCampaignLeaderboard($campaignID, $numPlayers) {
   require_once 'lib/mysql.php';
 

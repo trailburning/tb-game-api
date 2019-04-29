@@ -841,6 +841,17 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/activity/{activityID}/commen
     return $response->withJSON($jsonResponse);
 });
 
+$app->get('/game/{gameHashID}/fundraising/shoppinglist', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashGameID = $request->getAttribute('gameHashID');
+  $gameID = $hashids->decode($hashGameID)[0];
+
+  $jsonResponse = array('items' => getFundraisingGameShoppingList($gameID));
+
+  return $response->withJSON($jsonResponse);
+});
+
 /* **************************************************************************** */
 /* Start Support RaiseNow */
 /* **************************************************************************** */
