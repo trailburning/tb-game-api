@@ -216,6 +216,13 @@ function setPlayerGameLatestMarkerInDB($gameID, $playerID, $markerID) {
   $result = $db->query('UPDATE gamePlayers SET latestMarkerID = "' . $markerID . '" WHERE game = ' . $gameID . ' and player = ' . $playerID);
 }
 
+function addGameLevelVoteToDB($name, $vote) {
+  // only set once
+  $db = mysqliSingleton::init();
+
+  $result = $db->query('INSERT INTO gamelevelvote (name, vote) VALUES ("' . $name . '", ' . $vote . ')');
+}
+
 function getGamePlayersFromDB($gameID) {
   require_once 'lib/mysql.php';
 
