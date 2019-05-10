@@ -184,7 +184,9 @@ function setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $fundraisingMsg
 
   // only set once
   $db = mysqliSingleton::init();
-  $db->query('UPDATE gamePlayers SET fundraising_msg = "' . $fundraisingMsg . '", fundraising_goal = ' . $fundraisingGoal . ', fundraising_raised = ' . $fundraisingRaised . ', fundraising_currency = "' . $fundraisingCurrency . '", fundraising_charityOptIn = ' . $fundraisingCharityOptIn . ' where game = ' . $gameID . ' and player = ' . $playerID);
+  $strSQL = 'UPDATE gamePlayers SET fundraising_msg = "' . $fundraisingMsg . '", fundraising_goal = ' . $fundraisingGoal . ', fundraising_raised = ' . $fundraisingRaised . ', fundraising_currency = "' . $fundraisingCurrency . '", fundraising_charityOptIn = ' . $fundraisingCharityOptIn . ' where game = ' . $gameID . ' and player = ' . $playerID;
+  echo $strSQL;
+  $db->query($strSQL);
 }
 
 function setPlayerGameDistanceCompleteInDB($gameID, $playerID, $distanceCompleteActivityDate) {
