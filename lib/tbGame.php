@@ -184,7 +184,7 @@ function setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $fundraisingMsg
 
   // only set once
   $db = mysqliSingleton::init();
-  $strSQL = 'UPDATE gamePlayers SET fundraising_msg = "' . 'hello' . '", fundraising_goal = ' . $fundraisingGoal . ', fundraising_raised = ' . $fundraisingRaised . ', fundraising_currency = "' . $fundraisingCurrency . '", fundraising_charityOptIn = ' . $fundraisingCharityOptIn . ' where game = ' . $gameID . ' and player = ' . $playerID;
+  $strSQL = 'UPDATE gamePlayers SET fundraising_msg = "' . mysql_real_escape_string($fundraisingMsg) . '", fundraising_goal = ' . $fundraisingGoal . ', fundraising_raised = ' . $fundraisingRaised . ', fundraising_currency = "' . $fundraisingCurrency . '", fundraising_charityOptIn = ' . $fundraisingCharityOptIn . ' where game = ' . $gameID . ' and player = ' . $playerID;
   echo $strSQL;
   $db->query($strSQL);
 }
