@@ -1174,20 +1174,12 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/page/{pageShortNa
 
   $jsonResponse = getFundraisingPage($request->getAttribute('pageShortName'));
   // update fundraising info in DB
-/*
-  $jsonResponse = (object) [
-    'story' => '',
-    'fundraisingTarget' => 100,
-    'totalRaisedOnline' => 50,
-    'currencyCode' => 'GBP'
-  ];  
-*/  
   if ($jsonResponse) {
     // always set CharityOptIn to false as JustGiving maintain this internally
     setPlayerGameFundraisingDetailsInDB($gameID, $playerID, $jsonResponse->story, $jsonResponse->fundraisingTarget, $jsonResponse->totalRaisedOnline, $jsonResponse->currencyCode, 0);
   }
 
-//  return $response->withJSON($jsonResponse);
+  return $response->withJSON($jsonResponse);
 });
 
 $app->get('/fundraiser/page/{pageShortName}/donations', function (Request $request, Response $response) {
