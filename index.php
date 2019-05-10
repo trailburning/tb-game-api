@@ -852,6 +852,18 @@ $app->get('/game/{gameHashID}/fundraising/shoppinglist', function (Request $requ
   return $response->withJSON($jsonResponse);
 });
 
+$app->post('/vote', function (Request $request, Response $response) {
+
+  $json = $request->getBody();
+  $data = json_decode($json, true);
+
+  addGameLevelVoteToDB($data['name'], $data['vote']);
+
+  $jsonResponse = array();
+
+  return $response->withJSON($jsonResponse);
+});
+
 /* **************************************************************************** */
 /* Start Support RaiseNow */
 /* **************************************************************************** */
