@@ -21,7 +21,7 @@ function setPlayerGameFundraisingTotalsInDB($gameID, $playerID, $fundraisingRais
 }
 
 function getFundraisingDetails($hashGameID, $hashPlayerID) {
-  $url = 'https://api.raisenow.com/epayment/api/amp-v6a6sz/transactions/search?sort[0][field_name]=created&sort[0][order]=desc&displayed_fields=stored_anonymous_donation,stored_customer_firstname,stored_customer_lastname,stored_customer_nickname,stored_customer_additional_message,amount,currency_identifier&filters[0][field_name]=stored_TBPlayerID&filters[0][type]=fulltext&filters[0][value]=' . $hashPlayerID . '&filters[1][field_name]=stored_TBGameID&filters[1][type]=fulltext&filters[1][value]='. $hashGameID;
+  $url = 'https://api.raisenow.com/epayment/api/amp-v6a6sz/transactions/search?sort[0][field_name]=created&sort[0][order]=desc&displayed_fields=stored_anonymous_donation,stored_customer_firstname,stored_customer_lastname,stored_customer_nickname,stored_customer_additional_message,amount,currency_identifier,last_status&filters[0][field_name]=stored_TBPlayerID&filters[0][type]=fulltext&filters[0][value]=' . $hashPlayerID . '&filters[1][field_name]=stored_TBGameID&filters[1][type]=fulltext&filters[1][value]='. $hashGameID;
 
   $ch = curl_init();  
   curl_setopt($ch, CURLOPT_URL, $url);  
@@ -49,7 +49,7 @@ function getFundraisingDetails($hashGameID, $hashPlayerID) {
 }
 
 function getGameFundraisingDonations($hashGameID) {
-  $url = 'https://api.raisenow.com/epayment/api/amp-v6a6sz/transactions/search?sort[0][field_name]=created&sort[0][order]=desc&displayed_fields=stored_anonymous_donation,stored_customer_firstname,stored_customer_lastname,stored_customer_nickname,stored_customer_additional_message,amount,currency_identifier&filters[0][field_name]=stored_TBGameID&filters[0][type]=fulltext&filters[0][value]='. $hashGameID;
+  $url = 'https://api.raisenow.com/epayment/api/amp-v6a6sz/transactions/search?sort[0][field_name]=created&sort[0][order]=desc&displayed_fields=stored_anonymous_donation,stored_customer_firstname,stored_customer_lastname,stored_customer_nickname,stored_customer_additional_message,amount,currency_identifier,last_status&filters[0][field_name]=stored_TBGameID&filters[0][type]=fulltext&filters[0][value]='. $hashGameID;
 
   $ch = curl_init();  
   curl_setopt($ch, CURLOPT_URL, $url);  
@@ -73,7 +73,7 @@ function getGameFundraisingDonations($hashGameID) {
 }
 
 function getGamePlayerFundraisingDonations($hashGameID, $hashPlayerID) {
-  $url = 'https://api.raisenow.com/epayment/api/amp-v6a6sz/transactions/search?sort[0][field_name]=created&sort[0][order]=desc&displayed_fields=stored_anonymous_donation,stored_customer_firstname,stored_customer_lastname,stored_customer_nickname,stored_customer_additional_message,amount,currency_identifier&filters[0][field_name]=stored_TBPlayerID&filters[0][type]=fulltext&filters[0][value]=' . $hashPlayerID . '&filters[1][field_name]=stored_TBGameID&filters[1][type]=fulltext&filters[1][value]='. $hashGameID;
+  $url = 'https://api.raisenow.com/epayment/api/amp-v6a6sz/transactions/search?sort[0][field_name]=created&sort[0][order]=desc&displayed_fields=stored_anonymous_donation,stored_customer_firstname,stored_customer_lastname,stored_customer_nickname,stored_customer_additional_message,amount,currency_identifier,last_status&filters[0][field_name]=stored_TBPlayerID&filters[0][type]=fulltext&filters[0][value]=' . $hashPlayerID . '&filters[1][field_name]=stored_TBGameID&filters[1][type]=fulltext&filters[1][value]='. $hashGameID;
 
   $ch = curl_init();  
   curl_setopt($ch, CURLOPT_URL, $url);  
