@@ -259,6 +259,24 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
   return $response->withJSON($jsonResponse);  
 });
 
+$app->post('/campaign/{campaignHashID}/game/{gameHashID}/update', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashCampaignID = $request->getAttribute('campaignHashID');
+  $hashGameID = $request->getAttribute('gameHashID');
+
+  $gameID = $hashids->decode($hashGameID)[0];
+
+  $json = $request->getBody();
+  $data = json_decode($json, true);
+
+  setGameDetailsInDB($gameID, $data['name'], $data['description']);
+
+  $jsonResponse = array();
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->post('/campaign/{campaignHashID}/game/{gameHashID}/upload', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 

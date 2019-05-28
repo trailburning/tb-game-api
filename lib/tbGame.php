@@ -145,6 +145,13 @@ function removePlayerGameInvitationFromDB($invitationID) {
   $db->query('DELETE from gameInvitations WHERE id = ' . $invitationID);
 }
 
+function setGameDetailsInDB($gameID, $strName, $strDescription) {
+  // only set once
+  $db = mysqliSingleton::init();
+  $strSQL = 'UPDATE games SET name = "' . $db->real_escape_string($strName) . '", description = "' . $db->real_escape_string($strDescription) . '" where id = ' . $gameID;
+  $db->query($strSQL);
+}
+
 function setPlayerGameStateInDB($gameID, $playerID, $state) {
   // only set once
   $db = mysqliSingleton::init();
