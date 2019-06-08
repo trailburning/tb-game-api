@@ -12,6 +12,12 @@ define('FUNDRAISING_RAISENOW_PASSWORD', 'matt@trailburning.com:M0r3I5B3tt3r!');
 /* **************************************************************************** */
 /* Start Support RaiseNow */
 /* **************************************************************************** */
+function setPlayerGameCauseInDB($gameID, $playerID, $causeID) {
+  // only set once
+  $db = mysqliSingleton::init();
+  $db->query('UPDATE gamePlayers SET causeID = ' . $causeID . ' where game = ' . $gameID . ' and player = ' . $playerID);
+}
+
 function setPlayerGameFundraisingTotalsInDB($gameID, $playerID, $fundraisingRaised) {
   require_once 'lib/mysql.php';
 
@@ -238,9 +244,45 @@ function getFundraisingEventLeaderboard($eventId) {
 /* End Support JustGiving */
 /* **************************************************************************** */
 
-function getFundraisingGameShoppingList($gameID) {
+function getFundraisingGamePlayerCause($gameID, $playerID) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT fundraisingshoppinglist.amount, fundraisingshoppinglist.currency, fundraisingshoppinglist.buy, fundraisingshoppinglist.title, fundraisingshoppinglist.description, fundraisingshoppinglist.image FROM fundraisingshoppinglist JOIN fundraisingshoppinglistgamelevels ON fundraisingshoppinglistgamelevels.fundraisingShoppingListID = fundraisingshoppinglist.id JOIN games ON games.levelID = fundraisingshoppinglistgamelevels.gameLevelID WHERE games.ID = ' . $gameID;
+  $strSQL = 'SELECT id, name, shortname, campaignname, description FROM causes JOIN gameplayers ON gameplayers.causeID = causes.id WHERE gameplayers.game = ' . $gameID . ' and gameplayers.player  = ' . $playerID;
+  $result = $db->query($strSQL);
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $row['id'] = $hashids->encode($row['id']);
+
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
+function getFundraisingCampaignCauses($campaignID) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $db = mysqliSingleton::init();
+  $strSQL = 'SELECT id, name, shortname, campaignname, description FROM campaigncauses JOIN causes ON causes.id = campaigncauses.causeID WHERE campaigncauses.campaignID = ' . $campaignID;
+  $result = $db->query($strSQL);
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $row['id'] = $hashids->encode($row['id']);
+
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
+function getFundraisingCauseShoppingList($causeID) {
+  $db = mysqliSingleton::init();
+  $strSQL = 'SELECT fundraisingshoppinglist.amount, fundraisingshoppinglist.currency, fundraisingshoppinglist.buy, fundraisingshoppinglist.title, fundraisingshoppinglist.description, fundraisingshoppinglist.image FROM fundraisingshoppinglist JOIN fundraisingshoppinglistcauses ON fundraisingshoppinglistcauses.fundraisingShoppingListID = fundraisingshoppinglist.id WHERE fundraisingshoppinglistcauses.causeID = ' . $causeID;
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;

@@ -746,6 +746,35 @@ $app->get('/campaign/{campaignHashID}/summary', function (Request $request, Resp
   return $response->withJSON($jsonResponse);
 });
 
+$app->get('/campaign/{campaignHashID}/fundraising/causes', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $campaignID = $hashids->decode($request->getAttribute('campaignHashID'))[0];
+
+  $jsonResponse = getFundraisingCampaignCauses($campaignID);
+  foreach ($jsonResponse as &$cause) {
+    $causeID = $hashids->decode($cause['id'])[0];
+    $cause['items'] = getFundraisingCauseShoppingList($causeID);
+  }
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->get('/game/{gameHashID}/player/{playerHashID}/cause', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $gameHashID = $hashids->decode($request->getAttribute('gameHashID'))[0];
+  $playerHashID = $hashids->decode($request->getAttribute('playerHashID'))[0];
+
+  $jsonResponse = getFundraisingGamePlayerCause($gameHashID, $playerHashID);
+  foreach ($jsonResponse as &$cause) {
+    $causeID = $hashids->decode($cause['id'])[0];
+    $cause['items'] = getFundraisingCauseShoppingList($causeID);
+  }
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->post('/player', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
@@ -885,6 +914,28 @@ $app->post('/vote', function (Request $request, Response $response) {
 /* **************************************************************************** */
 /* Start Support RaiseNow */
 /* **************************************************************************** */
+
+$app->post('/fundraiser/game/{gameHashID}/player/{playerHashID}/cause', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashGameID = $request->getAttribute('gameHashID');
+  $hashPlayerID = $request->getAttribute('playerHashID');
+
+  $gameID = $hashids->decode($hashGameID)[0];
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
+  $json = $request->getBody();
+  $data = json_decode($json, true); 
+
+  $causeID = $hashids->decode($data['causeID'])[0];
+
+  setPlayerGameCauseInDB($gameID, $playerID, $causeID);
+
+  $jsonResponse = array();  
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{playerHashID}/details', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
