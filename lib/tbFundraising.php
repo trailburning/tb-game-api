@@ -12,6 +12,27 @@ define('FUNDRAISING_RAISENOW_PASSWORD', 'matt@trailburning.com:M0r3I5B3tt3r!');
 /* **************************************************************************** */
 /* Start Support RaiseNow */
 /* **************************************************************************** */
+function getPlayerGameCauseFromDB($gameID, $playerID) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  // only set once
+  $db = mysqliSingleton::init();
+  $strSQL = 'SELECT id, name, shortname, campaignname, description, media_share_goal, media_share_raised FROM causes JOIN gameplayers ON gameplayers.causeID = causes.id WHERE gameplayers.game = ' . $gameID . ' AND gameplayers.player = ' . $playerID;
+  $result = $db->query($strSQL);
+
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $hashID = $hashids->encode($row['id']);
+    $row['id'] = $hashID;
+
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
 function setPlayerGameCauseInDB($gameID, $playerID, $causeID) {
   // only set once
   $db = mysqliSingleton::init();

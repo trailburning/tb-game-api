@@ -67,7 +67,7 @@ function buildSocialGameImage($paramaObj) {
 }
 
 function buildSocialGameProgressImage($paramaObj) {
-  $builder = new UrlBuilder("tbassets2.imgix.net");
+  $builder = new UrlBuilder("mountainrush-assets.imgix.net");
   $builder->setUseHttps(true);
 
   // bottom left data
@@ -79,7 +79,7 @@ function buildSocialGameProgressImage($paramaObj) {
 
   $params = array("w" => 896, "h" => 101, "markx" => 84, "marky" => 14, "mark64" => $txtMountain,
   "bx" => 264, "by" => 25, "bm" => 'normal', "blend64" => $txtCountry);
-  $leftData = $builder->createURL("images/brands/mountainrush/social/wwf/bg_text_temp1.png", $params);
+  $leftData = $builder->createURL("clients/" . $paramaObj->client . "/social/bg_text_temp1.png", $params);
 
   // progress
   $params = array("w" => 300, "h" => 120, "txtfont64" => "Avenir Next Condensed,Bold", "txtalign" => 'center', "txtclr" => 'FFFFFF', "txtpad" => 0, "txtsize" => 86, "txt64" => $paramaObj->progress);
@@ -88,13 +88,13 @@ function buildSocialGameProgressImage($paramaObj) {
   // final image
   $params = array("w" => 1200, "h" => 630, "q" => 80, "markx" => 0, "marky" => 523, "mark64" => $leftData,
   "bw" => 228, "bh" => 100, "bx" => 888, "by" => 362, "bm" => 'normal', "blend64" => $txtProgress);
-  $finalImg = $builder->createURL("images/brands/mountainrush/social/wwf/CFYW_Gorilla_Progress2.png", $params);
+  $finalImg = $builder->createURL("clients/" . $paramaObj->client . "/social/" . $paramaObj->background, $params);
 
   return $finalImg;
 }
 
 function buildSocialGameGoalImage($paramaObj) {
-  $builder = new UrlBuilder("tbassets2.imgix.net");
+  $builder = new UrlBuilder("mountainrush-assets.imgix.net");
   $builder->setUseHttps(true);
 
   // bottom left data
@@ -106,7 +106,7 @@ function buildSocialGameGoalImage($paramaObj) {
 
   $params = array("w" => 896, "h" => 101, "markx" => 84, "marky" => 14, "mark64" => $txtMountain,
   "bx" => 264, "by" => 25, "bm" => 'normal', "blend64" => $txtCountry);
-  $leftData = $builder->createURL("images/brands/mountainrush/social/wwf/bg_text_temp1.png", $params);
+  $leftData = $builder->createURL("clients/" . $paramaObj->client . "/social/bg_text_temp1.png", $params);
 
   // goal
   $params = array("w" => 300, "h" => 120, "txtfont64" => "Avenir Next Condensed,Bold", "txtalign" => 'center', "txtclr" => 'FFFFFF', "txtpad" => 0, "txtsize" => 86, "txt64" => $paramaObj->goal);
@@ -115,7 +115,7 @@ function buildSocialGameGoalImage($paramaObj) {
   // final image
   $params = array("w" => 1200, "h" => 630, "q" => 80, "markx" => 0, "marky" => 523, "mark64" => $leftData,
   "bw" => 228, "bh" => 100, "bx" => 888, "by" => 430, "bm" => 'normal', "blend64" => $txtGoal);
-  $finalImg = $builder->createURL("images/brands/mountainrush/social/wwf/CFYW_Gorilla_Goal2.png", $params);
+  $finalImg = $builder->createURL("clients/" . $paramaObj->client . "/social/" . $paramaObj->background, $params);
 
   return $finalImg;
 }
@@ -140,51 +140,70 @@ function generateGameSocialImage($gameID) {
 }
 
 function generateGameProgressSocialImage($gameID, $progress) {
-  $ret = '';
+  $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $arrResponse = getGameFromDB($gameID);
   if (count($arrResponse)) {
-    $paramaObj = (object) [
-      'journeyID' => $arrResponse[0]['journeyID'],
-      'mountain' => $arrResponse[0]['level_name'],
-      'region' => strtolower($arrResponse[0]['region']),
-      'ascent' => $arrResponse[0]['ascent'],
-      'type' => $arrResponse[0]['type'],
-      'challenge' => getChallengeShortDescription($arrResponse[0]['type']),
-      'progress' => $progress
-    ];
+    $ownerPlayerID = $hashids->decode($arrResponse[0]['ownerPlayerID'])[0];
 
-    if ($progress) {
-      // 180328 MLA - temp until we can build images based on a template system
-      echo buildSocialGameProgressImage($paramaObj);
+    $arrCause = getPlayerGameCauseFromDB($gameID, $ownerPlayerID);
+    if (count($arrCause)) {
+
+      $paramaObj = (object) [
+        'client' => strtolower($arrCause[0]['name']),
+        'journeyID' => $arrResponse[0]['journeyID'],
+        'background' => $arrCause[0]['media_share_raised'],
+        'mountain' => $arrResponse[0]['level_name'],
+        'region' => strtolower($arrResponse[0]['region']),
+        'ascent' => $arrResponse[0]['ascent'],
+        'type' => $arrResponse[0]['type'],
+        'challenge' => getChallengeShortDescription($arrResponse[0]['type']),
+        'progress' => $progress
+      ];
+
+      if ($progress) {
+        echo buildSocialGameProgressImage($paramaObj);
+      }
+      else {
+        echo buildSocialGameImage($paramaObj);
+      }
     }
     else {
-      echo buildSocialGameImage($paramaObj);
+      echo buildSocialGameImage($paramaObj);      
     }
   }
 }
 
 function generateGameGoalSocialImage($gameID, $goal) {
-  $ret = '';
+  $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $arrResponse = getGameFromDB($gameID);
   if (count($arrResponse)) {
-    $paramaObj = (object) [
-      'journeyID' => $arrResponse[0]['journeyID'],
-      'mountain' => $arrResponse[0]['level_name'],
-      'region' => strtolower($arrResponse[0]['region']),
-      'ascent' => $arrResponse[0]['ascent'],
-      'type' => $arrResponse[0]['type'],
-      'challenge' => getChallengeShortDescription($arrResponse[0]['type']),
-      'goal' => $goal
-    ];
+    $ownerPlayerID = $hashids->decode($arrResponse[0]['ownerPlayerID'])[0];
 
-    if ($goal) {
-      // 180328 MLA - temp until we can build images based on a template system
-      echo buildSocialGameGoalImage($paramaObj);
+    $arrCause = getPlayerGameCauseFromDB($gameID, $ownerPlayerID);
+    if (count($arrCause)) {
+      $paramaObj = (object) [
+        'client' => strtolower($arrCause[0]['name']),
+        'journeyID' => $arrResponse[0]['journeyID'],
+        'background' => $arrCause[0]['media_share_goal'],
+        'mountain' => $arrResponse[0]['level_name'],
+        'region' => strtolower($arrResponse[0]['region']),
+        'ascent' => $arrResponse[0]['ascent'],
+        'type' => $arrResponse[0]['type'],
+        'challenge' => getChallengeShortDescription($arrResponse[0]['type']),
+        'goal' => $goal
+      ];
+
+      if ($goal) {
+        echo buildSocialGameGoalImage($paramaObj);
+      }
+      else {
+        echo buildSocialGameImage($paramaObj);
+      }
     }
     else {
-      echo buildSocialGameImage($paramaObj);
+      echo buildSocialGameImage($paramaObj);      
     }
   }
 }
