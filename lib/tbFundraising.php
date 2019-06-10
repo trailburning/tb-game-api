@@ -17,7 +17,7 @@ function getPlayerGameCauseFromDB($gameID, $playerID) {
 
   // only set once
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT id, name, shortname, campaignname, description, media_share_goal, media_share_raised FROM causes JOIN gameplayers ON gameplayers.causeID = causes.id WHERE gameplayers.game = ' . $gameID . ' AND gameplayers.player = ' . $playerID;
+  $strSQL = 'SELECT id, name, shortname, campaignname, description, description_long, logo, url, media, media_share_goal, media_share_raised FROM causes JOIN gameplayers ON gameplayers.causeID = causes.id WHERE gameplayers.game = ' . $gameID . ' AND gameplayers.player = ' . $playerID;
   $result = $db->query($strSQL);
 
   $rows = array();
@@ -269,7 +269,7 @@ function getFundraisingGamePlayerCause($gameID, $playerID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT id, name, shortname, campaignname, description FROM causes JOIN gameplayers ON gameplayers.causeID = causes.id WHERE gameplayers.game = ' . $gameID . ' and gameplayers.player  = ' . $playerID;
+  $strSQL = 'SELECT id, name, shortname, campaignname, description, description_long, logo, url FROM causes JOIN gameplayers ON gameplayers.causeID = causes.id WHERE gameplayers.game = ' . $gameID . ' and gameplayers.player  = ' . $playerID;
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
@@ -287,7 +287,7 @@ function getFundraisingCampaignCauses($campaignID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT id, name, shortname, campaignname, description FROM campaigncauses JOIN causes ON causes.id = campaigncauses.causeID WHERE campaigncauses.campaignID = ' . $campaignID;
+  $strSQL = 'SELECT id, name, shortname, campaignname, description, description_long, logo, url FROM campaigncauses JOIN causes ON causes.id = campaigncauses.causeID WHERE campaigncauses.campaignID = ' . $campaignID;
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;

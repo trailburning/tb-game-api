@@ -68,7 +68,7 @@ $db = connect_db();
 $id = $hashids->encode(126);
 var_dump($id);
 
-$id = $hashids->decode('0oLr2AnZzQ')[0];
+$id = $hashids->decode('l6x4weZBDV')[0];
 var_dump($id);
 
 //addLogToDB(LOG_OBJECT_GAME, LOG_ACTIVITY_CREATE, 2084);

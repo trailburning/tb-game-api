@@ -243,10 +243,12 @@ function getGamePlayersFromDB($gameID) {
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $row['fundraising_currency_symbol'] = getCurrencySymbol($row['fundraising_currency']);
+
+    $row['cause'] = getPlayerGameCauseFromDB($gameID, $row['id']);
+
     $hashID = $hashids->encode($row['id']);
     $row['id'] = $hashID;
-
-    $row['fundraising_currency_symbol'] = getCurrencySymbol($row['fundraising_currency']);
 
     $rows[$index] = $row;
     $index++;
