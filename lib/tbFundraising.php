@@ -269,7 +269,7 @@ function getFundraisingGamePlayerCause($gameID, $playerID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT id, name, shortname, campaignname, description, description_long, logo, url FROM causes JOIN gameplayers ON gameplayers.causeID = causes.id WHERE gameplayers.game = ' . $gameID . ' and gameplayers.player  = ' . $playerID;
+  $strSQL = 'SELECT id, name, shortname, campaignname, description, description_long, logo, url, provider_cause_code FROM causes JOIN gameplayers ON gameplayers.causeID = causes.id WHERE gameplayers.game = ' . $gameID . ' and gameplayers.player  = ' . $playerID;
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
