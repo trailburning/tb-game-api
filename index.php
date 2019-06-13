@@ -15,6 +15,8 @@ define('GAME_API_DOMAIN', 'https://tb-game-api.herokuapp.com/');
 define('CLIENT_ID', 15175);
 define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
 
+define('PROVIDER_SERVER_CAUSE_CODE', 'amp-v6a6sz');
+
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
@@ -982,7 +984,7 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/details', functio
   $gameID = $hashids->decode($hashGameID)[0];
   $playerID = $hashids->decode($hashPlayerID)[0];
 
-  $jsonResponse = getFundraisingDetails($hashGameID, $hashPlayerID);
+  $jsonResponse = getFundraisingDetails(PROVIDER_SERVER_CAUSE_CODE, $hashGameID, $hashPlayerID);
 
   // update fundraising info in DB
   if ($jsonResponse) {
@@ -1006,7 +1008,7 @@ $app->get('/game/{gameHashID}/fundraiser/donations', function (Request $request,
 
   $gameID = $hashids->decode($hashGameID)[0];
 
-  $jsonResponse = getGameFundraisingDonations($hashGameID);
+  $jsonResponse = getGameFundraisingDonations(PROVIDER_SERVER_CAUSE_CODE, $hashGameID);
 
   return $response->withJSON($jsonResponse);
 });
@@ -1020,7 +1022,7 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/donations', funct
   $gameID = $hashids->decode($hashGameID)[0];
   $playerID = $hashids->decode($hashPlayerID)[0];
 
-  $jsonResponse = getGamePlayerFundraisingDonations($hashGameID, $hashPlayerID);
+  $jsonResponse = getGamePlayerFundraisingDonations(PROVIDER_SERVER_CAUSE_CODE, $hashGameID, $hashPlayerID);
 
   return $response->withJSON($jsonResponse);
 });
