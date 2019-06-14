@@ -17,7 +17,7 @@ function getPlayerGameCauseFromDB($gameID, $playerID) {
 
   // only set once
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT id, name, shortname, campaignname, description, description_long, logo, url, media, media_share_goal, media_share_raised FROM causes JOIN gameplayers ON gameplayers.causeID = causes.id WHERE gameplayers.game = ' . $gameID . ' AND gameplayers.player = ' . $playerID;
+  $strSQL = 'SELECT id, name, shortname, campaignname, description, description_long, logo, url, media, media_share_goal, media_share_groupgoal, media_share_raised FROM causes JOIN gameplayers ON gameplayers.causeID = causes.id WHERE gameplayers.game = ' . $gameID . ' AND gameplayers.player = ' . $playerID;
   $result = $db->query($strSQL);
 
   $rows = array();
