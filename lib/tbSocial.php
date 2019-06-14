@@ -174,7 +174,7 @@ function generateGameProgressSocialImage($gameID, $progress) {
   }
 }
 
-function generateGameGoalSocialImage($gameID, $goal) {
+function generateGameGoalSocialImage($gameID, $goal, $bGroupGoal) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $arrResponse = getGameFromDB($gameID);
@@ -183,10 +183,15 @@ function generateGameGoalSocialImage($gameID, $goal) {
 
     $arrCause = getPlayerGameCauseFromDB($gameID, $ownerPlayerID);
     if (count($arrCause)) {
+      $background = $arrCause[0]['media_share_goal'];
+      if ($bGroupGoal) {
+        $background = $arrCause[0]['media_share_groupgoal'];
+      }
+
       $paramaObj = (object) [
         'client' => strtolower($arrCause[0]['name']),
         'journeyID' => $arrResponse[0]['journeyID'],
-        'background' => $arrCause[0]['media_share_goal'],
+        'background' => $background,
         'mountain' => $arrResponse[0]['level_name'],
         'region' => strtolower($arrResponse[0]['region']),
         'ascent' => $arrResponse[0]['ascent'],
