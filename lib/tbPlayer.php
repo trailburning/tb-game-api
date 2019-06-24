@@ -158,7 +158,8 @@ function getPlayersFromDBByClient($clientID, $match) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = connect_db();
-  $result = $db->query('SELECT id, firstname, lastname, email, city, country FROM players WHERE players.clientID = ' . $clientID . ' AND (LOWER(players.firstname) LIKE "%' . $match . '%" OR LOWER(players.lastname) like "%' . $match . '%") ORDER BY lastname DESC');
+  $strSQL = 'SELECT id, firstname, lastname, email, city, country FROM players WHERE players.clientID = ' . $clientID . ' AND (LOWER(players.firstname) LIKE "%' . $match . '%" OR LOWER(players.lastname) like "%' . $match . '%") AND NOT (players.email = "") ORDER BY lastname DESC';
+  $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
