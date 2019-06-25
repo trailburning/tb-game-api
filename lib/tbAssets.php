@@ -37,6 +37,11 @@ function getGameAssetsFromDB($gameID) {
   return $rows;
 }
 
+function removeAsset($mediaID) {
+  $db = connect_db();
+
+  $db->query('DELETE FROM gameMedia WHERE id = ' . $mediaID);  
+}
 
 function uploadAsset($hashCampaignID, $hashGameID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
