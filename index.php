@@ -289,6 +289,22 @@ $app->post('/campaign/{campaignHashID}/game/{gameHashID}/upload', function (Requ
   uploadAsset($hashCampaignID, $hashGameID);
 });
 
+$app->delete('/campaign/{campaignHashID}/game/{gameHashID}/media/{mediaID}', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashCampaignID = $request->getAttribute('campaignHashID');
+  $hashGameID = $request->getAttribute('gameHashID');
+  $hashMediaID = $request->getAttribute('mediaID');
+
+  $medaID = $hashids->decode($hashMediaID)[0];
+
+  removeAsset($medaID);
+
+  $jsonResponse = array();
+
+  return $response->withJSON($jsonResponse);  
+});
+
 $app->get('/game/{gameHashID}/socialimage', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
