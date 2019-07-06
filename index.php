@@ -1087,7 +1087,7 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
     // get campaign emails
     $jsonCampaignEmailsResponse = getCampaignEmailsFromDB($campaignID);
     if (count($jsonCampaignEmailsResponse)) {
-      // 190307 mla - currentl uses 1st emails but should use lang to pick correct ones.
+      // 190307 mla - current uses 1st emails but should use lang to pick correct ones.
       $campaignEmails = $jsonCampaignEmailsResponse[0];
       $jsonGamesResponse = getGameFromDB($gameID);
       if (count($jsonGamesResponse)) {
@@ -1096,6 +1096,8 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
         if (count($jsonPlayersResponse)) {
           $player = $jsonPlayersResponse[0];
           if ($player['game_notifications']) {
+            $player['id'] = $hashPlayerID;
+
             $jsonEmail = $campaignEmails['email_fundraising_donation'];        
             sendFundraisingDonationEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $donation);
           }
