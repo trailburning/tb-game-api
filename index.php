@@ -701,9 +701,28 @@ $app->get('/campaign/{campaignHashID}/games', function (Request $request, Respon
   $hashCampaignID = $request->getAttribute('campaignHashID');
   $campaignID = $hashids->decode($hashCampaignID)[0];
 
-  $jsonResponse = getGamesBcCampaignFromDB($campaignID);
+  $jsonResponse = getGamesByCampaignFromDB($campaignID);
 
   return $response->withJSON($jsonResponse);
+});
+
+$app->get('/campaign/{campaignHashID}/monitorgames', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashCampaignID = $request->getAttribute('campaignHashID');
+  $campaignID = $hashids->decode($hashCampaignID)[0];
+
+  $jsonGamesResponse = getGamesAndPlayersByCampaignFromDB($campaignID, 20);
+  // mla
+  if (count($jsonGamesResponse)) {
+    foreach ($jsonGamesResponse as &$game) {
+      $gameID = $hashids->decode($game['id'])[0];
+
+      $game['players'] = getGamePlayersFromDB($gameID);
+    }
+  }
+
+  return $response->withJSON($jsonGamesResponse);
 });
 
 $app->post('/campaign/{campaignHashID}/checkinvite', function (Request $request, Response $response) {
@@ -1087,7 +1106,7 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
     // get campaign emails
     $jsonCampaignEmailsResponse = getCampaignEmailsFromDB($campaignID);
     if (count($jsonCampaignEmailsResponse)) {
-      // 190307 mla - currentl uses 1st emails but should use lang to pick correct ones.
+      // 190307 mla - current uses 1st emails but should use lang to pick correct ones.
       $campaignEmails = $jsonCampaignEmailsResponse[0];
       $jsonGamesResponse = getGameFromDB($gameID);
       if (count($jsonGamesResponse)) {
@@ -1096,6 +1115,8 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
         if (count($jsonPlayersResponse)) {
           $player = $jsonPlayersResponse[0];
           if ($player['game_notifications']) {
+            $player['id'] = $hashPlayerID;
+
             $jsonEmail = $campaignEmails['email_fundraising_donation'];        
             sendFundraisingDonationEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $donation);
           }
