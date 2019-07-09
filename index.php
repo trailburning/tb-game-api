@@ -701,9 +701,28 @@ $app->get('/campaign/{campaignHashID}/games', function (Request $request, Respon
   $hashCampaignID = $request->getAttribute('campaignHashID');
   $campaignID = $hashids->decode($hashCampaignID)[0];
 
-  $jsonResponse = getGamesBcCampaignFromDB($campaignID);
+  $jsonResponse = getGamesByCampaignFromDB($campaignID);
 
   return $response->withJSON($jsonResponse);
+});
+
+$app->get('/campaign/{campaignHashID}/monitorgames', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashCampaignID = $request->getAttribute('campaignHashID');
+  $campaignID = $hashids->decode($hashCampaignID)[0];
+
+  $jsonGamesResponse = getGamesAndPlayersByCampaignFromDB($campaignID, 20);
+  // mla
+  if (count($jsonGamesResponse)) {
+    foreach ($jsonGamesResponse as &$game) {
+      $gameID = $hashids->decode($game['id'])[0];
+
+      $game['players'] = getGamePlayersFromDB($gameID);
+    }
+  }
+
+  return $response->withJSON($jsonGamesResponse);
 });
 
 $app->post('/campaign/{campaignHashID}/checkinvite', function (Request $request, Response $response) {
