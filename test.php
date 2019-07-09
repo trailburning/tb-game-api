@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-define('MR_SECURE_DOMAIN', 'https://mountainrush.co.uk/');
+define('MR_SECURE_DOMAIN', 'https://www.mountainrush.co.uk/');
 
 include "lib/tbLog.php";
 include "lib/tbEmail.php";
