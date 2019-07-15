@@ -304,20 +304,6 @@ function updatePlayerBlankDetails($playerProviderID) {
 
 function getPlayer($clientID, $token) {
   $results = getPlayerFromDBByToken($clientID, $token);
-/*  
-  if (count($results) == 0) {
-    // get from provider
-    $adapter = new Pest('https://www.strava.com/api/v3');
-    $service = new REST($token, $adapter);
 
-    $client = new Client($service);
-    $athlete = $client->getAthlete();
-
-    // 181220 MLA - note that from 190116 Strava will no longer return email addresses so we now set blank.
-    addPlayerToDB($clientID, $athlete['profile'], $athlete['firstname'], $athlete['lastname'], '', $athlete['city'], $athlete['country'], $athlete['id'], $token);
-
-    $results = getPlayerFromDBByToken($clientID, $token);
-  }
-*/  
   return $results;
 }
