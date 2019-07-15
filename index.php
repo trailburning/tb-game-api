@@ -256,11 +256,11 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
     $jsonResponse['oauthConnectURL'] = $oauth_connect;
 
     $stravaData = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode));
+    // old forever token
     $jsonResponse['token'] = $stravaData->getToken();
     $jsonResponse['athlete'] = $stravaData->getValues()['athlete'];
 
-//    var_dump($stravaData);
-
+    // no refresh token means we're using a forever token
     if (!$stravaData->getRefreshToken()) {
       // grab refresh token with forever token
       $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $jsonResponse['token']));
