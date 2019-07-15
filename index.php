@@ -266,7 +266,7 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
 
       $jsonResponse['stravaData']->access_token = $tokenData->getToken();
       $jsonResponse['stravaData']->refresh_token = $tokenData->getRefreshToken();
-      $jsonResponse['stravaData']->expires_at = $tokenData->expires();
+      $jsonResponse['stravaData']->expires_at = $tokenData->getExpires();
     }
   } catch(Exception $e) {
     print $e->getMessage();
