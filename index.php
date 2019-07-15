@@ -261,7 +261,6 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
 //    var_dump($jsonResponse['stravaData']);
 
     $jsonResponse['stravaData']->hello = 'hello';
-    $jsonResponse['stravaData']['world'] = 'world';
 
     if (!$jsonResponse['stravaData']->getRefreshToken()) {
       // grab refresh token with forever token
