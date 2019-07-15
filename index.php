@@ -257,7 +257,7 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
 
     $stravaData = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode));
     $jsonResponse['token'] = $stravaData->getToken();
-    $jsonResponse['athlete'] = $stravaData['values'];
+    $jsonResponse['athlete'] = $stravaData->getValues();
 
 //    var_dump($stravaData);
 
