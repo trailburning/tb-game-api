@@ -260,6 +260,9 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
 
 //    var_dump($jsonResponse['stravaData']);
     // new token data
+
+    var_dump($jsonResponse['stravaData']->refresh_token);
+
     if (!($jsonResponse['stravaData']->refresh_token)) {
       // no refresh token so must be old forever token.  need to grab refresh token gear
       $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $jsonResponse['token']));
