@@ -295,6 +295,7 @@ function updatePlayerBlankDetails($playerProviderID) {
 
 function getPlayer($clientID, $token) {
   $results = getPlayerFromDBByToken($clientID, $token);
+/*  
   if (count($results) == 0) {
     // get from provider
     $adapter = new Pest('https://www.strava.com/api/v3');
@@ -308,5 +309,6 @@ function getPlayer($clientID, $token) {
 
     $results = getPlayerFromDBByToken($clientID, $token);
   }
+*/  
   return $results;
 }

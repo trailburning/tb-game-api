@@ -1,5 +1,6 @@
 <?php
-error_reporting(E_ERROR);
+//error_reporting(E_ERROR);
+error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 header('Access-Control-Allow-Origin: *');
@@ -238,6 +239,7 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $hashCampaignID = $request->getAttribute('campaignHashID');
+  $campaignID = $hashids->decode($hashCampaignID)[0];
 
   $stravaCode = $request->getAttribute('stravaCode');
 
@@ -255,19 +257,26 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
 
     $jsonResponse['oauthConnectURL'] = $oauth_connect;
 
-    $stravaData = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode));
+    $tokenData = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode));
     // old forever token
-    $jsonResponse['token'] = $stravaData->getToken();
-    $jsonResponse['athlete'] = $stravaData->getValues()['athlete'];
+    $token = $tokenData->getToken();
+    $jsonResponse['token'] = $token;
+
+    $athlete = $tokenData->getValues()['athlete'];
+    $jsonResponse['athlete'] = $athlete;
 
     // no refresh token means we're using a forever token
-    if (!$stravaData->getRefreshToken()) {
+    if (!$tokenData->getRefreshToken()) {
       // grab refresh token with forever token
       $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $jsonResponse['token']));
+    }
 
-      $jsonResponse['access_token'] = $tokenData->getToken();
-      $jsonResponse['refresh_token'] = $tokenData->getRefreshToken();
-      $jsonResponse['expires_at'] = $tokenData->getExpires();
+    $db = connect_db();
+    $jsonCampaignResponse = getCampaignFromDB($db, $campaignID);
+    if (count($jsonCampaignResponse)) {
+      $clientID = $jsonCampaignResponse[0]['clientID'];
+
+      addPlayerToDB($clientID, $athlete['profile'], $athlete['firstname'], $athlete['lastname'], '', $athlete['city'], $athlete['country'], $athlete['id'], $token);
     }
   } catch(Exception $e) {
     print $e->getMessage();
@@ -620,7 +629,7 @@ $app->get('/client/{clientHashID}/playertoken/{token}', function (Request $reque
   $token = $request->getAttribute('token');
   $jsonResponse = getPlayer($clientID, $token);
   if (count($jsonResponse)) {
-    // add inviation data
+    // add invition data
     $jsonResponse[0]['invitations'] = getPlayerGameInvitationsFromDB($jsonResponse[0]['id']);
 
     // add game data
