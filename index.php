@@ -258,6 +258,7 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
 
     $jsonResponse['stravaData'] = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode));
     // new token data
+/*    
     if (!isset($jsonResponse['stravaData']['refresh_token'])) {
       // no refresh token so must be old forever token
       $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $jsonResponse['token']));
@@ -265,6 +266,7 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
       $jsonResponse['stravaData']['refresh_token'] = $tokenData['refresh_token'];
       $jsonResponse['stravaData']['expires_at'] = $tokenData['expires_at'];
     }
+*/    
   } catch(Exception $e) {
     print $e->getMessage();
   }
