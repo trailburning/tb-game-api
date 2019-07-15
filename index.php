@@ -255,8 +255,9 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
 
     $jsonResponse['oauthConnectURL'] = $oauth_connect;
     $jsonResponse['token'] = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode))->getToken();
+    $jsonResponse['test1'] = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode));
 
-    $jsonResponse['test'] = $oauth->getRefeshToken('authorization_code', array('code' => $stravaCode));
+    $jsonResponse['test2'] = $oauth->getAccessToken('refresh_token', array('refresh_token' => $jsonResponse['token']));
 
   } catch(Exception $e) {
     print $e->getMessage();
