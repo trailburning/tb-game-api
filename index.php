@@ -254,7 +254,21 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
     $oauth_connect = $oauth->getAuthorizationUrl(array('scope' => 'public'));      
 
     $jsonResponse['oauthConnectURL'] = $oauth_connect;
-    $jsonResponse['token'] = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode))->getToken();
+
+    $stravaData = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode));
+    // old forever token
+    $jsonResponse['token'] = $stravaData->getToken();
+    $jsonResponse['athlete'] = $stravaData->getValues()['athlete'];
+
+    // no refresh token means we're using a forever token
+    if (!$stravaData->getRefreshToken()) {
+      // grab refresh token with forever token
+      $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $jsonResponse['token']));
+
+      $jsonResponse['access_token'] = $tokenData->getToken();
+      $jsonResponse['refresh_token'] = $tokenData->getRefreshToken();
+      $jsonResponse['expires_at'] = $tokenData->getExpires();
+    }
   } catch(Exception $e) {
     print $e->getMessage();
   }
