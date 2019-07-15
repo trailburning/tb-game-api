@@ -258,8 +258,10 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
 
     $jsonResponse['stravaData'] = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode));
 
-//    var_dump($jsonResponse['stravaData']);
+    var_dump($jsonResponse['stravaData']);
 
+    return null;
+/*
     // no refresh token so must be old forever token
     if (!$jsonResponse['stravaData']->refresh_token) {
       // grab refresh token with forever token
@@ -273,6 +275,7 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
   }
 
   return $response->withJSON($jsonResponse);  
+*/  
 });
 
 $app->post('/campaign/{campaignHashID}/game/{gameHashID}/update', function (Request $request, Response $response) {
