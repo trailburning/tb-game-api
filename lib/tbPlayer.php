@@ -14,11 +14,10 @@ function addPlayerToDB($clientID, $avatar, $firstname, $lastname, $email, $city,
   // use UTC date
   date_default_timezone_set("UTC");
   $dtNow = date('Y-m-d H:i:s', time());
-echo 'addPlayerToDB';
+
   if (doesClientPlayerProviderIDAlreadyExistInDB($clientID, $providerID)) {
-    echo 't1';
     // insert failed so the email has already been used, let's try an update
-    updatePlayerDetailsbyProviderIDInDB($providerID, $avatar, $firstname, $lastname, $email, $city, $country, $providerToken);
+    updatePlayerDetailsbyProviderIDInDB($providerID, $avatar, $firstname, $lastname, $city, $country, $providerToken);
     $ret = getClientPlayerFromDBByProviderID($clientID, $providerID);
   }
   else {
@@ -256,12 +255,11 @@ function updatePlayerPreferencesInDB($playerID, $strEmail, $bReceiveEmail) {
   return $bRet;
 }
 
-function updatePlayerDetailsbyProviderIDInDB($providerID, $avatar, $firstname, $lastname, $email, $city, $country, $token) {
+function updatePlayerDetailsbyProviderIDInDB($providerID, $avatar, $firstname, $lastname, $city, $country, $token) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $strSQL = 'update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where playerProviderID = "' . $providerID . '"';
-  echo $strSQL;
+  $strSQL = 'update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where playerProviderID = "' . $providerID . '"';
   $result = $db->query($strSQL);
 }
 
