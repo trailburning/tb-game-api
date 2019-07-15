@@ -18,7 +18,7 @@ echo 'addPlayerToDB';
   if (doesClientPlayerProviderIDAlreadyExistInDB($clientID, $providerID)) {
     echo 't1';
     // insert failed so the email has already been used, let's try an update
-    updatePlayerDetailsInDB($avatar, $firstname, $lastname, $email, $city, $country, $providerToken);
+    updatePlayerDetailsbyProviderIDInDB($providerID, $avatar, $firstname, $lastname, $email, $city, $country, $providerToken);
     $ret = getClientPlayerFromDBByProviderID($clientID, $providerID);
   }
   else {
@@ -256,12 +256,20 @@ function updatePlayerPreferencesInDB($playerID, $strEmail, $bReceiveEmail) {
   return $bRet;
 }
 
+function updatePlayerDetailsbyProviderIDInDB($providerID, $avatar, $firstname, $lastname, $email, $city, $country, $token) {
+  require_once 'lib/mysql.php';
+
+  $db = connect_db();
+  $strSQL = 'update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where playerProviderID = "' . $providerID . '"';
+  echo $strSQL;
+  $result = $db->query($strSQL);
+}
+
 function updatePlayerDetailsInDB($avatar, $firstname, $lastname, $email, $city, $country, $token) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
   $strSQL = 'update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where email = "' . $email . '"';
-  echo $strSQL;
   $result = $db->query($strSQL);
 }
 
