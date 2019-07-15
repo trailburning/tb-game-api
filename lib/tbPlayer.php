@@ -260,7 +260,9 @@ function updatePlayerDetailsInDB($avatar, $firstname, $lastname, $email, $city, 
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where email = "' . $email . '"');
+  $strSQL = 'update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where email = "' . $email . '"';
+  echo $strSQL;
+  $result = $db->query($strSQL);
 }
 
 function updatePlayerDetailsWithoutEmailInDB($avatar, $firstname, $lastname, $city, $country, $token) {
