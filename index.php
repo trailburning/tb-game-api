@@ -258,9 +258,8 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
 
     $jsonResponse['stravaData'] = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode));
 
-    var_dump($jsonResponse['stravaData']);
+//    var_dump($jsonResponse['stravaData']);
 
-    return null;
 /*
     // no refresh token so must be old forever token
     if (!$jsonResponse['stravaData']->refresh_token) {
@@ -270,12 +269,13 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
       $jsonResponse['stravaData']->refresh_token = $tokenData->refresh_token;
       $jsonResponse['stravaData']->expires_at = $tokenData->expires_at;
     }
+
+*/  
   } catch(Exception $e) {
     print $e->getMessage();
   }
 
   return $response->withJSON($jsonResponse);  
-*/  
 });
 
 $app->post('/campaign/{campaignHashID}/game/{gameHashID}/update', function (Request $request, Response $response) {
