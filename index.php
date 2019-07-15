@@ -264,11 +264,9 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
       // no refresh token so must be old forever token.  need to grab refresh token gear
 
       $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $jsonResponse['token']));
-/*    
-      $jsonResponse['stravaData']['access_token'] = $tokenData['access_token'];
-      $jsonResponse['stravaData']['refresh_token'] = $tokenData['refresh_token'];
-      $jsonResponse['stravaData']['expires_at'] = $tokenData['expires_at'];
-*/    
+      $jsonResponse['stravaData']->access_token = $tokenData['access_token'];
+      $jsonResponse['stravaData']->refresh_token = $tokenData['refresh_token'];
+      $jsonResponse['stravaData']->expires_at = $tokenData['expires_at'];
     }
   } catch(Exception $e) {
     print $e->getMessage();
