@@ -736,7 +736,7 @@ $app->get('/campaign/{campaignHashID}/monitorgames', function (Request $request,
   $campaignID = $hashids->decode($hashCampaignID)[0];
 
   $jsonGamesResponse = getGamesAndPlayersByCampaignFromDB($campaignID, 30);
-  // mla
+
   if (count($jsonGamesResponse)) {
     foreach ($jsonGamesResponse as &$game) {
       $gameID = $hashids->decode($game['id'])[0];

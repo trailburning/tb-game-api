@@ -14,8 +14,9 @@ function addPlayerToDB($clientID, $avatar, $firstname, $lastname, $email, $city,
   // use UTC date
   date_default_timezone_set("UTC");
   $dtNow = date('Y-m-d H:i:s', time());
-
+echo 'addPlayerToDB';
   if (doesClientPlayerProviderIDAlreadyExistInDB($clientID, $providerID)) {
+    echo 't1';
     // insert failed so the email has already been used, let's try an update
     updatePlayerDetailsInDB($avatar, $firstname, $lastname, $email, $city, $country, $providerToken);
     $ret = getClientPlayerFromDBByProviderID($clientID, $providerID);
