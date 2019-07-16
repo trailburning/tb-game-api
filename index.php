@@ -253,7 +253,6 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
 
     $oauth = new OAuth($options);
     $oauth_connect = $oauth->getAuthorizationUrl(array('scope' => 'public'));      
-
     $jsonResponse['oauthConnectURL'] = $oauth_connect;
 
     $tokenData = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode));
@@ -278,7 +277,8 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
       $jsonPlayer = addPlayerToDB($clientID, $athlete['profile'], $athlete['firstname'], $athlete['lastname'], '', $athlete['city'], $athlete['country'], $athlete['id'], $token);
       $jsonResponse['playerID'] = $hashids->encode($jsonPlayer[0]['id']);
 
-      providerTokenExpires($jsonPlayer[0]['id'], $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
+      // update tokens
+      updatePlayerProviderTokensInDB($jsonPlayer[0]['id'], $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
     }
   } catch(Exception $e) {
     print $e->getMessage();
