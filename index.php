@@ -238,6 +238,7 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $hashCampaignID = $request->getAttribute('campaignHashID');
+  $campaignID = $hashids->decode($hashCampaignID)[0];
 
   $stravaCode = $request->getAttribute('stravaCode');
 
@@ -252,22 +253,32 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
 
     $oauth = new OAuth($options);
     $oauth_connect = $oauth->getAuthorizationUrl(array('scope' => 'public'));      
-
     $jsonResponse['oauthConnectURL'] = $oauth_connect;
 
-    $stravaData = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode));
+    $tokenData = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode));
     // old forever token
-    $jsonResponse['token'] = $stravaData->getToken();
-    $jsonResponse['athlete'] = $stravaData->getValues()['athlete'];
+    $token = $tokenData->getToken();
+    $jsonResponse['token'] = $token;
+
+    $athlete = $tokenData->getValues()['athlete'];
+    $jsonResponse['athlete'] = $athlete;
 
     // no refresh token means we're using a forever token
-    if (!$stravaData->getRefreshToken()) {
+    if (!$tokenData->getRefreshToken()) {
       // grab refresh token with forever token
       $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $jsonResponse['token']));
+    }
 
-      $jsonResponse['access_token'] = $tokenData->getToken();
-      $jsonResponse['refresh_token'] = $tokenData->getRefreshToken();
-      $jsonResponse['expires_at'] = $tokenData->getExpires();
+    $db = connect_db();
+    $jsonCampaignResponse = getCampaignFromDB($db, $campaignID);
+    if (count($jsonCampaignResponse)) {
+      $clientID = $hashids->decode($jsonCampaignResponse[0]['clientID'])[0];
+
+      $jsonPlayer = addPlayerToDB($clientID, $athlete['profile'], $athlete['firstname'], $athlete['lastname'], '', $athlete['city'], $athlete['country'], $athlete['id'], $token);
+      $jsonResponse['playerID'] = $hashids->encode($jsonPlayer[0]['id']);
+
+      // update tokens
+      updatePlayerProviderTokensInDB($jsonPlayer[0]['id'], $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
     }
   } catch(Exception $e) {
     print $e->getMessage();
@@ -620,7 +631,7 @@ $app->get('/client/{clientHashID}/playertoken/{token}', function (Request $reque
   $token = $request->getAttribute('token');
   $jsonResponse = getPlayer($clientID, $token);
   if (count($jsonResponse)) {
-    // add inviation data
+    // add invition data
     $jsonResponse[0]['invitations'] = getPlayerGameInvitationsFromDB($jsonResponse[0]['id']);
 
     // add game data
@@ -727,7 +738,7 @@ $app->get('/campaign/{campaignHashID}/monitorgames', function (Request $request,
   $campaignID = $hashids->decode($hashCampaignID)[0];
 
   $jsonGamesResponse = getGamesAndPlayersByCampaignFromDB($campaignID, 30);
-  // mla
+
   if (count($jsonGamesResponse)) {
     foreach ($jsonGamesResponse as &$game) {
       $gameID = $hashids->decode($game['id'])[0];
@@ -864,6 +875,8 @@ $app->post('/player/{playerHashID}', function (Request $request, Response $respo
 
   $json = $request->getBody();
   $data = json_decode($json, true);
+
+  $jsonResponse = array();
 
   // try and update
   if (!updatePlayerPreferencesInDB($hashids->decode($hashPlayerID)[0], $data['email'], $data['receiveEmail'])) {

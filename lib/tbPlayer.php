@@ -17,7 +17,7 @@ function addPlayerToDB($clientID, $avatar, $firstname, $lastname, $email, $city,
 
   if (doesClientPlayerProviderIDAlreadyExistInDB($clientID, $providerID)) {
     // insert failed so the email has already been used, let's try an update
-    updatePlayerDetailsInDB($avatar, $firstname, $lastname, $email, $city, $country, $providerToken);
+    updatePlayerDetailsbyProviderIDInDB($providerID, $avatar, $firstname, $lastname, $city, $country, $providerToken);
     $ret = getClientPlayerFromDBByProviderID($clientID, $providerID);
   }
   else {
@@ -28,6 +28,11 @@ function addPlayerToDB($clientID, $avatar, $firstname, $lastname, $email, $city,
     }
   }
   return $ret;
+}
+
+function updatePlayerProviderTokensInDB($playerID, $providerAccessToken, $providerRefreshToken, $providerTokenExpires) {
+  $db = connect_db();
+  $result = $db->query('update players set providerAccessToken = "' . $providerAccessToken . '", providerRefreshToken = "' . $providerRefreshToken . '", providerTokenExpires = ' . $providerTokenExpires . ' where id = ' . $playerID);
 }
 
 function getPlayerFromDBByEmail($clientID, $email) {
@@ -255,11 +260,20 @@ function updatePlayerPreferencesInDB($playerID, $strEmail, $bReceiveEmail) {
   return $bRet;
 }
 
+function updatePlayerDetailsbyProviderIDInDB($providerID, $avatar, $firstname, $lastname, $city, $country, $token) {
+  require_once 'lib/mysql.php';
+
+  $db = connect_db();
+  $strSQL = 'update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where playerProviderID = "' . $providerID . '"';
+  $result = $db->query($strSQL);
+}
+
 function updatePlayerDetailsInDB($avatar, $firstname, $lastname, $email, $city, $country, $token) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $result = $db->query('update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where email = "' . $email . '"');
+  $strSQL = 'update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where email = "' . $email . '"';
+  $result = $db->query($strSQL);
 }
 
 function updatePlayerDetailsWithoutEmailInDB($avatar, $firstname, $lastname, $city, $country, $token) {
@@ -295,18 +309,6 @@ function updatePlayerBlankDetails($playerProviderID) {
 
 function getPlayer($clientID, $token) {
   $results = getPlayerFromDBByToken($clientID, $token);
-  if (count($results) == 0) {
-    // get from provider
-    $adapter = new Pest('https://www.strava.com/api/v3');
-    $service = new REST($token, $adapter);
 
-    $client = new Client($service);
-    $athlete = $client->getAthlete();
-
-    // 181220 MLA - note that from 190116 Strava will no longer return email addresses so we now set blank.
-    addPlayerToDB($clientID, $athlete['profile'], $athlete['firstname'], $athlete['lastname'], '', $athlete['city'], $athlete['country'], $athlete['id'], $token);
-
-    $results = getPlayerFromDBByToken($clientID, $token);
-  }
   return $results;
 }
