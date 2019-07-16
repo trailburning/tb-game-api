@@ -277,6 +277,10 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
 
       $jsonPlayer = addPlayerToDB($clientID, $athlete['profile'], $athlete['firstname'], $athlete['lastname'], '', $athlete['city'], $athlete['country'], $athlete['id'], $token);
       $jsonResponse['playerID'] = $hashids->encode($jsonPlayer[0]['id']);
+
+      $jsonResponse['providerToken'] = $tokenData->getToken();
+      $jsonResponse['providerRefreshToken'] = $tokenData->getRefreshToken();
+      $jsonResponse['providerTokenExpires'] = $tokenData->getExpires();
     }
   } catch(Exception $e) {
     print $e->getMessage();
