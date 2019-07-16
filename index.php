@@ -1,6 +1,5 @@
 <?php
-//error_reporting(E_ERROR);
-error_reporting(E_ALL);
+error_reporting(E_ERROR);
 ini_set('display_errors', 1);
 
 header('Access-Control-Allow-Origin: *');
@@ -276,7 +275,8 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
     if (count($jsonCampaignResponse)) {
       $clientID = $hashids->decode($jsonCampaignResponse[0]['clientID'])[0];
 
-      addPlayerToDB($clientID, $athlete['profile'], $athlete['firstname'], $athlete['lastname'], '', $athlete['city'], $athlete['country'], $athlete['id'], $token);
+      $player = addPlayerToDB($clientID, $athlete['profile'], $athlete['firstname'], $athlete['lastname'], '', $athlete['city'], $athlete['country'], $athlete['id'], $token);
+      $jsonResponse['playerID'] = $hashids->encode($player['id']);
     }
   } catch(Exception $e) {
     print $e->getMessage();
