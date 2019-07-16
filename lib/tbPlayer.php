@@ -29,12 +29,12 @@ function addPlayerToDB($clientID, $avatar, $firstname, $lastname, $email, $city,
   }
   return $ret;
 }
-/*
-function updatePlayerProviderTokensInDB($playerID) {
+
+function updatePlayerProviderTokensInDB($playerID, $providerAccessToken, $providerRefreshToken, $providerTokenExpires) {
   $db = connect_db();
-  $result = $db->query('update players set last_updated = "' . $dtLastUpdated . '" where id = ' . $playerID);
+  $result = $db->query('update players set providerAccessToken = "' . $providerAccessToken . '", providerRefreshToken = "' . $providerRefreshToken . '", providerTokenExpires = ' . $providerTokenExpires . ' where id = ' . $playerID);
 }
-*/
+
 function getPlayerFromDBByEmail($clientID, $email) {
   require_once 'lib/mysql.php';
 
