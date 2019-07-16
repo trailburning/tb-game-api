@@ -275,8 +275,8 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
     if (count($jsonCampaignResponse)) {
       $clientID = $hashids->decode($jsonCampaignResponse[0]['clientID'])[0];
 
-      $player = addPlayerToDB($clientID, $athlete['profile'], $athlete['firstname'], $athlete['lastname'], '', $athlete['city'], $athlete['country'], $athlete['id'], $token);
-      $jsonResponse['playerID'] = $hashids->encode($player['id']);
+      $jsonPlayer = addPlayerToDB($clientID, $athlete['profile'], $athlete['firstname'], $athlete['lastname'], '', $athlete['city'], $athlete['country'], $athlete['id'], $token);
+      $jsonResponse['playerID'] = $hashids->encode($jsonPlayer[0]['id']);
     }
   } catch(Exception $e) {
     print $e->getMessage();
