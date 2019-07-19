@@ -731,13 +731,13 @@ $app->get('/campaign/{campaignHashID}/games', function (Request $request, Respon
   return $response->withJSON($jsonResponse);
 });
 
-$app->get('/campaign/{campaignHashID}/monitorgames', function (Request $request, Response $response) {
+$app->get('/campaign/{campaignHashID}/monitorgames/{numGames}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $hashCampaignID = $request->getAttribute('campaignHashID');
   $campaignID = $hashids->decode($hashCampaignID)[0];
 
-  $jsonGamesResponse = getGamesAndPlayersByCampaignFromDB($campaignID, 50);
+  $jsonGamesResponse = getGamesAndPlayersByCampaignFromDB($campaignID, $request->getAttribute('numGames'));
 
   if (count($jsonGamesResponse)) {
     foreach ($jsonGamesResponse as &$game) {
