@@ -104,16 +104,11 @@ $app->get('/eventbrite', function (Request $request, Response $response) {
 
   $url = 'https://www.eventbriteapi.com/v3/organizations/318563770275/events/';
 
-echo 't1';
   $ch = curl_init($url);
   curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , $authorization ));
-echo 't2';
-
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
   $result = curl_exec($ch);
-echo 't3';
-echo $result;
 
   $jsonResponse = json_decode($result);  
 
