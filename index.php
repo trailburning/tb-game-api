@@ -110,6 +110,8 @@ $app->get('/eventbrite', function (Request $request, Response $response) {
 
   $result = curl_exec($ch);
 
+  echo $result;
+
   $jsonResponse = json_decode($result);  
 
   curl_close($ch);
