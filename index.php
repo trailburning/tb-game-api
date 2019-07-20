@@ -1,5 +1,6 @@
 <?php
-error_reporting(E_ERROR);
+//error_reporting(E_ERROR);
+error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 header('Access-Control-Allow-Origin: *');
@@ -95,6 +96,22 @@ $app->get('/worker', function (Request $request, Response $response) {
   if (!DEBUG) {
     return $response->withJSON($jsonResponse);
   }
+});
+
+$app->get('/events', function (Request $request, Response $response) {
+  $authorization = "Authorization: Bearer IUADZGFNFJBKNV3QHYQT";
+
+  $url = 'https://www.eventbriteapi.com/v3/organizations/318563770275/events/';
+
+  $ch = curl_init($url);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json' , $authorization ));
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+  $result = curl_exec($ch);
+
+  curl_close($ch);
+
+  return $result;
 });
 
 $app->get('/strava/subscribe', function (Request $request, Response $response) {
