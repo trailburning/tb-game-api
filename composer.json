@@ -9,8 +9,7 @@
     "imgix/imgix-php": "dev-master",
     "mandrill/mandrill": "1.0.*",
     "aws/aws-sdk-php": "~3.0",
-    "vlucas/phpdotenv": "^3.3",
-    "league/oauth2-client": "*"
+    "vlucas/phpdotenv": "^3.3"
   },
   "require-dev": {
     "heroku/heroku-buildpack-php": "*"
