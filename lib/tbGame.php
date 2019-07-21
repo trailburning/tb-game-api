@@ -152,6 +152,17 @@ function setGameDetailsInDB($gameID, $strName, $strDescription) {
   $db->query($strSQL);
 }
 
+function setPlayerGameLastSeenInDB($gameID, $playerID) {
+  // use UTC date
+  date_default_timezone_set("UTC");
+  $dtNow = date('Y-m-d H:i:s', time());
+
+  // only set once
+  $db = mysqliSingleton::init();
+  $strSQL = 'UPDATE gamePlayers SET last_seen = "' . $dtNow . '" where game = ' . $gameID . ' and player = ' . $playerID;
+  $db->query($strSQL);
+}
+
 function setPlayerGameStateInDB($gameID, $playerID, $state) {
   // only set once
   $db = mysqliSingleton::init();
@@ -383,7 +394,7 @@ function getGamesByPlayerFromDB($playerID) {
   $dtNow = new DateTime("now");
 
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT gamePlayers.game, gamePlayers.fundraising_pageID, gamePlayers.fundraising_page, gamePlayers.fundraising_goal, games.ownerPlayerID, games.type, games.game_start, games.game_end, games.state, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.distance, gameLevels.levelType, gameLevels.multiplayer, gameLevels.content, gameLevels.sponsored, gameLevels.cause_sponsored, campaigns.name as campaign_name, campaigns.fundraising_page as campaign_fundraising_page FROM gamePlayers join games on gamePlayers.game = games.id join gameLevels on games.levelID = gameLevels.id join campaigns on games.campaignID = campaigns.id where player = ' . $playerID . ' order by games.game_end desc';
+  $strSQL = 'SELECT gamePlayers.game, gamePlayers.last_seen, gamePlayers.fundraising_pageID, gamePlayers.fundraising_page, gamePlayers.fundraising_goal, games.ownerPlayerID, games.type, games.game_start, games.game_end, games.state, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.distance, gameLevels.levelType, gameLevels.multiplayer, gameLevels.content, gameLevels.sponsored, gameLevels.cause_sponsored, campaigns.name as campaign_name, campaigns.fundraising_page as campaign_fundraising_page FROM gamePlayers join games on gamePlayers.game = games.id join gameLevels on games.levelID = gameLevels.id join campaigns on games.campaignID = campaigns.id where player = ' . $playerID . ' order by games.game_end desc';
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
@@ -398,6 +409,11 @@ function getGamesByPlayerFromDB($playerID) {
     $row['game_start'] = $dtStartDate->format('Y-m-d\TH:i:s.000\Z');
     $dtEndDate = new DateTime($row['game_end']);
     $row['game_end'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
+
+    // calc last seen secs
+    $dtLastSeen = new DateTime($row['last_seen']);
+    $row['last_seen'] = $dtLastSeen->format('Y-m-d\TH:i:s.000\Z');
+    $row['last_seen_secs_ago'] = time() - $dtLastSeen->getTimestamp();
 
     $row['game_state'] = getGameState($dtNow, $dtStartDate, $dtEndDate);
 

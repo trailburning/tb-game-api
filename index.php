@@ -1,6 +1,5 @@
 <?php
-//error_reporting(E_ERROR);
-error_reporting(E_ALL);
+error_reporting(E_ERROR);
 ini_set('display_errors', 1);
 
 header('Access-Control-Allow-Origin: *');
@@ -659,6 +658,22 @@ $app->get('/client/{clientHashID}/playertoken/{token}', function (Request $reque
 
     return $response->withJSON($jsonResponse);
   }
+});
+
+$app->get('/game/{gameHashID}/player/{playerHashID}/lastseen', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashGameID = $request->getAttribute('gameHashID');
+  $gameID = $hashids->decode($hashGameID)[0];
+
+  $hashPlayerID = $request->getAttribute('playerHashID');
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
+  setPlayerGameLastSeenInDB($gameID, $playerID);
+
+  $jsonResponse = array();  
+
+  return $response->withJSON($jsonResponse);
 });
 
 /* 181106 mla - old version until browser cache expires */
