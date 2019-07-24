@@ -54,6 +54,14 @@ function removeGameFromDB($gameID) {
   return null;
 }
 
+function removeGamePlayerFromDB($gameID, $playerID) {
+  $db = connect_db();
+
+  $db->query('DELETE FROM gameplayers WHERE game = ' . $gameID . ' and player = ' . $playerID);
+
+  return null;
+}
+
 function addGameInviteToDB($gameID, $playerEmail) {
   require_once 'lib/mysql.php';
 
