@@ -474,13 +474,23 @@ $app->post('/game', function (Request $request, Response $response) {
 $app->delete('/game/{gameHashID}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
-  $json = $request->getBody();
-  $data = json_decode($json, true);
-
   $hashGameID = $request->getAttribute('gameHashID');
   $gameID = $hashids->decode($hashGameID)[0];
 
   removeGameFromDB($gameID);
+
+  return null;
+});
+
+$app->delete('/game/{gameHashID}/player/{playerHashID}', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashGameID = $request->getAttribute('gameHashID');
+  $gameID = $hashids->decode($hashGameID)[0];
+  $hashPlayerID = $request->getAttribute('playerHashID');
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
+  removeGamePlayerFromDB($gameID, $playerID);
 
   return null;
 });
