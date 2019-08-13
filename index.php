@@ -648,6 +648,7 @@ $app->post('/game/{gameHashID}/player/{playerHashID}/invite/{inviteHashID}/rejec
   return $response->withJSON($jsonResponse);
 });
 
+/* 190813 - mla DEPRECATE */
 $app->get('/client/{clientHashID}/playertoken/{token}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
@@ -656,6 +657,31 @@ $app->get('/client/{clientHashID}/playertoken/{token}', function (Request $reque
 
   $token = $request->getAttribute('token');
   $jsonResponse = getPlayer($clientID, $token);
+  if (count($jsonResponse)) {
+    // add invition data
+    $jsonResponse[0]['invitations'] = getPlayerGameInvitationsFromDB($jsonResponse[0]['id']);
+
+    // add game data
+    $jsonResponse[0]['games'] = getGamesByPlayerFromDB($jsonResponse[0]['id']);
+
+    $jsonResponse[0]['id'] = $hashids->encode($jsonResponse[0]['id']);
+    $jsonResponse[0]['clientID'] = $hashids->encode($jsonResponse[0]['clientID']);
+
+    return $response->withJSON($jsonResponse);
+  }
+});
+
+/* 190813 - mla REPLACEMENT */
+$app->get('/player/{playerHashID}/details', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashClientID = $request->getAttribute('clientHashID');
+  $clientID = $hashids->decode($hashClientID)[0];
+
+  $hashPlayerID = $request->getAttribute('playerHashID');
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
+  $jsonResponse = getPlayerFromDBByID($playerID);
   if (count($jsonResponse)) {
     // add invition data
     $jsonResponse[0]['invitations'] = getPlayerGameInvitationsFromDB($jsonResponse[0]['id']);
