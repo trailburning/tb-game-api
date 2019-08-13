@@ -402,7 +402,7 @@ function getGamesByPlayerFromDB($playerID) {
   $dtNow = new DateTime("now");
 
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT gamePlayers.game, gamePlayers.last_seen, gamePlayers.fundraising_pageID, gamePlayers.fundraising_page, gamePlayers.fundraising_goal, games.ownerPlayerID, games.type, games.game_start, games.game_end, games.state, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.distance, gameLevels.levelType, gameLevels.multiplayer, gameLevels.content, gameLevels.sponsored, gameLevels.cause_sponsored, campaigns.name as campaign_name, campaigns.fundraising_page as campaign_fundraising_page FROM gamePlayers join games on gamePlayers.game = games.id join gameLevels on games.levelID = gameLevels.id join campaigns on games.campaignID = campaigns.id where player = ' . $playerID . ' order by games.game_end desc';
+  $strSQL = 'SELECT gamePlayers.game, gamePlayers.last_seen, gamePlayers.fundraising_pageID, gamePlayers.fundraising_page, gamePlayers.fundraising_goal, games.ownerPlayerID, games.type, games.game_start, games.game_end, games.state, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.distance, gameLevels.image, gameLevels.levelType, gameLevels.multiplayer, gameLevels.content, gameLevels.sponsored, gameLevels.cause_sponsored, campaigns.name as campaign_name, campaigns.fundraising_page as campaign_fundraising_page FROM gamePlayers join games on gamePlayers.game = games.id join gameLevels on games.levelID = gameLevels.id join campaigns on games.campaignID = campaigns.id where player = ' . $playerID . ' order by games.game_end desc';
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
