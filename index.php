@@ -225,6 +225,30 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
   return;
 });
 
+$app->post('/player/{playerHashID}/activity', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $json = $request->getBody();
+  $data = json_decode($json, true);
+
+  $playerHashID = $hashids->decode($data['playerHashID'])[0];
+
+  $hashPlayerID = $request->getAttribute('playerHashID');
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
+  $jsonResponse = array();
+
+  // use UTC date
+  date_default_timezone_set("UTC");
+
+  $dtNow = date('Y-m-d\TH:i:s.000\Z', time());
+  $data['start_date'] = $dtNow;
+
+  addPlayerManualActivityToDB($playerID, $data);
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->get('/campaign/{campaignHashID}/strava/oauth', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 

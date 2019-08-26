@@ -35,6 +35,13 @@ function getPlayerActivitiesFromDB($playerID, $dtFirstActivityAllowed, $dtLastAc
   return $rows;
 }
 
+function addPlayerManualActivityToDB($playerID, $activity) {
+    $db = mysqliSingleton::init();
+
+    $strSQL = 'INSERT INTO playerActivities (player, activity, type, distance, total_elevation_gain, start_date) VALUES (' . $playerID . ', ' . $activity['id'] . ', "' . $activity['type'] . '", ' . $activity['distance'] . ', ' . $activity['total_elevation_gain'] . ', "' . $activity['start_date'] . '")';
+    $result = $db->query($strSQL);
+}
+
 function addPlayerActivitiesToDB($playerID, $jsonActivities) {
   require_once 'lib/mysql.php';
 
