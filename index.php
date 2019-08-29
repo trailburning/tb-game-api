@@ -737,14 +737,16 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/lastseen', function (Request
 });
 
 /* 181106 mla - old version until browser cache expires */
-$app->get('/client/{clientHashID}/player/{token}', function (Request $request, Response $response) {
+$app->get('/client/{clientHashID}/player/{playerHashID}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $hashClientID = $request->getAttribute('clientHashID');
   $clientID = $hashids->decode($hashClientID)[0];
 
-  $token = $request->getAttribute('token');
-  $jsonResponse = getPlayer($clientID, $token);
+  $hashPlayerID = $request->getAttribute('playerHashID');
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
+  $jsonResponse = getPlayerByIDFromDB($playerID);
   if (count($jsonResponse)) {
     // add inviation data
     $jsonResponse[0]['invitations'] = getPlayerGameInvitationsFromDB($jsonResponse[0]['id']);
