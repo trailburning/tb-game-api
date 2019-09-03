@@ -18,6 +18,11 @@ define('PROVIDER_SERVER_CAUSE_CODE', 'world-1ba4'); // LIVE WBR
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
+use Strava\API\OAuth;
+use Strava\API\Client;
+use Strava\API\Exception;
+use Strava\API\Service\REST;
+
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
