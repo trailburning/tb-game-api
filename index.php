@@ -292,14 +292,11 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
     );
 
     $oauth = new OAuth($options);
-//    $oauth_connect = $oauth->getAuthorizationUrl(array('scope' => 'public'));      
-    $oauth_connect = $oauth->getAuthorizationUrl(array('scope' => 'read,activity:read'));      
+    $oauth_connect = $oauth->getAuthorizationUrl(array('scope' => 'public'));      
+//    $oauth_connect = $oauth->getAuthorizationUrl(array('scope' => 'read,activity:read'));      
     $jsonResponse['oauthConnectURL'] = $oauth_connect;
 
     $tokenData = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode));
-    // old forever token
-    $token = $tokenData->getToken();
-    $jsonResponse['token'] = $token;
 
     $athlete = $tokenData->getValues()['athlete'];
     $jsonResponse['athlete'] = $athlete;
