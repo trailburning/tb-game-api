@@ -34,13 +34,8 @@ function getStravaToken($playerID, $providerAccessToken, $providerRefreshToken, 
       // grab refresh token with forever token
       $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $providerRefreshToken));
 
-      $db = connect_db();
-      $jsonCampaignResponse = getCampaignFromDB($db, $campaignID);
-      if (count($jsonCampaignResponse)) {
-        $clientID = $hashids->decode($jsonCampaignResponse[0]['clientID'])[0];
-
-        // update tokens
-        updatePlayerProviderTokensInDB($jsonPlayer[0]['id'], $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
+      // update tokens
+      updatePlayerProviderTokensInDB($jsonPlayer[0]['id'], $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
       }
     } catch(Exception $e) {
       print $e->getMessage();
