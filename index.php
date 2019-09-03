@@ -12,9 +12,6 @@ header('Content-Type: application/json');
 define('MR_SECURE_DOMAIN', 'https://www.mountainrush.co.uk/');
 define('GAME_API_DOMAIN', 'https://tb-game-api.herokuapp.com/');
 
-define('CLIENT_ID', 15175);
-define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
-
 //define('PROVIDER_SERVER_CAUSE_CODE', 'amp-v6a6sz'); // test
 define('PROVIDER_SERVER_CAUSE_CODE', 'world-1ba4'); // LIVE WBR
 
@@ -24,10 +21,8 @@ use Monolog\Handler\StreamHandler;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-use Strava\API\OAuth;
-use Strava\API\Exception;
-
 include "lib/tbLog.php";
+include "lib/tbStrava.php";
 include "lib/tbAssets.php";
 include "lib/tbEmail.php";
 include "lib/tbSocial.php";

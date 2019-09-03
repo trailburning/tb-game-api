@@ -113,7 +113,7 @@ function getPlayerFromDBByProviderID($providerID) {
 }
 
 function getPlayerFromDB($db, $playerID) {
-  $result = $db->query('SELECT id, clientID, avatar, firstname, lastname, email, game_notifications, measurement, last_activity, last_updated, playerProviderToken FROM players where id = ' . $playerID);
+  $result = $db->query('SELECT id, clientID, avatar, firstname, lastname, email, game_notifications, measurement, last_activity, last_updated, playerProviderToken, providerAccessToken, providerRefreshToken, providerTokenExpires FROM players where id = ' . $playerID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {

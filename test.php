@@ -136,6 +136,27 @@ if (count($jsonPlayerResponse)) {
 }
 */
 
+// use UTC date
+date_default_timezone_set("UTC");
+
+//$epoch = 1567122299; // MLA old
+$epoch = 1567521750; // MLA new
+echo '<br/>';
+
+$dtExpire = new DateTime("@$epoch");
+echo 'expire : ' . $dtExpire->format('Y-m-d H:i:s') . '<br/>';
+$tExpire = strtotime($dtExpire->format('Y-m-d H:i:s'));
+
+$dtNow = new DateTime();
+echo 'now : ' . $dtNow->format('Y-m-d H:i:s') . '<br/>';
+$tNow = strtotime($dtNow->format('Y-m-d H:i:s'));
+
+echo '<br/>';
+echo $tExpire - $tNow;
+
+// mla stop here
+exit;
+
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
 $jsonGamesResponse = getGameFromDB($gameID);
