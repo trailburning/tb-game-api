@@ -35,7 +35,7 @@ function getStravaToken($playerID, $providerAccessToken, $providerRefreshToken, 
       $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $providerRefreshToken));
 
       // update tokens
-      updatePlayerProviderTokensInDB($jsonPlayer[0]['id'], $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
+      updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
     } catch(Exception $e) {
       print $e->getMessage();
     }
