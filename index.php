@@ -1408,6 +1408,26 @@ $app->post('/fundraiser/campaign/{campaignHashID}/game/{gameHashID}/player/{play
   }
 });
 
+$app->post('/fundraiser/game/{gameHashID}/player/{playerHashID}/goal', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashGameID = $request->getAttribute('gameHashID');
+  $hashPlayerID = $request->getAttribute('playerHashID');
+
+  $gameID = $hashids->decode($hashGameID)[0];
+  $playerID = $hashids->decode($hashPlayerID)[0];
+
+  $json = $request->getBody();
+  $data = json_decode($json, true); 
+
+  $jsonResponse = array();  
+
+  // store fundraising goal
+  setPlayerGameFundraisingGoalInDB($gameID, $playerID, $data['targetAmount']);
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->get('/game/{gameHashID}/player/{playerHashID}/fundraiser/page/{pageShortName}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
