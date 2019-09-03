@@ -21,8 +21,7 @@ function getStravaToken($playerID, $providerAccessToken, $providerRefreshToken, 
   $dtNow = new DateTime();
   $tNow = strtotime($dtNow->format('Y-m-d H:i:s'));
 
-//  echo $tExpire - $tNow . ' : ' . EXPIRY_THRESHOLD_SECONDS;
-
+  // if expired or about to expire then we need a new token
   if (($tExpire - $tNow) < EXPIRY_THRESHOLD_SECONDS) {
     try {
       $options = array(
