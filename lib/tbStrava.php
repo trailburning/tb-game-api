@@ -36,7 +36,6 @@ function getStravaToken($playerID, $providerAccessToken, $providerRefreshToken, 
 
       // update tokens
       updatePlayerProviderTokensInDB($jsonPlayer[0]['id'], $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
-      }
     } catch(Exception $e) {
       print $e->getMessage();
     }
