@@ -27,7 +27,7 @@ use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
 include "lib/tbLog.php";
-include "lib/tbStrava.php";
+//include "lib/tbStrava.php";
 include "lib/tbAssets.php";
 include "lib/tbEmail.php";
 include "lib/tbSocial.php";
