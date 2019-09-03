@@ -6,7 +6,16 @@ define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
 
 define('EXPIRY_THRESHOLD_SECONDS', 3600);
 
+use Strava\API\OAuth;
+use Strava\API\Client;
+use Strava\API\Exception;
+use Strava\API\Service\REST;
+
 function getStravaToken($playerID, $providerAccessToken, $providerRefreshToken, $providerTokenExpires) {
+  if (!$providerTokenExpires) {    
+    return $providerAccessToken;
+  }
+
   // use UTC date
   date_default_timezone_set("UTC");
 
