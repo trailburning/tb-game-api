@@ -15,6 +15,9 @@ define('GAME_API_DOMAIN', 'https://tb-game-api.herokuapp.com/');
 //define('PROVIDER_SERVER_CAUSE_CODE', 'amp-v6a6sz'); // test
 define('PROVIDER_SERVER_CAUSE_CODE', 'world-1ba4'); // LIVE WBR
 
+define('CLIENT_ID', 15175);
+define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
+
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
