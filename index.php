@@ -1,6 +1,5 @@
 <?php
 error_reporting(E_ERROR);
-//error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 header('Access-Control-Allow-Origin: *');
@@ -52,8 +51,8 @@ $app = new \Slim\App($settings);
 unset($app->getContainer()['errorHandler']);
 unset($app->getContainer()['phpErrorHandler']);
 
-//const DEBUG = false;
-const DEBUG = true;
+const DEBUG = false;
+//const DEBUG = true;
 
 const GAME_PLAYER_PLAYING_STATE = 0;
 const GAME_PLAYER_PLAYING_NOT_ACTIVE_STATE = 1;
