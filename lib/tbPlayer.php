@@ -289,8 +289,6 @@ function updatePlayer($playerID) {
     // ensure we have the latest token
     $token = StravaGetToken($playerID, $results[0]['providerAccessToken'], $results[0]['providerRefreshToken'], $results[0]['providerTokenExpires']);
 
-    echo 'token:' . $token;
-
     // get from provider
     $adapter = new Pest('https://www.strava.com/api/v3');
     $service = new REST($token, $adapter);
