@@ -121,13 +121,12 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
   date_default_timezone_set("UTC");
 
   $dtExpire = new DateTime();
-  // not yet using short term token, so use forever token
+  // not yet using short term token, so use forever token to get short term
   if (!$providerTokenExpires) {
     $results = getPlayerFromDBByID($playerID);
     if (count($results) != 0) {
       $providerRefreshToken = $results[0]['playerProviderToken'];
     }
-
   }
   else {
     $dtExpire = new DateTime("@$providerTokenExpires");
@@ -140,6 +139,7 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
 
   // if expired or about to expire then we need a new token
   if (($tExpire - $tNow) < EXPIRY_THRESHOLD_SECONDS) {
+    echo 'update';
     try {
       $options = array(
         'clientId'     => CLIENT_ID,
@@ -149,6 +149,9 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
 
       // grab refresh token with forever token
       try {
+
+        echo 'token:' . $providerRefreshToken;
+
         $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $providerRefreshToken));
         // update tokens
         updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
