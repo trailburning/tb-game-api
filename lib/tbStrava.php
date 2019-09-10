@@ -117,14 +117,22 @@ function StravaGetOAuthToken($strSiteDomain, $hashCampaignID, $stravaCode) {
 }
 
 function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, $providerTokenExpires) {
-  if (!$providerTokenExpires) {    
-    return $providerAccessToken;
-  }
-
   // use UTC date
   date_default_timezone_set("UTC");
 
-  $dtExpire = new DateTime("@$providerTokenExpires");
+  $dtExpire = new DateTime();
+  // not yet using short term token, so use forever token
+  if (!$providerTokenExpires) {
+    $results = getPlayerFromDBByID($playerID);
+    if (count($results) != 0) {
+      $providerRefreshToken = $results[0]['playerProviderToken'];
+    }
+
+  }
+  else {
+    $dtExpire = new DateTime("@$providerTokenExpires");
+  }
+
   $tExpire = strtotime($dtExpire->format('Y-m-d H:i:s'));
 
   $dtNow = new DateTime();
