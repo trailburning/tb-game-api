@@ -514,8 +514,6 @@ function getGamePlayerActivityPhotos($gameID, $playerID, $activityID) {
     // ensure we have the latest token
     $token = StravaGetToken($playerID, $results[0]['providerAccessToken'], $results[0]['providerRefreshToken'], $results[0]['providerTokenExpires']);
 
-    $token = $results[0]['playerProviderToken'];
-
     try {
       $adapter = new Pest('https://www.strava.com/api/v3');
       $service = new REST($token, $adapter);
