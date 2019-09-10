@@ -861,23 +861,6 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/cause', function (Request $r
   return $response->withJSON($jsonResponse);
 });
 
-$app->post('/player', function (Request $request, Response $response) {
-  $hashids = new Hashids\Hashids('mountainrush', 10);
-
-  $json = $request->getBody();
-  $data = json_decode($json, true);
-
-  $hashClientID = $data['clientID'];
-  $clientID = $hashids->decode($hashClientID)[0];
-
-  $jsonResponse = addPlayerToDB($clientID, $data['avatar'], $data['firstname'], $data['lastname'], $data['email'], $data['city'], $data['country'], $data['providerID'], $data['providerToken']);
-
-  $jsonResponse[0]['id'] = $hashids->encode($jsonResponse[0]['id']);
-  $jsonResponse[0]['clientID'] = $hashids->encode($jsonResponse[0]['clientID']);
-
-  return $response->withJSON($jsonResponse);
-});
-
 $app->post('/player/{playerHashID}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 

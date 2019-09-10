@@ -17,12 +17,11 @@ function addPlayerToDB($clientID, $avatar, $firstname, $lastname, $email, $city,
 
   if (doesClientPlayerProviderIDAlreadyExistInDB($clientID, $providerID)) {
     // insert failed so the email has already been used, let's try an update
-    updatePlayerDetailsbyProviderIDInDB($providerID, $avatar, $firstname, $lastname, $city, $country, $providerToken);
     $ret = getClientPlayerFromDBByProviderID($clientID, $providerID);
   }
   else {
     $db = connect_db();
-    if ($db->query('INSERT INTO players (created, clientID, avatar, firstname, lastname, email, city, country, game_notifications, playerProviderID, playerProviderToken) VALUES ("' . $dtNow . '", ' . $clientID . ', "' . $avatar . '", "' . $firstname . '", "' . $lastname . '", "' . $email. '", "' . $city . '", "' . $country. '", 1, "' . $providerID . '", "' . $providerToken . '")') === TRUE) {
+    if ($db->query('INSERT INTO players (created, clientID, avatar, firstname, lastname, email, city, country, game_notifications, playerProviderID) VALUES ("' . $dtNow . '", ' . $clientID . ', "' . $avatar . '", "' . $firstname . '", "' . $lastname . '", "' . $email. '", "' . $city . '", "' . $country. '", 1, "' . $providerID . '")') === TRUE) {
       $lastInsertID = $db->insert_id;
       $ret = getPlayerFromDB($db, $lastInsertID);
     }
@@ -258,22 +257,6 @@ function updatePlayerPreferencesInDB($playerID, $strEmail, $bReceiveEmail) {
     }
   }
   return $bRet;
-}
-
-function updatePlayerDetailsbyProviderIDInDB($providerID, $avatar, $firstname, $lastname, $city, $country, $token) {
-  require_once 'lib/mysql.php';
-
-  $db = connect_db();
-  $strSQL = 'update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where playerProviderID = "' . $providerID . '"';
-  $result = $db->query($strSQL);
-}
-
-function updatePlayerDetailsInDB($avatar, $firstname, $lastname, $email, $city, $country, $token) {
-  require_once 'lib/mysql.php';
-
-  $db = connect_db();
-  $strSQL = 'update players set avatar = "' . $avatar . '", firstname = "' . $firstname . '", lastname = "' . $lastname . '", email = "' . $email .'", city = "' . $city . '", country = "' . $country . '", playerProviderToken = "' . $token . '" where email = "' . $email . '"';
-  $result = $db->query($strSQL);
 }
 
 function updatePlayerDetailsWithoutEmailInDB($avatar, $firstname, $lastname, $city, $country, $token) {
