@@ -139,7 +139,7 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
 
   // if expired or about to expire then we need a new token
   if (($tExpire - $tNow) < EXPIRY_THRESHOLD_SECONDS) {
-    echo 'update';
+    echo 'update token';
     try {
       $options = array(
         'clientId'     => CLIENT_ID,
@@ -161,7 +161,7 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
         // update tokens
         updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
       } catch(GuzzleHttp\Exception\ConnectException $e) {
-//        print $e->getMessage();
+        print $e->getMessage();
       }
 
     } catch(Exception $e) {
