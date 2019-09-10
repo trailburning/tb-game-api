@@ -512,6 +512,10 @@ function getGamePlayerActivityPhotos($gameID, $playerID, $activityID) {
   if (count($results) != 0) {
     $token = $results[0]['playerProviderToken'];
 
+    echo 't1:' . $results[0]['providerAccessToken'] . '<br/>';
+    echo 't2:' . $results[0]['providerRefreshToken'] . '<br/>';
+    echo 't3:' . $results[0]['providerTokenExpires'] . '<br/>';
+
     // ensure we have the latest token
 //    $token = StravaGetToken($playerID, $results[0]['providerAccessToken'], $results[0]['providerRefreshToken'], $results[0]['providerTokenExpires']);
 
