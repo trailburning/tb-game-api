@@ -153,6 +153,11 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
         echo 'token:' . $providerRefreshToken;
 
         $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $providerRefreshToken));
+
+        echo 't1:' . $tokenData->getToken();
+        echo 't2:' . $tokenData->getRefreshToken();
+        echo 't3:' . $tokenData->getExpires();
+
         // update tokens
         updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
       } catch(GuzzleHttp\Exception\ConnectException $e) {
