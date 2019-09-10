@@ -510,7 +510,6 @@ function getGamePlayerActivityPhotos($gameID, $playerID, $activityID) {
   // first find last update date
   $results = getPlayerFromDB($db, $playerID);
   if (count($results) != 0) {
-
     // ensure we have the latest token
     $token = StravaGetToken($playerID, $results[0]['providerAccessToken'], $results[0]['providerRefreshToken'], $results[0]['providerTokenExpires']);
 

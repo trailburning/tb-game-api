@@ -85,7 +85,7 @@ function getPlayerFromDBByID($playerID) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $strSQL = 'SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, game_notifications, measurement, playerProviderID, playerProviderToken, last_activity, last_updated FROM players WHERE id = ' . $playerID;
+  $strSQL = 'SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, game_notifications, measurement, playerProviderID, playerProviderToken, providerAccessToken, providerRefreshToken, providerTokenExpires, last_activity, last_updated FROM players WHERE id = ' . $playerID;
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
@@ -286,7 +286,10 @@ function updatePlayerDetailsWithoutEmailInDB($avatar, $firstname, $lastname, $ci
 function updatePlayer($playerID) {
   $results = getPlayerFromDBByID($playerID);
   if (count($results) != 0) {
-    $token = $results[0]['playerProviderToken'];
+    // ensure we have the latest token
+    $token = StravaGetToken($playerID, $results[0]['providerAccessToken'], $results[0]['providerRefreshToken'], $results[0]['providerTokenExpires']);
+
+    echo 'token:' . $token;
 
     // get from provider
     $adapter = new Pest('https://www.strava.com/api/v3');
