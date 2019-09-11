@@ -54,18 +54,15 @@ function StravaUpdateTokens() {
   $jsonPlayersResponse = getPlayersFromDB();
   if (count($jsonPlayersResponse)) {
     foreach ($jsonPlayersResponse as $player) {
-      echo 'player: ' . $player['id'] . ' : ' . $player['lastname'] . '<br/>';
-
       $playerID = $player['id'];
-      echo 'providerAccessToken:' . $player['providerAccessToken'] . '<br/>';
-      echo 'providerRefreshToken:' . $player['providerRefreshToken'] . '<br/>';
-      echo 'providerTokenExpires:' . $player['providerTokenExpires'] . '<br/>';
 
-      $token = StravaGetToken($playerID, $player['providerAccessToken'], $player['providerRefreshToken'], $player['providerTokenExpires']);
+      echo 'player: ' . $player['id'] . ' : ' . $player['lastname'] . '<br/>';
 
       ob_flush();
       flush();
       sleep(1);
+
+      $token = StravaGetToken($playerID, $player['providerAccessToken'], $player['providerRefreshToken'], $player['providerTokenExpires']);
     }
   }
 }
@@ -137,7 +134,7 @@ function StravaGetOAuthToken($strSiteDomain, $hashCampaignID, $stravaCode) {
 }
 
 function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, $providerTokenExpires) {
-  echo 'StravaGetToken_' . $playerID . ':' . $providerAccessToken . ':' . $providerRefreshToken . ':' . $providerTokenExpires;
+  echo 'StravaGetToken:' . $playerID . ':' . $providerAccessToken . ':' . $providerRefreshToken . ':' . $providerTokenExpires;
 
   // use UTC date
   date_default_timezone_set("UTC");
