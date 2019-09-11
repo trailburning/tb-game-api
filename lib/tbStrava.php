@@ -158,9 +158,6 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
 
   echo 'token:' . $providerRefreshToken . '<br/>';
 
-return;
-
-
   // if expired or about to expire then we need a new token
   if (($tExpire - $tNow) < EXPIRY_THRESHOLD_SECONDS) {
     try {
