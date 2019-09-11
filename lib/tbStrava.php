@@ -137,6 +137,8 @@ function StravaGetOAuthToken($strSiteDomain, $hashCampaignID, $stravaCode) {
 }
 
 function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, $providerTokenExpires) {
+  echo 'StravaGetToken_' . $playerID . ':' . $providerAccessToken . ':' . $providerRefreshToken . ':' . $providerTokenExpires;
+
   // use UTC date
   date_default_timezone_set("UTC");
 
