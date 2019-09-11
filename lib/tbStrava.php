@@ -78,7 +78,8 @@ function StravaGetOAuth($strSiteDomain, $hashCampaignID) {
     );
 
     $oauth = new OAuth($options);
-    $oauth_connect = $oauth->getAuthorizationUrl(array('scope' => 'public'));      
+//    $oauth_connect = $oauth->getAuthorizationUrl(array('scope' => 'public'));      
+    $oauth_connect = $oauth->getAuthorizationUrl(array('scope' => 'read,activity:read'));      
 
     $jsonResponse['oauthConnectURL'] = $oauth_connect;
   } catch(Exception $e) {
@@ -172,7 +173,13 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
 
         echo 'token to use:' . $providerRefreshToken . '<br/>';
 
-        $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $providerRefreshToken));
+        try {
+
+          $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $providerRefreshToken));
+
+        } catch(Exception $e) {
+//          print $e->getMessage();
+        }
 /*        
 
         // update tokens
