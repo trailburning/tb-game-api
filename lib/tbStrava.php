@@ -54,15 +54,19 @@ function StravaUpdateTokens() {
   $jsonPlayersResponse = getPlayersFromDB();
   if (count($jsonPlayersResponse)) {
     foreach ($jsonPlayersResponse as $player) {
-      $playerID = $player['id'];
 
-      echo 'player: ' . $player['id'] . ' : ' . $player['lastname'] . '<br/>';
+      if (!$player['providerRefreshToken']) {
+        $playerID = $player['id'];
 
-      ob_flush();
-      flush();
-      sleep(1);
+        echo 'player: ' . $player['id'] . ' : ' . $player['lastname'] . '<br/>';
 
-      $token = StravaGetToken($playerID, $player['providerAccessToken'], $player['providerRefreshToken'], $player['providerTokenExpires']);
+        ob_flush();
+        flush();
+        sleep(1);
+
+        $token = StravaGetToken($playerID, $player['providerAccessToken'], $player['providerRefreshToken'], $player['providerTokenExpires']);
+      }
+
     }
   }
 }
