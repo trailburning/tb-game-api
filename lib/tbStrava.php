@@ -60,7 +60,7 @@ function StravaUpdateTokens() {
 
         echo 'player: ' . $player['id'] . ' : ' . $player['lastname'] . '<br/>';
 
-        $token = StravaGetToken($playerID, $player['providerAccessToken'], $player['providerRefreshToken'], $player['providerTokenExpires']);
+        $token = StravaGetToken($playerID, $player['providerAccessToken'], $player['providerRefreshToken'], $player['providerTokenExpires'], 99);
       }
 
     }
@@ -134,7 +134,7 @@ function StravaGetOAuthToken($strSiteDomain, $hashCampaignID, $stravaCode) {
   return $jsonResponse;
 }
 
-function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, $providerTokenExpires) {
+function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, $providerTokenExpires, $test) {
   echo 'StravaGetToken:' . $playerID . ':' . $providerAccessToken . ':' . $providerRefreshToken . ':' . $providerTokenExpires;
 
   // use UTC date
@@ -173,18 +173,14 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
 
         echo 'token to use:' . $providerRefreshToken . '<br/>';
 
-        try {
+        $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $providerRefreshToken));
 
-          $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $providerRefreshToken));
-
-        } catch(Exception $e) {
-//          print $e->getMessage();
-        }
 /*        
 
-        // update tokens
-        updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
+          // update tokens
+          updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
 */        
+
       } catch(GuzzleHttp\Exception\ConnectException $e) {
 //        print $e->getMessage();
       }
