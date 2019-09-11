@@ -63,12 +63,14 @@ function StravaUpdateTokens() {
       echo 'player: ' . $player['id'] . ' : ' . $player['lastname'] . '<br/>';
 
       if (!$player['providerRefreshToken']) {
-        echo 'generate token<br/>';
+        $token = $player['playerProviderToken'];
+        echo 'generate token: ' . $token . '<br/>';
+
 
         // grab refresh token with forever token
         try {
 /*
-          $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $player['playerProviderToken']));
+          $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $token));
 
           // update tokens
           updatePlayerProviderTokensInDB($player['id'], $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
