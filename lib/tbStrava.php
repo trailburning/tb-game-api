@@ -155,6 +155,10 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
     $dtExpire = new DateTime("@$providerTokenExpires");
   }
 
+  if (!$providerRefreshToken) {
+    return;
+  }
+
   $tExpire = strtotime($dtExpire->format('Y-m-d H:i:s'));
 
   $dtNow = new DateTime();
