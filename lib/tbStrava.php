@@ -59,16 +59,11 @@ function StravaUpdateTokens() {
         echo 'player: ' . $player['id'] . ' : ' . $player['lastname'] . '<br/>';
 
         $playerID = $player['id'];
-//        $providerAccessToken = $player['providerAccessToken'];
-//        $providerRefreshToken = $player['providerRefreshToken'];
-//        $providerTokenExpires = $player['providerTokenExpires'];
-        $providerAccessToken = null;
-        $providerRefreshToken = null;
-        $providerTokenExpires = null;
+        $providerAccessToken = $player['providerAccessToken'];
+        $providerRefreshToken = $player['providerRefreshToken'];
+        $providerTokenExpires = $player['providerTokenExpires'];
 
-//        $token = StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, $providerTokenExpires);
-//        $token = StravaGetToken($playerID, null, null, null);
-        $token = StravaGetToken($playerID, null, null, null);
+        $token = StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, $providerTokenExpires);
       }
 
     }
@@ -178,17 +173,12 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
 
       // grab refresh token with forever token
       try {
-
         echo 'token to use:' . $providerRefreshToken . '<br/>';
 
         $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $providerRefreshToken));
 
-/*        
-
-          // update tokens
-          updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
-*/        
-
+        // update tokens
+        updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
       } catch(GuzzleHttp\Exception\ConnectException $e) {
 //        print $e->getMessage();
       }
