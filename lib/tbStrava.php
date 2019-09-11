@@ -138,8 +138,6 @@ function StravaGetOAuthToken($strSiteDomain, $hashCampaignID, $stravaCode) {
 }
 
 function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, $providerTokenExpires) {
-  echo 'StravaGetToken:' . $playerID . ':' . $providerAccessToken . ':' . $providerRefreshToken . ':' . $providerTokenExpires;
-
   // use UTC date
   date_default_timezone_set("UTC");
 
@@ -165,8 +163,6 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
   $dtNow = new DateTime();
   $tNow = strtotime($dtNow->format('Y-m-d H:i:s'));
 
-  echo 'token:' . $providerRefreshToken . '<br/>';
-
   // if expired or about to expire then we need a new token
   if (($tExpire - $tNow) < EXPIRY_THRESHOLD_SECONDS) {
     try {
@@ -178,7 +174,6 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
 
       // grab refresh token with forever token
       try {
-        echo 'token to use:' . $providerRefreshToken . '<br/>';
 
         try {
           $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $providerRefreshToken));
