@@ -57,8 +57,8 @@ function StravaUpdateTokens() {
       echo 'player: ' . $player['lastname'] . '<br/>';
 
       if (!$player['providerRefreshToken']) {
-        echo 'generate token<br/>';
-
+        echo 'generate token: ' . $player['playerProviderToken'] . '<br/>';
+/*
         try {
           $options = array(
             'clientId'     => CLIENT_ID,
@@ -78,6 +78,7 @@ function StravaUpdateTokens() {
         } catch(Exception $e) {
           print $e->getMessage();
         }
+*/        
       }
     }
   }
