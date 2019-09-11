@@ -67,8 +67,8 @@ function StravaUpdateTokens() {
 
         // grab refresh token with forever token
         try {
-          $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $player['playerProviderToken']));
 /*
+          $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $player['playerProviderToken']));
 
           // update tokens
           updatePlayerProviderTokensInDB($player['id'], $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
