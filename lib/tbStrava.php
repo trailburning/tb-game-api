@@ -171,8 +171,9 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
       try {
 
         echo 'token to use:' . $providerRefreshToken . '<br/>';
-/*        
+
         $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $providerRefreshToken));
+/*        
 
         // update tokens
         updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
