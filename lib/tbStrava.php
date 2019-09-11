@@ -140,6 +140,8 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
   flush();
   sleep(1);
 
+return;
+
   // use UTC date
   date_default_timezone_set("UTC");
 
