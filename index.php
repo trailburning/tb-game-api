@@ -1,6 +1,5 @@
 <?php
-//error_reporting(E_ERROR);
-error_reporting(E_ALL);
+error_reporting(E_ERROR);
 ini_set('display_errors', 1);
 
 header('Access-Control-Allow-Origin: *');
