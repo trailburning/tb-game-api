@@ -157,7 +157,7 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
   $tNow = strtotime($dtNow->format('Y-m-d H:i:s'));
 
   echo 'token:' . $providerRefreshToken . '<br/>';
-/*
+
   // if expired or about to expire then we need a new token
   if (($tExpire - $tNow) < EXPIRY_THRESHOLD_SECONDS) {
     try {
@@ -169,10 +169,14 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
 
       // grab refresh token with forever token
       try {
+
+        echo 'token to use:' . $providerRefreshToken . '<br/>';
+/*        
         $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $providerRefreshToken));
 
         // update tokens
         updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
+*/        
       } catch(GuzzleHttp\Exception\ConnectException $e) {
 //        print $e->getMessage();
       }
@@ -180,6 +184,6 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
       print $e->getMessage();
     }
   }
-*/  
+
   return $providerAccessToken;
 }
