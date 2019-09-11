@@ -143,6 +143,7 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
   // use UTC date
   date_default_timezone_set("UTC");
 
+  $tokenData = null;
   $dtExpire = new DateTime();
   // not yet using short term token, so use forever token to get short term
   if (!$providerTokenExpires) {
@@ -188,10 +189,11 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
           print $e->getMessage();
         }
 
-
+        if ($tokenData) {
           // update tokens
           $providerAccessToken = $tokenData->getToken();
-          updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
+          updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());          
+        }
 
       } catch(GuzzleHttp\Exception\ConnectException $e) {
 //        print $e->getMessage();
