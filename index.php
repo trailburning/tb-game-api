@@ -196,6 +196,7 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
   return;
 });
 
+// 190911 MLA only use to generate shrt lived tokens and then remove!
 $app->get('/strava/updatetokens', function (Request $request, Response $response) {
   // generate short lived tokens from forever tokens
   StravaUpdateTokens();
