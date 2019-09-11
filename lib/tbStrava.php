@@ -75,7 +75,7 @@ function StravaUpdateTokens() {
           updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
 
         } catch(GuzzleHttp\Exception\ConnectException $e) {
-  //        print $e->getMessage();
+          print $e->getMessage();
         }
 
         ob_flush();
