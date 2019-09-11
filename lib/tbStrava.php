@@ -60,7 +60,7 @@ function StravaUpdateTokens() {
   $jsonPlayersResponse = getPlayersFromDB();
   if (count($jsonPlayersResponse)) {
     foreach ($jsonPlayersResponse as $player) {
-      echo 'player: ' . $player['lastname'] . '<br/>';
+      echo 'player: ' . $player['id'] . ' : ' . $player['lastname'] . '<br/>';
 
       if (!$player['providerRefreshToken']) {
         echo 'generate token<br/>';
@@ -68,9 +68,11 @@ function StravaUpdateTokens() {
         // grab refresh token with forever token
         try {
           $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $player['playerProviderToken']));
+/*
 
           // update tokens
           updatePlayerProviderTokensInDB($player['id'], $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
+*/        
         } catch(GuzzleHttp\Exception\ConnectException $e) {
   //        print $e->getMessage();
         }
