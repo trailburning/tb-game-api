@@ -137,7 +137,7 @@ function StravaGetOAuthToken($strSiteDomain, $hashCampaignID, $stravaCode) {
   return $jsonResponse;
 }
 
-function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, $providerTokenExpires, $test) {
+function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, $providerTokenExpires) {
   echo 'StravaGetToken:' . $playerID . ':' . $providerAccessToken . ':' . $providerRefreshToken . ':' . $providerTokenExpires;
 
   // use UTC date
