@@ -60,10 +60,6 @@ function StravaUpdateTokens() {
 
         echo 'player: ' . $player['id'] . ' : ' . $player['lastname'] . '<br/>';
 
-        ob_flush();
-        flush();
-        sleep(1);
-
         $token = StravaGetToken($playerID, $player['providerAccessToken'], $player['providerRefreshToken'], $player['providerTokenExpires']);
       }
 
@@ -161,10 +157,6 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
   $tNow = strtotime($dtNow->format('Y-m-d H:i:s'));
 
   echo 'token:' . $providerRefreshToken . '<br/>';
-
-  ob_flush();
-  flush();
-  sleep(1);
 
 return;
 

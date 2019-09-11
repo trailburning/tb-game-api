@@ -41,7 +41,7 @@ include "lib/tbHelper.php";
 
 $settings =  [
   'settings' => [
-    'displayErrorDetails' => true,
+    'displayErrorDetails' => true
   ],
 ];
 
