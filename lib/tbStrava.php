@@ -77,6 +77,11 @@ function StravaUpdateTokens() {
         } catch(GuzzleHttp\Exception\ConnectException $e) {
   //        print $e->getMessage();
         }
+
+        ob_flush();
+        flush();
+        sleep(1);
+
       }
     }
   }
