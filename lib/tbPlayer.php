@@ -34,6 +34,19 @@ function updatePlayerProviderTokensInDB($playerID, $providerAccessToken, $provid
   $result = $db->query('update players set providerAccessToken = "' . $providerAccessToken . '", providerRefreshToken = "' . $providerRefreshToken . '", providerTokenExpires = ' . $providerTokenExpires . ' where id = ' . $playerID);
 }
 
+function getPlayersFromDB() {
+  $db = connect_db();
+  $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, playerProviderToken, providerAccessToken, providerRefreshToken, providerTokenExpires, last_activity, last_updated FROM players');
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
 function getPlayerFromDBByEmail($clientID, $email) {
   require_once 'lib/mysql.php';
 
