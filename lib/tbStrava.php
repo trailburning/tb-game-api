@@ -160,11 +160,12 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
   $dtNow = new DateTime();
   $tNow = strtotime($dtNow->format('Y-m-d H:i:s'));
 
+  echo 'token:' . $providerRefreshToken . '<br/>';
+
   ob_flush();
   flush();
   sleep(1);
 
-  echo 'token:' . $providerRefreshToken . '<br/>';
 return;
 
 
