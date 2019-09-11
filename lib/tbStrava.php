@@ -51,38 +51,19 @@ function StravaGetSubscriptions() {
 }
 
 function StravaUpdateTokens() {
-  $options = array(
-    'clientId'     => CLIENT_ID,
-    'clientSecret' => CLIENT_SECRET
-  );
-  $oauth = new OAuth($options);
-
   $jsonPlayersResponse = getPlayersFromDB();
   if (count($jsonPlayersResponse)) {
     foreach ($jsonPlayersResponse as $player) {
       echo 'player: ' . $player['id'] . ' : ' . $player['lastname'] . '<br/>';
 
-      if (!$player['providerRefreshToken']) {
-        $playerID = $player['id'];
-        $token = $player['playerProviderToken'];
-        echo 'generate token: ' . $token . '<br/>';
+      $playerID = $player['id'];
+      echo 'generate token<br/>';
 
-        // grab refresh token with forever token
-        try {
-          $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $token));
+      $token = StravaGetToken($playerID, $player['providerAccessToken'], $player['providerRefreshToken'], $player['providerTokenExpires']);
 
-          // update tokens
-          updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
-
-        } catch(GuzzleHttp\Exception\ConnectException $e) {
-          print $e->getMessage();
-        }
-
-        ob_flush();
-        flush();
-        sleep(1);
-
-      }
+      ob_flush();
+      flush();
+      sleep(1);
     }
   }
 }
