@@ -165,36 +165,29 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
 
   // if expired or about to expire then we need a new token
   if (($tExpire - $tNow) < EXPIRY_THRESHOLD_SECONDS) {
+    $options = array(
+      'clientId'     => CLIENT_ID,
+      'clientSecret' => CLIENT_SECRET
+    );
+    $oauth = new OAuth($options);
+
+    // grab refresh token with forever token
     try {
-      $options = array(
-        'clientId'     => CLIENT_ID,
-        'clientSecret' => CLIENT_SECRET
-      );
-      $oauth = new OAuth($options);
-
-      // grab refresh token with forever token
       try {
-
-        try {
-          $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $providerRefreshToken));
-
-        }
-        catch (InvalidArgumentException $e) {
-          // likely means the token was invalid because the user has revoked the connection
-          print $e->getMessage();
-        }
-
-        if ($tokenData) {
-          // update tokens
-          $providerAccessToken = $tokenData->getToken();
-          updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());          
-        }
-
-      } catch(GuzzleHttp\Exception\ConnectException $e) {
-//        print $e->getMessage();
+        $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $providerRefreshToken));
       }
-    } catch(Exception $e) {
-      print $e->getMessage();
+      catch (InvalidArgumentException $e) {
+        // likely means the token was invalid because the user has revoked the connection
+        print $e->getMessage();
+      }
+
+      if ($tokenData) {
+        // update tokens
+        $providerAccessToken = $tokenData->getToken();
+        updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());          
+      }
+    } catch(GuzzleHttp\Exception\ConnectException $e) {
+//        print $e->getMessage();
     }
   }
 
