@@ -36,7 +36,7 @@ function updatePlayerProviderTokensInDB($playerID, $providerAccessToken, $provid
 
 function getPlayersFromDB() {
   $db = connect_db();
-  $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, playerProviderToken, providerAccessToken, providerRefreshToken, providerTokenExpires, last_activity, last_updated FROM players LIMIT 30');
+  $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, playerProviderToken, providerAccessToken, providerRefreshToken, providerTokenExpires, last_activity, last_updated FROM players');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
