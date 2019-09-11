@@ -179,17 +179,19 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
       try {
         echo 'token to use:' . $providerRefreshToken . '<br/>';
 
-//        try {
+        try {
           $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $providerRefreshToken));
+
+        }
+        catch (InvalidArgumentException $e) {
+          // likely means the token was invalid because the user has revoked the connection
+          print $e->getMessage();
+        }
+
 
           // update tokens
           $providerAccessToken = $tokenData->getToken();
           updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
-
-//        }
-//        catch (InvalidArgumentException $e) {
-          // likely means the token was invalid because the user has revoked the connection
-//        }
 
       } catch(GuzzleHttp\Exception\ConnectException $e) {
 //        print $e->getMessage();
