@@ -51,34 +51,29 @@ function StravaGetSubscriptions() {
 }
 
 function StravaUpdateTokens() {
+  $options = array(
+    'clientId'     => CLIENT_ID,
+    'clientSecret' => CLIENT_SECRET
+  );
+  $oauth = new OAuth($options);
+
   $jsonPlayersResponse = getPlayersFromDB();
   if (count($jsonPlayersResponse)) {
     foreach ($jsonPlayersResponse as $player) {
       echo 'player: ' . $player['lastname'] . '<br/>';
 
       if (!$player['providerRefreshToken']) {
-        echo 'generate token: ' . $player['playerProviderToken'] . '<br/>';
-/*
+        echo 'generate token<br/>';
+
+        // grab refresh token with forever token
         try {
-          $options = array(
-            'clientId'     => CLIENT_ID,
-            'clientSecret' => CLIENT_SECRET
-          );
-          $oauth = new OAuth($options);
+          $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $player['playerProviderToken']));
 
-          // grab refresh token with forever token
-          try {
-            $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $player['playerProviderToken']));
-
-            // update tokens
-            updatePlayerProviderTokensInDB($playerID, $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
-          } catch(GuzzleHttp\Exception\ConnectException $e) {
-    //        print $e->getMessage();
-          }
-        } catch(Exception $e) {
-          print $e->getMessage();
+          // update tokens
+          updatePlayerProviderTokensInDB($player['id'], $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
+        } catch(GuzzleHttp\Exception\ConnectException $e) {
+  //        print $e->getMessage();
         }
-*/        
       }
     }
   }
