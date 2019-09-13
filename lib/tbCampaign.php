@@ -21,7 +21,7 @@ function getCampaignsFromDB() {
 function getCampaignFromDB($db, $campaignID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
-  $strSQL = ''SELECT clients.id as clientID, clients.name as client_name, clients.shortname as client_shortname, campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.juicer_feed, campaigns.fundraising_currency, campaigns.fundraising_minimum, campaigns.fundraising_provider, campaigns.fundraising_donation, campaigns.fundraising_page, campaigns.fundraising_charity, campaigns.fundraising_event, campaigns.invitation_code FROM campaigns JOIN clients ON campaigns.clientID = clients.id WHERE campaigns.id = ' . $campaignID';
+  $strSQL = 'SELECT clients.id as clientID, clients.name as client_name, clients.shortname as client_shortname, campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.juicer_feed, campaigns.fundraising_currency, campaigns.fundraising_minimum, campaigns.fundraising_provider, campaigns.fundraising_donation, campaigns.fundraising_page, campaigns.fundraising_charity, campaigns.fundraising_event, campaigns.invitation_code FROM campaigns JOIN clients ON campaigns.clientID = clients.id WHERE campaigns.id = ' . $campaignID;
   echo $strSQL;
   $result = $db->query($strSQL);
   $rows = array();
