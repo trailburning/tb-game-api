@@ -93,7 +93,11 @@ function StravaGetOAuth($strSiteDomain, $hashCampaignID) {
 }
 
 function StravaGetOAuthToken($strSiteDomain, $hashCampaignID, $stravaCode) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
   $jsonResponse = array();
+
+  $campaignID = $hashids->decode($hashCampaignID)[0];
 
   try {
     $options = array(
