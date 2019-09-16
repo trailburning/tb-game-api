@@ -263,7 +263,7 @@ function getGamePlayersFromDB($gameID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT players.id, avatar, firstname, lastname, email, city, country, game_notifications, measurement, playerProviderID, playerProviderToken, last_activity, last_updated, gamePlayers.latestMarkerID, gamePlayers.bMediaCaptured, gamePlayers.latest_activity, gamePlayers.ascent, gamePlayers.distance, gamePlayers.state, gamePlayers.fundraising_pageID, gamePlayers.fundraising_page, gamePlayers.fundraising_msg, gamePlayers.fundraising_goal, gamePlayers.fundraising_raised, gamePlayers.fundraising_currency FROM gamePlayers JOIN players ON gamePlayers.player = players.id WHERE game = ' . $gameID;
+  $strSQL = 'SELECT players.id, avatar, firstname, lastname, email, city, country, game_notifications, measurement, playerProviderID, playerProviderToken, providerAccessToken, providerRefreshToken, providerTokenExpires, last_activity, last_updated, gamePlayers.latestMarkerID, gamePlayers.bMediaCaptured, gamePlayers.latest_activity, gamePlayers.ascent, gamePlayers.distance, gamePlayers.state, gamePlayers.fundraising_pageID, gamePlayers.fundraising_page, gamePlayers.fundraising_msg, gamePlayers.fundraising_goal, gamePlayers.fundraising_raised, gamePlayers.fundraising_currency FROM gamePlayers JOIN players ON gamePlayers.player = players.id WHERE game = ' . $gameID;
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
@@ -510,7 +510,9 @@ function getGamePlayerActivityPhotos($gameID, $playerID, $activityID) {
   // first find last update date
   $results = getPlayerFromDB($db, $playerID);
   if (count($results) != 0) {
-    $token = $results[0]['playerProviderToken'];
+    // ensure we have the latest token
+    $token = StravaGetToken($playerID, $results[0]['providerAccessToken'], $results[0]['providerRefreshToken'], $results[0]['providerTokenExpires']);
+
     try {
       $adapter = new Pest('https://www.strava.com/api/v3');
       $service = new REST($token, $adapter);
@@ -533,7 +535,9 @@ function getGamePlayerActivityComments($gameID, $playerID, $activityID) {
   // first find last update date
   $results = getPlayerFromDB($db, $playerID);
   if (count($results) != 0) {
-    $token = $results[0]['playerProviderToken'];
+    // ensure we have the latest token
+    $token = StravaGetToken($playerID, $results[0]['providerAccessToken'], $results[0]['providerRefreshToken'], $results[0]['providerTokenExpires']);
+
     try {
       $adapter = new Pest('https://www.strava.com/api/v3');
       $service = new REST($token, $adapter);

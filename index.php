@@ -15,22 +15,18 @@ define('GAME_API_DOMAIN', 'https://tb-game-api.herokuapp.com/');
 //define('PROVIDER_SERVER_CAUSE_CODE', 'amp-v6a6sz'); // test
 define('PROVIDER_SERVER_CAUSE_CODE', 'world-1ba4'); // LIVE WBR
 
-define('CLIENT_ID', 15175);
-define('CLIENT_SECRET', 'f3d284154c0b25200f074bc1a46ccc06920f9ed6');
-
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
-
-use Strava\API\OAuth;
-use Strava\API\Client;
-use Strava\API\Exception;
-use Strava\API\Service\REST;
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
+require 'vendor/autoload.php';
+require_once 'lib/mysqliSingleton.php';
+require_once 'lib/mysql.php';
+
 include "lib/tbLog.php";
-//include "lib/tbStrava.php";
+include "lib/tbStrava.php";
 include "lib/tbAssets.php";
 include "lib/tbEmail.php";
 include "lib/tbSocial.php";
@@ -43,18 +39,17 @@ include "lib/tbFundraising.php";
 include "lib/tbKPI.php";
 include "lib/tbHelper.php";
 
-require 'vendor/autoload.php';
-require_once 'lib/mysqliSingleton.php';
-require_once 'lib/mysql.php';
-
 $settings =  [
   'settings' => [
-    'displayErrorDetails' => true,
+    'displayErrorDetails' => true
   ],
 ];
 
 $app = new \Slim\App($settings);
 //$app = new \Slim\App;
+
+unset($app->getContainer()['errorHandler']);
+unset($app->getContainer()['phpErrorHandler']);
 
 const DEBUG = false;
 //const DEBUG = true;
@@ -117,42 +112,15 @@ $app->get('/events', function (Request $request, Response $response) {
 });
 
 $app->get('/strava/subscribe', function (Request $request, Response $response) {
-  $url = 'https://api.strava.com/api/v3/push_subscriptions';
-
-  $fields = array(
-    'client_id' => CLIENT_ID,
-    'client_secret' => CLIENT_SECRET,
-    'object_type' => 'activity',
-    'aspect_type' => 'create',
-    'callback_url' => GAME_API_DOMAIN . 'strava/callback',
-    'verify_token' => 'STRAVA'
-  );
-
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $url);
-  curl_setopt($ch,CURLOPT_POST, count($fields));
-  curl_setopt($ch,CURLOPT_POSTFIELDS, http_build_query($fields));
-  curl_exec($ch);
-  curl_close($ch);
+  StravaSubscribe(GAME_API_DOMAIN);
 });
 
 $app->get('/strava/unsubscribe/{ID}', function (Request $request, Response $response) {
-  $url = 'https://api.strava.com/api/v3/push_subscriptions/' . $request->getAttribute('ID') . '?client_id=' . CLIENT_ID . '&client_secret=' . CLIENT_SECRET;
-
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $url);
-  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
-  curl_exec($ch);
-  curl_close($ch);
+  StraveUnsubscribe($request->getAttribute('ID'));
 });
 
 $app->get('/strava/getsubscriptions', function (Request $request, Response $response) {
-  $url = 'https://api.strava.com/api/v3/push_subscriptions?client_id=' . CLIENT_ID . '&client_secret=' . CLIENT_SECRET;
-
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $url);
-  curl_exec($ch);
-  curl_close($ch);
+  StravaGetSubscriptions();
 });
 
 $app->get('/strava/callback', function (Request $request, Response $response) {
@@ -228,6 +196,12 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
   return;
 });
 
+// 190911 MLA only use to generate shrt lived tokens and then remove!
+$app->get('/strava/updatetokens', function (Request $request, Response $response) {
+  // generate short lived tokens from forever tokens
+  StravaUpdateTokens();
+});
+
 $app->post('/player/{playerHashID}/activity', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
@@ -257,22 +231,7 @@ $app->get('/campaign/{campaignHashID}/strava/oauth', function (Request $request,
 
   $hashCampaignID = $request->getAttribute('campaignHashID');
 
-  $jsonResponse = array();
-
-  try {
-    $options = array(
-      'clientId'     => CLIENT_ID,
-      'clientSecret' => CLIENT_SECRET,
-      'redirectUri'  => MR_SECURE_DOMAIN . 'campaign/' . $hashCampaignID . '/register'
-    );
-
-    $oauth = new OAuth($options);
-    $oauth_connect = $oauth->getAuthorizationUrl(array('scope' => 'public'));      
-
-    $jsonResponse['oauthConnectURL'] = $oauth_connect;
-  } catch(Exception $e) {
-    print $e->getMessage();
-  }
+  $jsonResponse = StravaGetOAuth(MR_SECURE_DOMAIN, $hashCampaignID);
 
   return $response->withJSON($jsonResponse);  
 });
@@ -285,46 +244,7 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
 
   $stravaCode = $request->getAttribute('stravaCode');
 
-  $jsonResponse = array();
-
-  try {
-    $options = array(
-      'clientId'     => CLIENT_ID,
-      'clientSecret' => CLIENT_SECRET,
-      'redirectUri'  => MR_SECURE_DOMAIN . 'campaign/' . $hashCampaignID . '/register'
-    );
-
-    $oauth = new OAuth($options);
-    $oauth_connect = $oauth->getAuthorizationUrl(array('scope' => 'public'));      
-//    $oauth_connect = $oauth->getAuthorizationUrl(array('scope' => 'read,activity:read'));      
-    $jsonResponse['oauthConnectURL'] = $oauth_connect;
-
-    $tokenData = $oauth->getAccessToken('authorization_code', array('code' => $stravaCode));
-    $token = $tokenData->getToken();
-
-    $athlete = $tokenData->getValues()['athlete'];
-    $jsonResponse['athlete'] = $athlete;
-
-    // no refresh token means we're using a forever token
-    if (!$tokenData->getRefreshToken()) {
-      // grab refresh token with forever token
-      $tokenData = $oauth->getAccessToken('refresh_token', array('refresh_token' => $token));
-    }
-
-    $db = connect_db();
-    $jsonCampaignResponse = getCampaignFromDB($db, $campaignID);
-    if (count($jsonCampaignResponse)) {
-      $clientID = $hashids->decode($jsonCampaignResponse[0]['clientID'])[0];
-
-      $jsonPlayer = addPlayerToDB($clientID, $athlete['profile'], $athlete['firstname'], $athlete['lastname'], '', $athlete['city'], $athlete['country'], $athlete['id'], $token);
-      $jsonResponse['playerID'] = $hashids->encode($jsonPlayer[0]['id']);
-
-      // update tokens
-      updatePlayerProviderTokensInDB($jsonPlayer[0]['id'], $tokenData->getToken(), $tokenData->getRefreshToken(), $tokenData->getExpires());
-    }
-  } catch(Exception $e) {
-    print $e->getMessage();
-  }
+  $jsonResponse = StravaGetOAuthToken(MR_SECURE_DOMAIN, $hashCampaignID, $stravaCode);
 
   return $response->withJSON($jsonResponse);  
 });
@@ -674,30 +594,6 @@ $app->post('/game/{gameHashID}/player/{playerHashID}/invite/{inviteHashID}/rejec
   return $response->withJSON($jsonResponse);
 });
 
-/* 190813 - mla DEPRECATE */
-$app->get('/client/{clientHashID}/playertoken/{token}', function (Request $request, Response $response) {
-  $hashids = new Hashids\Hashids('mountainrush', 10);
-
-  $hashClientID = $request->getAttribute('clientHashID');
-  $clientID = $hashids->decode($hashClientID)[0];
-
-  $token = $request->getAttribute('token');
-  $jsonResponse = getPlayer($clientID, $token);
-  if (count($jsonResponse)) {
-    // add invition data
-    $jsonResponse[0]['invitations'] = getPlayerGameInvitationsFromDB($jsonResponse[0]['id']);
-
-    // add game data
-    $jsonResponse[0]['games'] = getGamesByPlayerFromDB($jsonResponse[0]['id']);
-
-    $jsonResponse[0]['id'] = $hashids->encode($jsonResponse[0]['id']);
-    $jsonResponse[0]['clientID'] = $hashids->encode($jsonResponse[0]['clientID']);
-
-    return $response->withJSON($jsonResponse);
-  }
-});
-
-/* 190813 - mla REPLACEMENT */
 $app->get('/player/{playerHashID}/details', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
@@ -943,23 +839,6 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/cause', function (Request $r
     $causeID = $hashids->decode($cause['id'])[0];
     $cause['items'] = getFundraisingCauseShoppingList($causeID);
   }
-
-  return $response->withJSON($jsonResponse);
-});
-
-$app->post('/player', function (Request $request, Response $response) {
-  $hashids = new Hashids\Hashids('mountainrush', 10);
-
-  $json = $request->getBody();
-  $data = json_decode($json, true);
-
-  $hashClientID = $data['clientID'];
-  $clientID = $hashids->decode($hashClientID)[0];
-
-  $jsonResponse = addPlayerToDB($clientID, $data['avatar'], $data['firstname'], $data['lastname'], $data['email'], $data['city'], $data['country'], $data['providerID'], $data['providerToken']);
-
-  $jsonResponse[0]['id'] = $hashids->encode($jsonResponse[0]['id']);
-  $jsonResponse[0]['clientID'] = $hashids->encode($jsonResponse[0]['clientID']);
 
   return $response->withJSON($jsonResponse);
 });

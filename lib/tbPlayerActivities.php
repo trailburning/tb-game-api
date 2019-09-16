@@ -85,10 +85,7 @@ function getPlayerActivities($playerID, $startDate, $endDate, $activityType) {
   $results = getPlayerFromDB($db, $playerID);
   if (count($results) != 0) {
     // ensure we have the latest token
-//    $accessToken = getStravaToken($playerID, $results[0]['providerAccessToken'], $results[0]['providerRefreshToken'], $results[0]['providerTokenExpires']);
-//    echo $accessToken;
-
-    $token = $results[0]['playerProviderToken'];
+    $token = StravaGetToken($playerID, $results[0]['providerAccessToken'], $results[0]['providerRefreshToken'], $results[0]['providerTokenExpires']);
 
     $dtFirstActivityAllowed = $startDate;
     $dtLastActivityAllowed = $endDate;

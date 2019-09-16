@@ -13,8 +13,14 @@ function processGamePlayer($log, $campaign, $campaignEmails, $gameID, $game, $ga
   if ($gamePlayer['latest_activity']) {
     if (DEBUG) echo 'Player:' . $gamePlayer['latest_activity'] . '<br/>';
 //    $log->warning('Player Activity');
+
+    // ensure we have the latest token
+    $token = StravaGetToken($playerID, $gamePlayer['providerAccessToken'], $gamePlayer['providerRefreshToken'], $gamePlayer['providerTokenExpires']);
+
+    if (DEBUG) echo 'Strava Token:' . $token . '<br/>';
+
     // check the activity exists
-    $activity = getPlayerActivity($gamePlayer['playerProviderToken'], $gamePlayer['latest_activity']);
+    $activity = getPlayerActivity($token, $gamePlayer['latest_activity']);
     if ($activity) {
       if (DEBUG) echo 'Found Player Activity<br/>';
 //      $log->warning('Player Activity - Found');
