@@ -36,7 +36,7 @@ function updatePlayerProviderTokensInDB($playerID, $providerAccessToken, $provid
 
 function getPlayersFromDB() {
   $db = connect_db();
-  $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, playerProviderToken, providerAccessToken, providerRefreshToken, providerTokenExpires, last_activity, last_updated FROM players');
+  $result = $db->query('SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, playerProviderID, providerAccessToken, providerRefreshToken, providerTokenExpires, last_activity, last_updated FROM players');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -77,27 +77,11 @@ function getClientPlayerFromDBByProviderID($clientID, $playerProviderID) {
   return $rows;
 }
 
-function getPlayerFromDBByToken($clientID, $token) {
-  require_once 'lib/mysql.php';
-
-  $db = connect_db();
-  $strSQL = 'SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, game_notifications, measurement, playerProviderID, last_activity, last_updated FROM players WHERE clientID = ' . $clientID . ' and playerProviderToken = "' . $token . '" ORDER BY id LIMIT 1';
-  $result = $db->query($strSQL);
-  $rows = array();
-  $index = 0;
-  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
-    $rows[$index] = $row;
-    $index++;
-  }
-
-  return $rows;
-}
-
 function getPlayerFromDBByID($playerID) {
   require_once 'lib/mysql.php';
 
   $db = connect_db();
-  $strSQL = 'SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, game_notifications, measurement, playerProviderID, playerProviderToken, providerAccessToken, providerRefreshToken, providerTokenExpires, last_activity, last_updated FROM players WHERE id = ' . $playerID;
+  $strSQL = 'SELECT id, created, clientID, avatar, firstname, lastname, email, city, country, game_notifications, measurement, playerProviderID, providerAccessToken, providerRefreshToken, providerTokenExpires, last_activity, last_updated FROM players WHERE id = ' . $playerID;
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
@@ -125,7 +109,7 @@ function getPlayerFromDBByProviderID($providerID) {
 }
 
 function getPlayerFromDB($db, $playerID) {
-  $result = $db->query('SELECT id, clientID, avatar, firstname, lastname, email, game_notifications, measurement, last_activity, last_updated, playerProviderToken, providerAccessToken, providerRefreshToken, providerTokenExpires FROM players where id = ' . $playerID);
+  $result = $db->query('SELECT id, clientID, avatar, firstname, lastname, email, game_notifications, measurement, last_activity, last_updated, providerAccessToken, providerRefreshToken, providerTokenExpires FROM players where id = ' . $playerID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -139,7 +123,7 @@ function getPlayerFromDB($db, $playerID) {
 function getPlayerByIDFromDB($playerID) {
   $db = connect_db();
 
-  $result = $db->query('SELECT id, clientID, avatar, firstname, lastname, email, game_notifications, measurement, last_activity, last_updated, playerProviderToken FROM players where id = ' . $playerID);
+  $result = $db->query('SELECT id, clientID, avatar, firstname, lastname, email, game_notifications, measurement, last_activity, last_updated, providerAccessToken, providerRefreshToken, providerTokenExpires FROM players where id = ' . $playerID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -302,10 +286,4 @@ function updatePlayerBlankDetails($playerProviderID) {
 
   $db = connect_db();
   $result = $db->query('UPDATE players SET avatar = "", firstname = "", lastname = "", city = "", country = "" WHERE playerProviderID = "' . $playerProviderID . '"');
-}
-
-function getPlayer($clientID, $token) {
-  $results = getPlayerFromDBByToken($clientID, $token);
-
-  return $results;
 }

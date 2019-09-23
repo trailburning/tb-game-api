@@ -144,17 +144,7 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
   date_default_timezone_set("UTC");
 
   $tokenData = null;
-  $dtExpire = new DateTime();
-  // not yet using short term token, so use forever token to get short term
-  if (!$providerTokenExpires) {
-    $results = getPlayerFromDBByID($playerID);
-    if (count($results) != 0) {
-      $providerRefreshToken = $results[0]['playerProviderToken'];
-    }
-  }
-  else {
-    $dtExpire = new DateTime("@$providerTokenExpires");
-  }
+  $dtExpire = new DateTime("@$providerTokenExpires");
 
   if (!$providerRefreshToken) {
     return;
