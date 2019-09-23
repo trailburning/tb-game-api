@@ -207,7 +207,7 @@ if (count($jsonGamesResponse)) {
             }
 
             if ($player['game_notifications']) {
-              $activity = getPlayerActivity($activePlayer['playerProviderToken'], $LatestActivity);
+              $activity = getPlayerActivity($activePlayer['playerAccessToken'], $LatestActivity);
               if ($activity) {
                 // activity email
                 $jsonEmail = $campaign['email_activity_broadcast'];
