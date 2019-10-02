@@ -164,7 +164,7 @@ function getCampaignLanguagesFromDB($campaignID) {
 
 function getCampaignEmailsFromDB($campaignID) {
   $db = mysqliSingleton::init();
-  $result = $db->query('SELECT languages.name as language_name, campaignemails.email_template, campaignemails.email_welcome, campaignemails.email_finished, campaignemails.email_activity, campaignemails.email_activity_broadcast, campaignemails.email_inactivity, campaignemails.email_summit, campaignemails.email_summit_broadcast, campaignemails.email_invite, campaignemails.email_fundraising_donation FROM campaignemails JOIN languages ON campaignemails.languageID = languages.id WHERE campaignID = ' . $campaignID);
+  $result = $db->query('SELECT languages.name as language_name, campaignemails.email_template, campaignemails.email_welcome, campaignemails.email_finished, campaignemails.email_activity, campaignemails.email_activity_distance, campaignemails.email_activity_broadcast, campaignemails.email_activity_broadcast_distance, campaignemails.email_inactivity, campaignemails.email_summit, campaignemails.email_summit_broadcast, campaignemails.email_invite, campaignemails.email_fundraising_donation FROM campaignemails JOIN languages ON campaignemails.languageID = languages.id WHERE campaignID = ' . $campaignID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
