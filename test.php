@@ -211,16 +211,18 @@ if (count($jsonGamesResponse)) {
               if ($activity) {
                 // activity email
                 $jsonEmail = $campaignEmails['email_activity_broadcast'];
-                if ($player['id'] == $activePlayer['id']) {
-                  $jsonEmail = $campaignEmails['email_activity'];
-                }
-
                 // distance based challenge so use distance email template
                 if ($game['distance'] > 0) {
-                  $jsonEmail .= '_distance' ;
+                  $jsonEmail = $campaignEmails['email_activity_broadcast_distance'];
                 }
 
-                echo 'email:' . $jsonEmail;
+                if ($player['id'] == $activePlayer['id']) {
+                  $jsonEmail = $campaignEmails['email_activity'];
+                  // distance based challenge so use distance email template
+                  if ($game['distance'] > 0) {
+                    $jsonEmail = $campaignEmails['email_activity_distance'];
+                  }
+                }
 
                 sendActivityEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $activePlayer, $activity);
               }
