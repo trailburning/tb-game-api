@@ -18,8 +18,8 @@ require_once('vendor/autoload.php');
 require_once 'lib/mysqliSingleton.php';
 require_once 'lib/mysql.php';
 
-const DEBUG = false;
-//const DEBUG = true;
+//const DEBUG = false;
+const DEBUG = true;
 
 $GLOBALS['db_server'] = 'localhost';
 $GLOBALS['db_user'] = 'root';
@@ -78,9 +78,9 @@ var_dump($id);
 
 // MR
 $activePlayerID = 36;
-$gameID = 2041;
+$gameID = 7701;
 //$gameID = 2114; // 2 player
-$LatestActivity = 1626880620;
+$LatestActivity = 2749451686;
 
 // CFYW
 //$activePlayerID = 164;
@@ -155,7 +155,7 @@ echo '<br/>';
 echo $tExpire - $tNow;
 
 // mla stop here
-exit;
+//exit;
 
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
@@ -207,14 +207,14 @@ if (count($jsonGamesResponse)) {
             }
 
             if ($player['game_notifications']) {
-              $activity = getPlayerActivity($activePlayer['playerAccessToken'], $LatestActivity);
+              $activity = getPlayerActivity($activePlayer['providerAccessToken'], $LatestActivity);
               if ($activity) {
                 // activity email
                 $jsonEmail = $campaign['email_activity_broadcast'];
                 if ($player['id'] == $activePlayer['id']) {
                   $jsonEmail = $campaign['email_activity'];
                 }
-  //              sendActivityEmail($campaign['email_template'], $jsonEmail, $game, $player, $activePlayer, $activity);
+                sendActivityEmail($campaign['email_template'], $jsonEmail, $game, $player, $activePlayer, $activity);
               }
 
               // welcome email
