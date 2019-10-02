@@ -43,6 +43,7 @@ function sendActivityEmail($strEmailTemplate, $jsonEmail, $game, $player, $activ
   $jsonEmail = replaceTags($jsonEmail, $game, $player, $activePlayer, $activity);
   $arrEmail = json_decode($jsonEmail);
 
+  var_dump($jsonEmail);
   var_dump($arrEmail);
 
   $strSubject = $game['campaign_name'] . ' - ' . $arrEmail->title;

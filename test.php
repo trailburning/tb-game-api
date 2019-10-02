@@ -220,6 +220,8 @@ if (count($jsonGamesResponse)) {
                   $jsonEmail .= '_distance' ;
                 }
 
+                echo 'email:' . $jsonEmail;
+
                 sendActivityEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $activePlayer, $activity);
               }
 
