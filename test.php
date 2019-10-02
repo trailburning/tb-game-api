@@ -210,11 +210,11 @@ if (count($jsonGamesResponse)) {
               $activity = getPlayerActivity($activePlayer['providerAccessToken'], $LatestActivity);
               if ($activity) {
                 // activity email
-                $jsonEmail = $campaign['email_activity_broadcast'];
+                $jsonEmail = $campaignEmails['email_activity_broadcast'];
                 if ($player['id'] == $activePlayer['id']) {
-                  $jsonEmail = $campaign['email_activity'];
+                  $jsonEmail = $campaignEmails['email_activity'];
                 }
-                sendActivityEmail($campaign['email_template'], $jsonEmail, $game, $player, $activePlayer, $activity);
+                sendActivityEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $activePlayer, $activity);
               }
 
               // welcome email
