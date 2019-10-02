@@ -18,8 +18,8 @@ require_once('vendor/autoload.php');
 require_once 'lib/mysqliSingleton.php';
 require_once 'lib/mysql.php';
 
-//const DEBUG = false;
-const DEBUG = true;
+const DEBUG = false;
+//const DEBUG = true;
 
 $GLOBALS['db_server'] = 'localhost';
 $GLOBALS['db_user'] = 'root';
@@ -205,10 +205,6 @@ if (count($jsonGamesResponse)) {
               );
   //            sendFundraisingDonationEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $donation);
             }
-
-$fDistance = number_format(10234 / 1000, 1); 
-echo 't1:' . $fDistance;
-
 
             if ($player['game_notifications']) {
               $activity = getPlayerActivity($activePlayer['providerAccessToken'], $LatestActivity);
