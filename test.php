@@ -206,6 +206,10 @@ if (count($jsonGamesResponse)) {
   //            sendFundraisingDonationEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $donation);
             }
 
+$fDistance = number_format(10234 / 1000, 1); 
+echo 't1:' . $fDistance;
+
+
             if ($player['game_notifications']) {
               $activity = getPlayerActivity($activePlayer['providerAccessToken'], $LatestActivity);
               if ($activity) {
