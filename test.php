@@ -217,7 +217,7 @@ if (count($jsonGamesResponse)) {
 
                 // distance based challenge so use distance email template
                 if ($game['distance'] > 0) {
-                  $jsonEmail .+ '_distance' ;
+                  $jsonEmail .= '_distance' ;
                 }
 
                 sendActivityEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $activePlayer, $activity);
