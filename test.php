@@ -78,9 +78,9 @@ var_dump($id);
 
 // MR
 $activePlayerID = 36;
-$gameID = 2041;
+$gameID = 7701;
 //$gameID = 2114; // 2 player
-$LatestActivity = 1626880620;
+$LatestActivity = 2749451686;
 
 // CFYW
 //$activePlayerID = 164;
@@ -155,7 +155,7 @@ echo '<br/>';
 echo $tExpire - $tNow;
 
 // mla stop here
-exit;
+//exit;
 
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
@@ -207,14 +207,24 @@ if (count($jsonGamesResponse)) {
             }
 
             if ($player['game_notifications']) {
-              $activity = getPlayerActivity($activePlayer['playerAccessToken'], $LatestActivity);
+              $activity = getPlayerActivity($activePlayer['providerAccessToken'], $LatestActivity);
               if ($activity) {
                 // activity email
-                $jsonEmail = $campaign['email_activity_broadcast'];
-                if ($player['id'] == $activePlayer['id']) {
-                  $jsonEmail = $campaign['email_activity'];
+                $jsonEmail = $campaignEmails['email_activity_broadcast'];
+                // distance based challenge so use distance email template
+                if ($game['distance'] > 0) {
+                  $jsonEmail = $campaignEmails['email_activity_broadcast_distance'];
                 }
-  //              sendActivityEmail($campaign['email_template'], $jsonEmail, $game, $player, $activePlayer, $activity);
+
+                if ($player['id'] == $activePlayer['id']) {
+                  $jsonEmail = $campaignEmails['email_activity'];
+                  // distance based challenge so use distance email template
+                  if ($game['distance'] > 0) {
+                    $jsonEmail = $campaignEmails['email_activity_distance'];
+                  }
+                }
+
+                sendActivityEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $activePlayer, $activity);
               }
 
               // welcome email
