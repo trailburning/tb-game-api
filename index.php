@@ -56,7 +56,7 @@ const DEBUG = false;
 
 const GAME_PLAYER_PLAYING_STATE = 0;
 const GAME_PLAYER_PLAYING_NOT_ACTIVE_STATE = 1;
-const GAME_PLAYER_SUMMITED_STATE = 100;
+const GAME_PLAYER_COMPLETED_CHALLENGE_STATE = 100;
 
 $GLOBALS['db_server'] = 'localhost';
 $GLOBALS['db_user'] = 'root';
@@ -177,7 +177,7 @@ $app->post('/strava/callback', function (Request $request, Response $response) {
                   // ensure player has not already completed the game
                   $gamePlayerResults = getGamePlayerFromDB($gameID, $playerID);
                   if (count($gamePlayerResults)) {
-                    if (is_null($gamePlayerResults[0]['ascentCompleted'])) {
+                    if (is_null($gamePlayerResults[0]['challengeCompleted'])) {
                       // update that player has logged an activity
                       setPlayerGameActivityInDB($gameID, $playerID, $data['object_id']);
                     }
