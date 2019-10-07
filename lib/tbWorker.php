@@ -15,12 +15,13 @@ function processGamePlayer($log, $campaign, $campaignEmails, $gameID, $game, $ga
 //    $log->warning('Player Activity');
 
     // ensure we have the latest token
-    $token = StravaGetToken($playerID, $gamePlayer['providerAccessToken'], $gamePlayer['providerRefreshToken'], $gamePlayer['providerTokenExpires']);
+    $token = StravaGetToken($gamePlayerID, $gamePlayer['providerAccessToken'], $gamePlayer['providerRefreshToken'], $gamePlayer['providerTokenExpires']);
 
     if (DEBUG) echo 'Strava Token:' . $token . '<br/>';
 
     // check the activity exists
     $activity = getPlayerActivity($token, $gamePlayer['latest_activity']);
+
     if ($activity) {
       if (DEBUG) echo 'Found Player Activity<br/>';
 //      $log->warning('Player Activity - Found');
@@ -42,14 +43,14 @@ function processGamePlayer($log, $campaign, $campaignEmails, $gameID, $game, $ga
         // get all game players
         $jsonPlayersResponse = getGamePlayersFromDB($gameID);
         if (count($jsonPlayersResponse)) {
-          $bGamePlayerSummited = false;
+          $bGamePlayerChallengeCompleted = false;
           // get latest activities to update player progress
           getPlayerGameProgress($gamePlayerID, $gameID);
           // get player game details
           $gamePlayerResults = getGamePlayerFromDB($gameID, $gamePlayerID);
           if (count($gamePlayerResults)) {
-            if (!is_null($gamePlayerResults[0]['ascentCompleted'])) {
-              $bGamePlayerSummited = true;
+            if (!is_null($gamePlayerResults[0]['challengeCompleted'])) {
+              $bGamePlayerChallengeCompleted = true;
             }
           }
 
@@ -73,10 +74,10 @@ function processGamePlayer($log, $campaign, $campaignEmails, $gameID, $game, $ga
               sendActivityEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $gamePlayer, $activity);
             }
               
-            // has player summited and not already been processed?
-            if ($bGamePlayerSummited && $gamePlayer['state'] == GAME_PLAYER_PLAYING_STATE) {
-              if (DEBUG) echo 'PLAYER SUMMIT EMAIL<br/>';
-              setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_SUMMITED_STATE);
+            // has player completed the challenge and not already been processed?
+            if ($bGamePlayerChallengeCompleted && $gamePlayer['state'] == GAME_PLAYER_PLAYING_STATE) {
+              if (DEBUG) echo 'PLAYER CHALLENGE COMPLETE EMAIL<br/>';
+              setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_COMPLETED_CHALLENGE_STATE);
               if ($gamePlayer['game_notifications']) {
                 $jsonEmail = $campaignEmails['email_summit_broadcast'];
                 if ($player['id'] == $gamePlayer['id']) {
@@ -117,24 +118,24 @@ function processGamePlayer($log, $campaign, $campaignEmails, $gameID, $game, $ga
           sendInactivityEmail($campaignEmails['email_template'], $jsonEmail, $game, $gamePlayer);
         }
       }
-      else { // has player summited?
+      else { // has player completed the challenge?
         $jsonPlayersResponse = getGamePlayersFromDB($gameID);
         if (count($jsonPlayersResponse)) {
-          $bGamePlayerSummited = false;
+          $bGamePlayerChallengeCompleted = false;
 
           // get player game details
           $gamePlayerResults = getGamePlayerFromDB($gameID, $gamePlayerID);
           if (count($gamePlayerResults)) {
-            if (!is_null($gamePlayerResults[0]['ascentCompleted'])) {
-              $bGamePlayerSummited = true;
+            if (!is_null($gamePlayerResults[0]['challengeCompleted'])) {
+              $bGamePlayerChallengeCompleted = true;
             }
           }
 
           foreach ($jsonPlayersResponse as $player) {
-            // has player summited and not already been processed?
-            if ($bGamePlayerSummited && $gamePlayer['state'] == GAME_PLAYER_PLAYING_STATE) {
-              if (DEBUG) echo 'PLAYER SUMMIT EMAIL<br/>';
-              setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_SUMMITED_STATE);
+            // has player completed the challenge and not already been processed?
+            if ($bGamePlayerChallengeCompleted && $gamePlayer['state'] == GAME_PLAYER_PLAYING_STATE) {
+              if (DEBUG) echo 'PLAYER COMPLETED CHALLENGE EMAIL<br/>';
+              setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_COMPLETED_CHALLENGE_STATE);
               if ($gamePlayer['game_notifications']) {
                 $jsonEmail = $campaignEmails['email_summit_broadcast'];
                 if ($player['id'] == $gamePlayer['id']) {
@@ -184,7 +185,7 @@ function processActivity($log) {
           foreach ($jsonGamesResponse as $game) {      
             $gameID = $hashids->decode($game['id'])[0];
             $bGameCompleted = false;
-            $nPlayersSummited = 0;
+            $nPlayersCompletedChallenge = 0;
 
             // process game state
             $dtGameEndDate = new DateTime($game['game_end']);
@@ -203,12 +204,12 @@ function processActivity($log) {
                 $gamePlayerID = $hashids->decode($gamePlayer['id'])[0]; 
                 processGamePlayer($log, $campaign, $campaignEmails, $gameID, $game, $gamePlayerID, $gamePlayer, $bGameCompleted);
 
-                if ($gamePlayer['state'] == GAME_PLAYER_SUMMITED_STATE) {
-                  $nPlayersSummited++;
+                if ($gamePlayer['state'] == GAME_PLAYER_COMPLETED_CHALLENGE_STATE) {
+                  $nPlayersCompletedChallenge++;
                 }
               }
-              // have all players summited?
-              if (count($jsonGamePlayersResponse) == $nPlayersSummited) {
+              // have all players completed the challenge?
+              if (count($jsonGamePlayersResponse) == $nPlayersCompletedChallenge) {
                 // close game
                 setGameToCloseInDB($gameID);
               }

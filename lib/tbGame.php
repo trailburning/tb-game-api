@@ -195,13 +195,13 @@ function setPlayerGameFundraisingGoalInDB($gameID, $playerID, $fundraisingGoal) 
   $db->query($strSQL);
 }
 
-function setPlayerGameAscentCompleteInDB($gameID, $playerID, $ascentCompleteActivityDate) {
+function setPlayerGameChallengeCompleteInDB($gameID, $playerID, $challengeCompleteActivityDate) {
   // only set once
   $db = mysqliSingleton::init();
-  $result = $db->query('SELECT ascentCompleted FROM gamePlayers where game = ' . $gameID . ' and player = ' . $playerID);
+  $result = $db->query('SELECT challengeCompleted FROM gamePlayers where game = ' . $gameID . ' and player = ' . $playerID);
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
-    if (!$row['ascentCompleted']) {
-      $db->query('UPDATE gamePlayers SET ascentCompleted = "' . $ascentCompleteActivityDate . '" where game = ' . $gameID . ' and player = ' . $playerID);
+    if (!$row['challengeCompleted']) {
+      $db->query('UPDATE gamePlayers SET challengeCompleted = "' . $challengeCompleteActivityDate . '" where game = ' . $gameID . ' and player = ' . $playerID);
     }
   }
 }
@@ -461,40 +461,20 @@ function getGameFromDB($gameID) {
 
   return $rows;
 }
-/*
-function getGamePlayersFromDB($gameID) {
-  require_once 'lib/mysql.php';
 
-  $db = mysqliSingleton::init();
-  $strSQL = 'SELECT fundraising_pageID, fundraising_page, fundraising_goal, fundraising_raised, fundraising_currency, fundraising_msg, bMediaCaptured, latestMarkerID, ascentCompleted, distanceCompleted, players.avatar, players.firstname, players.lastname, players.email, players.game_notifications, players.measurement FROM gamePlayers JOIN players ON players.id = gamePlayers.player where game = ' . $gameID;
-  $result = $db->query($strSQL);
-  $rows = array();
-  $index = 0;
-  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
-    if ($row['ascentCompleted']) {
-      // format date as UTC
-      $dtAscentCompleted = new DateTime($row['ascentCompleted']);
-      $row['ascentCompleted'] = $dtAscentCompleted->format('Y-m-d\TH:i:s.000\Z');
-    }
-    $rows[$index] = $row;
-    $index++;
-  }
-  return $rows;
-}
-*/
 function getGamePlayerFromDB($gameID, $playerID) {
   require_once 'lib/mysql.php';
 
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT fundraising_pageID, fundraising_page, fundraising_goal, fundraising_raised, fundraising_currency, fundraising_msg, bMediaCaptured, latestMarkerID, ascentCompleted, distanceCompleted, players.avatar, players.firstname, players.lastname, players.email, players.game_notifications, players.measurement FROM gamePlayers JOIN players ON players.id = gamePlayers.player where game = ' . $gameID . ' and player = ' . $playerID;
+  $strSQL = 'SELECT fundraising_pageID, fundraising_page, fundraising_goal, fundraising_raised, fundraising_currency, fundraising_msg, bMediaCaptured, latestMarkerID, challengeCompleted, players.avatar, players.firstname, players.lastname, players.email, players.game_notifications, players.measurement FROM gamePlayers JOIN players ON players.id = gamePlayers.player where game = ' . $gameID . ' and player = ' . $playerID;
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
-    if ($row['ascentCompleted']) {
+    if ($row['challengeCompleted']) {
       // format date as UTC
-      $dtAscentCompleted = new DateTime($row['ascentCompleted']);
-      $row['ascentCompleted'] = $dtAscentCompleted->format('Y-m-d\TH:i:s.000\Z');
+      $dtChallengeCompleted = new DateTime($row['challengeCompleted']);
+      $row['challengeCompleted'] = $dtChallengeCompleted->format('Y-m-d\TH:i:s.000\Z');
     }
     $rows[$index] = $row;
     $index++;
