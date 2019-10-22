@@ -27,6 +27,7 @@ require_once 'lib/mysql.php';
 
 include "lib/tbLog.php";
 include "lib/tbStrava.php";
+include "lib/tbRoutes.php";
 include "lib/tbAssets.php";
 include "lib/tbEmail.php";
 include "lib/tbSocial.php";
@@ -248,6 +249,46 @@ $app->get('/campaign/{campaignHashID}/strava/code/{stravaCode}/token', function 
   $jsonResponse = StravaGetOAuthToken(MR_SECURE_DOMAIN, $hashCampaignID, $stravaCode);
 
   return $response->withJSON($jsonResponse);  
+});
+
+$app->get('/routes', function (Request $request, Response $response) {
+  $jsonResponse = getRoutesFromDB();
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->get('/route/{routeHashID}', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashRouteID = $request->getAttribute('routeHashID');
+  $routeID = $hashids->decode($hashRouteID)[0];
+
+  $jsonResponse = getRouteWithPointsFromDB($routeID);
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->post('/route', function (Request $request, Response $response) {
+  $json = $request->getBody();
+  $data = json_decode($json, true); 
+
+  $jsonResponse = addRouteToDB($data['name'], $data['description']);
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->post('/route/{routeHashID}/upload', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashRouteID = $request->getAttribute('routeHashID');
+
+  $routeID = $hashids->decode($hashRouteID)[0];
+
+  uploadRoute($routeID);
+
+  $jsonResponse = array();
+
+  return $response->withJSON($jsonResponse);
 });
 
 $app->post('/campaign/{campaignHashID}/game/{gameHashID}/update', function (Request $request, Response $response) {
