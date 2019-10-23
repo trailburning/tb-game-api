@@ -27,8 +27,8 @@ require_once 'lib/mysql.php';
 
 include "lib/tbLog.php";
 include "lib/tbStrava.php";
+include "lib/tbMedia.php";
 include "lib/tbRoutes.php";
-include "lib/tbAssets.php";
 include "lib/tbEmail.php";
 include "lib/tbSocial.php";
 include "lib/tbCampaign.php";
@@ -295,7 +295,16 @@ $app->post('/route/{routeHashID}/media/upload', function (Request $request, Resp
 
   $hashRouteID = $request->getAttribute('routeHashID');
 
-  uploadRouteAsset($hashRouteID);
+  $routeID = $hashids->decode($hashRouteID)[0];
+
+  // add to db
+  $strMimeType = mime_content_type($_FILES['upload_file']['tmp_name']);
+//  $routeAssetID = addRouteAssetToDB($routeID, $_FILES['upload_file']['name'], $strMimeType);
+//  if ($routeAssetID) {
+    $strPath = 'routes/' . $hashRouteID . '/' . $hashRouteID . '/';
+    $strFile =  $hashGameAssetID;
+    uploadAsset($strPath, $strFile);
+//  }
 });
 
 $app->post('/campaign/{campaignHashID}/game/{gameHashID}/update', function (Request $request, Response $response) {
@@ -322,7 +331,18 @@ $app->post('/campaign/{campaignHashID}/game/{gameHashID}/upload', function (Requ
   $hashCampaignID = $request->getAttribute('campaignHashID');
   $hashGameID = $request->getAttribute('gameHashID');
 
-  uploadAsset($hashCampaignID, $hashGameID);
+  $gameID = $hashids->decode($hashGameID)[0];
+
+  // add to db
+  $strMimeType = mime_content_type($_FILES['upload_file']['tmp_name']);
+  $gameAssetID = addGameAssetToDB($gameID, $_FILES['upload_file']['name'], $strMimeType);
+  if ($gameAssetID) {
+    $hashGameAssetID = $hashids->encode($gameAssetID);
+
+    $strPath = 'games/' . $hashCampaignID . '/' . $hashGameID . '/';
+    $strFile =  $hashGameAssetID;
+    uploadAsset($strPath, $strFile);
+  }
 });
 
 $app->delete('/campaign/{campaignHashID}/game/{gameHashID}/media/{mediaID}', function (Request $request, Response $response) {
