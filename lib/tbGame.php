@@ -531,3 +531,45 @@ function getGamePlayerActivityComments($gameID, $playerID, $activityID) {
   }  
   return $ret;
 }
+
+function addGameAssetToDB($gameID, $name, $mimeType) {
+  $ret = null;
+
+  // use UTC date
+  date_default_timezone_set("UTC");
+  $dtNow = date('Y-m-d H:i:s', time());
+
+  $db = connect_db();
+  $strSQL = 'INSERT INTO gamemedia (created, gameID, name, mimeType) VALUES ("' . $dtNow . '", ' . $gameID . ', "' . $name . '", "' . $mimeType . '")';
+  if ($db->query($strSQL) === TRUE) {
+    $lastInsertID = $db->insert_id;
+
+    $ret = $lastInsertID;
+  }
+  return $ret;
+}
+
+function getGameAssetsFromDB($gameID) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $db = mysqliSingleton::init();
+  $strSQL = 'SELECT id, created, name FROM gameMedia WHERE gameID = ' . $gameID . ' ORDER BY created DESC';
+  $result = $db->query($strSQL);
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $hashID = $hashids->encode($row['id']);
+    $row['id'] = $hashID;
+
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
+function removeAsset($mediaID) {
+  $db = connect_db();
+
+  $db->query('DELETE FROM gameMedia WHERE id = ' . $mediaID);  
+}
