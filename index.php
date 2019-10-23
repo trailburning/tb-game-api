@@ -281,7 +281,6 @@ $app->post('/route/{routeHashID}/upload', function (Request $request, Response $
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $hashRouteID = $request->getAttribute('routeHashID');
-
   $routeID = $hashids->decode($hashRouteID)[0];
 
   uploadRoute($routeID);
@@ -289,6 +288,14 @@ $app->post('/route/{routeHashID}/upload', function (Request $request, Response $
   $jsonResponse = array();
 
   return $response->withJSON($jsonResponse);
+});
+
+$app->post('/route/{routeHashID}/media/upload', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashRouteID = $request->getAttribute('routeHashID');
+
+  uploadRouteAsset($hashRouteID);
 });
 
 $app->post('/campaign/{campaignHashID}/game/{gameHashID}/update', function (Request $request, Response $response) {

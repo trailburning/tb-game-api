@@ -102,9 +102,6 @@ function uploadRoute($routeID) {
   // delete old route
   deleteRoutePointsFromDB($routeID);
 
-//  echo 't1:' . $_FILES['upload_file']['tmp_name'] . '<br/>';
-//  echo 't2:' . $_FILES['upload_file']['name'] . '<br/>';
-
   // now load new route
   $gpx = simplexml_load_file($_FILES['upload_file']['tmp_name']);
   foreach ($gpx->rte as $rte) {
@@ -114,6 +111,55 @@ function uploadRoute($routeID) {
         $fAlt = $ele;
       }
       addRoutePointToDB($routeID, $rtept['lat'], $rtept['lon'], $fAlt);
+    }
+  }
+}
+
+function uploadRouteAsset($hashRouteID) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $bucket = 'mountainrush-media';
+  $region = 'eu-west-3';
+
+  // this will simply read AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY from env vars
+  $s3 = new Aws\S3\S3Client([
+    'version'  => 'latest',
+    'region'   => $region
+  ]);
+
+  if($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['upload_file']) && $_FILES['upload_file']['error'] == UPLOAD_ERR_OK && is_uploaded_file($_FILES['upload_file']['tmp_name'])) {
+
+    $strPath = 'routes/' . $hashRouteID . '/';
+
+    echo 'mime:' . mime_content_type($_FILES['upload_file']['tmp_name']);
+
+    try {
+      // first put path
+      $s3->putObject(array( 
+               'Bucket' => $bucket,
+               'Key'    => $strPath,
+               'Body'   => '',
+               'ACL'    => 'public-read'
+              ));
+      // put uploaded file
+      $upload = $s3->upload($bucket, $strPath . $hashRouteID, fopen($_FILES['upload_file']['tmp_name'], 'rb'), 'public-read');
+
+      echo htmlspecialchars($upload->get('ObjectURL'));
+
+    } catch(Exception $e) {
+      echo $e;
+    }
+
+  }
+  else {
+    switch ($_FILES['upload_file']['error']) {
+      case UPLOAD_ERR_INI_SIZE:
+        echo 'File too big';
+        break;    
+
+      default:
+        echo 'unknown error';
+        break;
     }
   }
 }
