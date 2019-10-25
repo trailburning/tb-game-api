@@ -290,21 +290,90 @@ $app->post('/route/{routeHashID}/upload', function (Request $request, Response $
   return $response->withJSON($jsonResponse);
 });
 
-$app->post('/route/{routeHashID}/media/upload', function (Request $request, Response $response) {
+$app->post('/route/{routeHashID}/event', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $json = $request->getBody();
+  $data = json_decode($json, true); 
+
+  $hashRouteID = $request->getAttribute('routeHashID');
+  $routeID = $hashids->decode($hashRouteID)[0];
+
+  $jsonResponse = addRouteEventToDB($routeID, $data['coords'][1], $data['coords'][0], $data['name'], $data['description']);
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->get('/route/{routeHashID}/events', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $hashRouteID = $request->getAttribute('routeHashID');
-
   $routeID = $hashids->decode($hashRouteID)[0];
+
+  $jsonResponse = array();
+  $jsonResponse['events'] = getRouteEventsFromDB($routeID);
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->post('/route/event/{eventHashID}/asset', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $json = $request->getBody();
+  $data = json_decode($json, true); 
+
+  $hashEventID = $request->getAttribute('eventHashID');
+
+  $eventID = $hashids->decode($hashEventID)[0];
+
+  $jsonResponse = addRouteEventAssetToDB($eventID, $data['name'], $data['description']);
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->post('/route/event/asset/{assetHashID}/media/upload', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashAssetID = $request->getAttribute('assetHashID');
+
+  $assetID = $hashids->decode($hashAssetID)[0];
 
   // add to db
   $strMimeType = mime_content_type($_FILES['upload_file']['tmp_name']);
-//  $routeAssetID = addRouteAssetToDB($routeID, $_FILES['upload_file']['name'], $strMimeType);
-//  if ($routeAssetID) {
-    $strPath = 'routes/' . $hashRouteID . '/' . $hashRouteID . '/';
-    $strFile =  $hashGameAssetID;
+  $routeAssetMediaID = addRouteEventAssetMediaToDB($assetID, $_FILES['upload_file']['name'], $strMimeType); 
+  if ($routeAssetMediaID) {
+    $hashRouteAssetMediaID = $hashids->encode($routeAssetMediaID);
+
+    $strPath = 'routes/' . $hashAssetID . '/' . $hashRouteAssetMediaID . '/';
+    $strFile =  $_FILES['upload_file']['name'];
     uploadAsset($strPath, $strFile);
-//  }
+  }
+});
+
+$app->delete('/route/event/asset/{assetHashID}/media/{mediaHashID}', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashAssetID = $request->getAttribute('assetHashID');
+  $hashMediaID = $request->getAttribute('mediaHashID');
+
+  $assetID = $hashids->decode($hashAssetID)[0];
+  $mediaID = $hashids->decode($hashMediaID)[0];
+
+  $db = connect_db();
+
+// mla
+  $jsonMediaResponse = getRouteEventAssetMedia($db, $mediaID);
+  if (count($jsonMediaResponse)) {
+    $strPath = 'routes/' . $hashAssetID . '/' . $hashMediaID . '/' . $jsonMediaResponse[0]['name'];
+    deleteAsset($strPath);
+
+    // delete from db
+    deleteRouteEventAssetMediaFromDB($mediaID); 
+  }
+
+  $jsonResponse = array();
+
+  return $response->withJSON($jsonResponse);
 });
 
 $app->post('/campaign/{campaignHashID}/game/{gameHashID}/update', function (Request $request, Response $response) {
