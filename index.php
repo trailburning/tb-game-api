@@ -304,6 +304,22 @@ $app->post('/route/{routeHashID}/event', function (Request $request, Response $r
   return $response->withJSON($jsonResponse);
 });
 
+$app->get('/route/{routeHashID}/events/lang/{langName}', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashRouteID = $request->getAttribute('routeHashID');
+  $routeID = $hashids->decode($hashRouteID)[0];
+
+  $jsonResponse = array();
+
+  $jsonLangResponse = getLanguageFromDBByName($request->getAttribute('langName'));
+  if (count($jsonLangResponse)) {
+    $jsonResponse['events'] = getRouteEventsFromDB($routeID, $jsonLangResponse[0]['id']);
+  }
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->get('/route/{routeHashID}/events', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
@@ -311,7 +327,11 @@ $app->get('/route/{routeHashID}/events', function (Request $request, Response $r
   $routeID = $hashids->decode($hashRouteID)[0];
 
   $jsonResponse = array();
-  $jsonResponse['events'] = getRouteEventsFromDB($routeID);
+
+  $jsonLangResponse = getLanguageFromDBByName('en');
+  if (count($jsonLangResponse)) {
+    $jsonResponse['events'] = getRouteEventsFromDB($routeID, $jsonLangResponse[0]['id']);
+  }
 
   return $response->withJSON($jsonResponse);
 });

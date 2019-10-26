@@ -115,12 +115,12 @@ function uploadRoute($routeID) {
   }
 }
 
-function getRouteEventsFromDB($routeID) {
+function getRouteEventsFromDB($routeID, $langID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = connect_db();
 
-  $result = $db->query('SELECT id, lat, lon, name, description FROM routeevents where routeID = ' . $routeID);
+  $result = $db->query('SELECT id, lat, lon, name, description FROM routeevents where routeID = ' . $routeID . ' AND languageID = ' . $langID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
