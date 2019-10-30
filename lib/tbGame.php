@@ -305,7 +305,7 @@ function getGamesAndPlayersByCampaignFromDB($campaignID, $nNum) {
   $dtNow = new DateTime("now");
 
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT games.id, campaignID, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.distance, gameLevels.levelType, gameLevels.journeyID FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id WHERE campaigns.id = ' . $campaignID . ' order by game_end desc limit ' . $nNum;
+  $strSQL = 'SELECT games.id, campaignID, season, type, game_start, game_end, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.distance, gameLevels.levelType, gameLevels.journeyID, gameLevels.routeID FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id WHERE campaigns.id = ' . $campaignID . ' order by game_end desc limit ' . $nNum;
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
@@ -313,6 +313,7 @@ function getGamesAndPlayersByCampaignFromDB($campaignID, $nNum) {
     $hashID = $hashids->encode($row['id']);
     $row['id'] = $hashID;
     $row['campaignID'] = $hashids->encode($row['campaignID']);
+    $row['routeID'] = $hashids->encode($row['routeID']);
 
     // format dates as UTC
     $dtStartDate = new DateTime($row['game_start']);
@@ -340,7 +341,7 @@ function getActiveGamesByCampaignIDFromDB($campaignID) {
   $formattedNow = $dtNow->format('Y-m-d\TH:i:s.000\Z');
 
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT games.id, campaignID, season, type, game_start, game_end, state, gameLevels.name as level_name, gameLevels.region, gameLevels.ascent, gameLevels.distance, gameLevels.levelType, gameLevels.journeyID, campaigns.name as campaign_name, campaigns.fundraising_provider, campaigns.fundraising_page FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id WHERE campaigns.id = ' . $campaignID . ' AND state = ' . GAME_READY_STATE . ' order by game_end desc';
+  $strSQL = 'SELECT games.id, campaignID, season, type, game_start, game_end, state, gameLevels.name as level_name, gameLevels.region, gameLevels.ascent, gameLevels.distance, gameLevels.levelType, gameLevels.journeyID, gameLevels.routeID, campaigns.name as campaign_name, campaigns.fundraising_provider, campaigns.fundraising_page FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id WHERE campaigns.id = ' . $campaignID . ' AND state = ' . GAME_READY_STATE . ' order by game_end desc';
 
   $result = $db->query($strSQL);
 
@@ -350,6 +351,7 @@ function getActiveGamesByCampaignIDFromDB($campaignID) {
     $hashID = $hashids->encode($row['id']);
     $row['id'] = $hashID;
     $row['campaignID'] = $hashids->encode($row['campaignID']);
+    $row['routeID'] = $hashids->encode($row['routeID']);
 
     // format dates as UTC
     $dtStartDate = new DateTime($row['game_start']);
@@ -376,12 +378,13 @@ function getGamesByCampaignFromDB($campaignID) {
   $dtNow = new DateTime("now");
 
   $db = mysqliSingleton::init();
-  $result = $db->query('SELECT games.id, season, type, game_start, game_end, state, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.distance, gameLevels.levelType, gameLevels.journeyID FROM games JOIN gameLevels ON games.levelID = gameLevels.id WHERE games.campaignID = ' . $campaignID . ' order by game_end desc');
+  $result = $db->query('SELECT games.id, season, type, game_start, game_end, state, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.distance, gameLevels.levelType, gameLevels.journeyID, gameLevels.routeID FROM games JOIN gameLevels ON games.levelID = gameLevels.id WHERE games.campaignID = ' . $campaignID . ' order by game_end desc');
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
     $hashID = $hashids->encode($row['id']);
     $row['id'] = $hashID;
+    $row['routeID'] = $hashids->encode($row['routeID']);
 
     // format dates as UTC
     $dtStartDate = new DateTime($row['game_start']);
@@ -444,13 +447,14 @@ function getGameFromDB($gameID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT games.id, campaignID, ownerPlayerID, season, type, game_start, game_end, games.name, games.description, state, gameLevels.name as level_name, gameLevels.region, gameLevels.ascent, gameLevels.distance, gameLevels.levelType, gameLevels.journeyID, gameLevels.mountainType, gameLevels.multiplayer, gameLevels.content, gameLevels.sponsored, gameLevels.cause_sponsored, campaigns.name as campaign_name, campaigns.fundraising_provider, campaigns.fundraising_currency, campaigns.fundraising_page FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id where games.id = ' . $gameID;
+  $strSQL = 'SELECT games.id, campaignID, ownerPlayerID, season, type, game_start, game_end, games.name, games.description, state, gameLevels.name as level_name, gameLevels.region, gameLevels.ascent, gameLevels.distance, gameLevels.levelType, gameLevels.journeyID, gameLevels.routeID, gameLevels.mountainType, gameLevels.multiplayer, gameLevels.content, gameLevels.sponsored, gameLevels.cause_sponsored, campaigns.name as campaign_name, campaigns.fundraising_provider, campaigns.fundraising_currency, campaigns.fundraising_page FROM games JOIN gameLevels ON games.levelID = gameLevels.id JOIN campaigns ON games.campaignID = campaigns.id where games.id = ' . $gameID;
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
     $row['id'] = $hashids->encode($row['id']);
     $row['campaignID'] = $hashids->encode($row['campaignID']);
+    $row['routeID'] = $hashids->encode($row['routeID']);
     $row['ownerPlayerID'] = $hashids->encode($row['ownerPlayerID']);
     $row['stateDetail'] = getGameStateDetail($row['state']);
     $row['fundraising_currency_symbol'] = getCurrencySymbol($row['fundraising_currency']);

@@ -147,6 +147,21 @@ function getCampaignCodeFromDB($campaignID, $strCode) {
   return $rows;
 }
 
+function getLanguageFromDBByName($langName) {
+  require_once 'lib/mysql.php';
+
+  $db = mysqliSingleton::init();
+  $result = $db->query('SELECT id, name, description FROM languages WHERE name = "' . $langName . '"');
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
 function getCampaignLanguagesFromDB($campaignID) {
   require_once 'lib/mysql.php';
 
