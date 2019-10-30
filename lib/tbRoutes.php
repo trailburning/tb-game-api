@@ -165,7 +165,7 @@ function getRouteEventFromDB($db, $routeEventID) {
   return $rows;
 }
 
-function addRouteEventToDB($routeID, $lat, $lng, $name, $description) {
+function addRouteEventToDB($routeID, $langID, $lat, $lng, $name, $description) {
   $ret = null;
 
   // use UTC date
@@ -173,7 +173,7 @@ function addRouteEventToDB($routeID, $lat, $lng, $name, $description) {
   $dtNow = date('Y-m-d H:i:s', time());
 
   $db = connect_db();
-  if ($db->query('INSERT INTO routeevents (created, routeID, lat, lon, name, description) VALUES ("' . $dtNow . '", ' . $routeID . ', ' . $lat. ', ' . $lng . ', "' . $name . '", "' . $description . '")') === TRUE) {
+  if ($db->query('INSERT INTO routeevents (created, routeID, languageID, lat, lon, name, description) VALUES ("' . $dtNow . '", ' . $routeID . ', ' . $langID . ', ' . $lat. ', ' . $lng . ', "' . $name . '", "' . $description . '")') === TRUE) {
     $lastInsertID = $db->insert_id;
     $ret = getRouteEventFromDB($db, $lastInsertID);
   }
@@ -229,7 +229,7 @@ function addRouteEventAssetToDB($eventID, $name, $description) {
 function getRouteEventAssetMedia($db, $id) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
-  $result = $db->query('SELECT id, name, mimeType FROM routeeventassetmedia where id = ' . $id);
+  $result = $db->query('SELECT id, name, mimeType, category FROM routeeventassetmedia where id = ' . $id);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -245,7 +245,7 @@ function getRouteEventAssetMedia($db, $id) {
 function getRouteEventAssetMedias($db, $assetID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
-  $result = $db->query('SELECT id, name, mimeType FROM routeeventassetmedia where assetID = ' . $assetID);
+  $result = $db->query('SELECT id, name, mimeType, category FROM routeeventassetmedia where assetID = ' . $assetID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -275,7 +275,12 @@ function addRouteEventAssetMediaToDB($assetID, $name, $mimeType) {
   return $ret;
 }
 
+function updateRouteEventAssetMediaInDB($id, $strCategory) {
+  $db = connect_db();
+  $db->query('UPDATE routeeventassetmedia SET category = "' . $strCategory . '" WHERE id = ' . $id);
+} 
+
 function deleteRouteEventAssetMediaFromDB($id) {
   $db = connect_db();
-  $db->query('DELETE FROM routeeventassetmedia WHERE id = ' . $id);
+  $db->query('DELETE FROM routeeventassetmedia WHERE id = ' . $id);  
 }

@@ -299,7 +299,13 @@ $app->post('/route/{routeHashID}/event', function (Request $request, Response $r
   $hashRouteID = $request->getAttribute('routeHashID');
   $routeID = $hashids->decode($hashRouteID)[0];
 
-  $jsonResponse = addRouteEventToDB($routeID, $data['coords'][1], $data['coords'][0], $data['name'], $data['description']);
+  $jsonResponse = array();
+
+  // lookup language
+  $jsonLangResponse = getLanguageFromDBByName($data['lang']);
+  if (count($jsonLangResponse)) {
+    $jsonResponse = addRouteEventToDB($routeID, $jsonLangResponse[0]['id'], $data['coords'][1], $data['coords'][0], $data['name'], $data['description']);
+  }
 
   return $response->withJSON($jsonResponse);
 });
@@ -370,6 +376,26 @@ $app->post('/route/event/asset/{assetHashID}/media/upload', function (Request $r
   }
 });
 
+$app->put('/route/event/asset/{assetHashID}/media/{mediaHashID}', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $json = $request->getBody();
+  $data = json_decode($json, true); 
+
+  $hashAssetID = $request->getAttribute('assetHashID');
+  $hashMediaID = $request->getAttribute('mediaHashID');
+
+  $assetID = $hashids->decode($hashAssetID)[0];
+  $mediaID = $hashids->decode($hashMediaID)[0];
+
+  // update in db
+  updateRouteEventAssetMediaInDB($mediaID, $data['category']); 
+
+  $jsonResponse = array();
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->delete('/route/event/asset/{assetHashID}/media/{mediaHashID}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
@@ -381,7 +407,6 @@ $app->delete('/route/event/asset/{assetHashID}/media/{mediaHashID}', function (R
 
   $db = connect_db();
 
-// mla
   $jsonMediaResponse = getRouteEventAssetMedia($db, $mediaID);
   if (count($jsonMediaResponse)) {
     $strPath = 'routes/' . $hashAssetID . '/' . $hashMediaID . '/' . $jsonMediaResponse[0]['name'];
