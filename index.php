@@ -817,7 +817,6 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/lastseen', function (Request
   return $response->withJSON($jsonResponse);
 });
 
-/* 181106 mla - old version until browser cache expires */
 $app->get('/client/{clientHashID}/player/{playerHashID}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
@@ -1010,6 +1009,22 @@ $app->post('/player/{playerHashID}', function (Request $request, Response $respo
   if (!updatePlayerPreferencesInDB($hashids->decode($hashPlayerID)[0], $data['email'], $data['receiveEmail'])) {
     $jsonResponse = array('error' => array('id' => 'UserEmailAlreadyExists'));
   }
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->post('/player/{playerHashID}/paywall', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashPlayerID = $request->getAttribute('playerHashID');
+
+  $json = $request->getBody();
+  $data = json_decode($json, true);
+
+  $jsonResponse = array();
+
+  // try and update
+  updatePlayerPaywallInDB($hashids->decode($hashPlayerID)[0], $data['paywallPayment']);
 
   return $response->withJSON($jsonResponse);
 });
