@@ -1029,6 +1029,31 @@ $app->post('/player/{playerHashID}/paywall', function (Request $request, Respons
   return $response->withJSON($jsonResponse);
 });
 
+$app->post('/player/{playerHashID}/paywall/payment', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $hashPlayerID = $request->getAttribute('playerHashID');
+
+  $json = $request->getBody();
+  $data = json_decode($json, true);
+
+  \Stripe\Stripe::setApiKey("sk_test_b7DOE29nNfdf1cEVPng38Yvf");
+
+  $charge = \Stripe\Charge::create([
+    "amount" => 2000,
+    "currency" => "eur",
+    "source" => $data['token'],
+    "description" => "Charge for jenny.rosen@example.com"
+  ]);
+
+  $jsonResponse = array();
+
+  // try and update
+  updatePlayerPaywallInDB($hashids->decode($hashPlayerID)[0], $data['amount']);
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->get('/player/{playerHashID}/update', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
   
