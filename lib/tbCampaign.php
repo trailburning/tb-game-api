@@ -21,7 +21,7 @@ function getCampaignsFromDB() {
 function getCampaignFromDB($db, $campaignID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
-  $strSQL = 'SELECT clients.id as clientID, clients.name as client_name, clients.shortname as client_shortname, campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.juicer_feed, campaigns.fundraising_currency, campaigns.fundraising_minimum, campaigns.fundraising_provider, campaigns.fundraising_donation, campaigns.fundraising_page, campaigns.fundraising_charity, campaigns.fundraising_event, campaigns.invitation_code FROM campaigns JOIN clients ON campaigns.clientID = clients.id WHERE campaigns.id = ' . $campaignID;
+  $strSQL = 'SELECT clients.id as clientID, clients.name as client_name, clients.shortname as client_shortname, campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.juicer_feed, campaigns.fundraising_currency, campaigns.fundraising_minimum, campaigns.fundraising_provider, campaigns.fundraising_donation, campaigns.fundraising_page, campaigns.fundraising_charity, campaigns.fundraising_event, campaigns.paywall_amount, campaigns.paywall_currency, campaigns.invitation_code FROM campaigns JOIN clients ON campaigns.clientID = clients.id WHERE campaigns.id = ' . $campaignID;
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
@@ -42,7 +42,7 @@ function getCampaignSummaryFromDB($campaignID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = mysqliSingleton::init();
-  $result = $db->query('SELECT campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.fundraising_currency, sum(ascent) as total_ascent, sum(distance) as total_distance, sum(fundraising_raised) as total_fundraising_raised FROM campaigns JOIN games ON campaigns.id = games.campaignID JOIN gamePlayers on games.id = gamePlayers.game WHERE campaigns.id = ' . $campaignID . ' GROUP BY campaigns.id'); 
+  $result = $db->query('SELECT campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.fundraising_currency, campaigns.paywall_amount, campaigns.paywall_currency, sum(ascent) as total_ascent, sum(distance) as total_distance, sum(fundraising_raised) as total_fundraising_raised FROM campaigns JOIN games ON campaigns.id = games.campaignID JOIN gamePlayers on games.id = gamePlayers.game WHERE campaigns.id = ' . $campaignID . ' GROUP BY campaigns.id'); 
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {

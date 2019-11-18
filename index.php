@@ -64,8 +64,8 @@ $GLOBALS['db_user'] = 'root';
 $GLOBALS['db_pass'] = 'root';
 $GLOBALS['db_name'] = 'tb_game';
 
-if (getenv("CLEARDB_DATABASE_URL")) {
-  $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
+if (getenv('CLEARDB_DATABASE_URL')) {
+  $url = parse_url(getenv('CLEARDB_DATABASE_URL'));
 
   $GLOBALS['db_server'] = $url["host"];
   $GLOBALS['db_user'] = $url["user"];
@@ -817,7 +817,6 @@ $app->get('/game/{gameHashID}/player/{playerHashID}/lastseen', function (Request
   return $response->withJSON($jsonResponse);
 });
 
-/* 181106 mla - old version until browser cache expires */
 $app->get('/client/{clientHashID}/player/{playerHashID}', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
@@ -853,6 +852,7 @@ $app->get('/campaign/{campaignHashID}', function (Request $request, Response $re
   if ($campaignID) {
     $jsonResponse = getCampaignFromDB($db, $campaignID);
     if (count($jsonResponse)) {
+      $jsonResponse[0]['paywall_currency_symbol'] = getCurrencySymbol($jsonResponse[0]['paywall_currency']);
       $jsonResponse[0]['fundraising_currency_symbol'] = getCurrencySymbol($jsonResponse[0]['fundraising_currency']);
       // add language data
       $jsonResponse[0]['languages'] = getCampaignLanguagesFromDB($campaignID);
@@ -1009,6 +1009,44 @@ $app->post('/player/{playerHashID}', function (Request $request, Response $respo
   // try and update
   if (!updatePlayerPreferencesInDB($hashids->decode($hashPlayerID)[0], $data['email'], $data['receiveEmail'])) {
     $jsonResponse = array('error' => array('id' => 'UserEmailAlreadyExists'));
+  }
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->post('/campaign/{campaignHashID}/player/{playerHashID}/paywall/payment', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $campaignID = $hashids->decode($request->getAttribute('campaignHashID'))[0];
+  $playerID = $hashids->decode($request->getAttribute('playerHashID'))[0];
+
+  $json = $request->getBody();
+  $data = json_decode($json, true);
+
+  $jsonResponse = array();
+
+  $jsonCampaignResponse = getCampaignSummaryFromDB($campaignID);
+  if (count($jsonCampaignResponse)) {
+    $fAmount = $jsonCampaignResponse[0]['paywall_amount'] * 100;
+
+    \Stripe\Stripe::setApiKey(getenv('STRIPE_API_KEY'));
+
+    try {
+      $charge = \Stripe\Charge::create([
+        "amount" => $fAmount,
+        "currency" => "eur",
+        "source" => $data['token'],
+        "description" => "Charge for test@test.com"
+      ]);
+      $jsonResponse = $charge;
+
+      // try and update
+      updatePlayerPaywallInDB($playerID, $fAmount, $charge['id']);
+    }
+    catch(Exception $e) {
+      $jsonResponse['error'] = $e;
+      error_log("unable to create charge, error:" . $e->getMessage());
+    }
   }
 
   return $response->withJSON($jsonResponse);
