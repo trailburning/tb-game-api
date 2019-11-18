@@ -256,10 +256,10 @@ function updatePlayerPreferencesInDB($playerID, $strEmail, $bReceiveEmail) {
   return $bRet;
 }
 
-function updatePlayerPaywallInDB($playerID, $fPaywallAmount) {
+function updatePlayerPaywallInDB($playerID, $fPaywallAmount, $paywallPaymentID) {
   $db = connect_db();
 
-  $strSQL = 'update players set paywall_amount = ' . $fPaywallAmount . ' where id = ' . $playerID;
+  $strSQL = 'update players set paywall_amount = ' . $fPaywallAmount . ', paywall_payment_id = "' . $paywallPaymentID . '" where id = ' . $playerID;
   $result = $db->query($strSQL);
 }
 
