@@ -170,7 +170,7 @@ function StravaGetToken($playerID, $providerAccessToken, $providerRefreshToken, 
       }
       catch (InvalidArgumentException $e) {
         // likely means the token was invalid because the user has revoked the connection
-        print $e->getMessage();
+//        print $e->getMessage();
       }
 
       if ($tokenData) {

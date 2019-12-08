@@ -65,7 +65,7 @@ $hashids = new Hashids\Hashids('mountainrush', 10);
 
 $db = connect_db();
 
-$id = $hashids->encode(126);
+$id = $hashids->encode(3);
 var_dump($id);
 
 $id = $hashids->decode('l6x4weZBDV')[0];
@@ -155,7 +155,7 @@ echo '<br/>';
 echo $tExpire - $tNow;
 
 // mla stop here
-//exit;
+exit;
 
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
