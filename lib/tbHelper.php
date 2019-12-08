@@ -15,7 +15,7 @@ function getPlayerGameProgress($playerID, $gameID) {
   }
 
   $arrPlayerActivities = getPlayerActivities($playerID, $dtActivityStartDate, $dtActivityEndDate, $gameResults[0]['type']);
-
+/*
   $fElevationGain = 0;
   $fDistance = 0;
 
@@ -44,7 +44,7 @@ function getPlayerGameProgress($playerID, $gameID) {
       setPlayerGameChallengeCompleteInDB($gameID, $playerID, $dtLastActivity);
     }
   }
-
+*/
   return $arrPlayerActivities;
 }
 
