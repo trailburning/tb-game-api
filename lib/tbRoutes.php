@@ -181,6 +181,11 @@ function addRouteEventToDB($routeID, $langID, $lat, $lng, $name, $description) {
   return $ret;
 }
 
+function deleteRouteEventFromDB($id) {
+  $db = connect_db();
+  $db->query('DELETE FROM routeevents WHERE id = ' . $id);
+}
+
 function getRouteEventAssets($db, $eventID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
