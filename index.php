@@ -661,6 +661,12 @@ $app->post('/game/{gameHashID}/player/{playerHashID}', function (Request $reques
           foreach ($jsonPlayerResponse as $player) {
             if ($player['game_notifications']) {
               $jsonEmail = $campaignEmails['email_welcome'];
+
+              // distance based challenge so use distance email template
+              if ($game['distance'] > 0) {
+                $jsonEmail = $campaignEmails['email_welcome_distance'];
+              }
+
               sendWelcomeEmail($campaignEmails['email_template'], $jsonEmail, $game, $player);
             }
           }
@@ -1039,27 +1045,34 @@ $app->post('/campaign/{campaignHashID}/player/{playerHashID}/paywall/payment', f
 
   $jsonResponse = array();
 
+  // get campaign
   $jsonCampaignResponse = getCampaignSummaryFromDB($campaignID);
   if (count($jsonCampaignResponse)) {
-    $fAmount = $jsonCampaignResponse[0]['paywall_amount'] * 100;
+    // get player
+    $jsonPlayerResponse = getPlayerFromDBByID($playerID);
+    if (count($jsonPlayerResponse)) {
+      $fAmount = $jsonCampaignResponse[0]['paywall_amount'] * 100;
 
-    \Stripe\Stripe::setApiKey(getenv('STRIPE_API_KEY'));
+      \Stripe\Stripe::setApiKey(getenv('STRIPE_API_KEY'));
 
-    try {
-      $charge = \Stripe\Charge::create([
-        "amount" => $fAmount,
-        "currency" => "eur",
-        "source" => $data['token'],
-        "description" => "Charge for test@test.com"
-      ]);
-      $jsonResponse = $charge;
+      try {
+        $charge = \Stripe\Charge::create([
+          "amount" => $fAmount,
+          "currency" => $jsonCampaignResponse[0]['paywall_currency'],
+          "source" => $data['token'],
+          "description" => "Test charge: " . $jsonPlayerResponse[0]['firstname'] . ' ' . $jsonPlayerResponse[0]['lastname'],
+          "receipt_email"=> $jsonPlayerResponse[0]['email'],
+          'metadata' => ['campaign_id' => $request->getAttribute('campaignHashID'), 'player_id' => $request->getAttribute('playerHashID')]
+        ]);
+        $jsonResponse = $charge;
 
-      // try and update
-      updatePlayerPaywallInDB($playerID, $fAmount, $charge['id']);
-    }
-    catch(Exception $e) {
-      $jsonResponse['error'] = $e;
-      error_log("unable to create charge, error:" . $e->getMessage());
+        // try and update
+        updatePlayerPaywallInDB($playerID, $fAmount, $charge['id']);
+      }
+      catch(Exception $e) {
+        $jsonResponse['error'] = $e;
+        error_log("unable to create charge, error:" . $e->getMessage());
+      }
     }
   }
 
