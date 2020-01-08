@@ -80,8 +80,18 @@ function processGamePlayer($log, $campaign, $campaignEmails, $gameID, $game, $ga
               setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_COMPLETED_CHALLENGE_STATE);
               if ($gamePlayer['game_notifications']) {
                 $jsonEmail = $campaignEmails['email_summit_broadcast'];
+                // distance based challenge so use distance email template
+                if ($game['distance'] > 0) {
+                  $jsonEmail = $campaignEmails['email_distance_complete_broadcast'];
+                }
+
                 if ($player['id'] == $gamePlayer['id']) {
                   $jsonEmail = $campaignEmails['email_summit'];
+
+                  // distance based challenge so use distance email template
+                  if ($game['distance'] > 0) {
+                    $jsonEmail = $campaignEmails['email_challenge_complete'];
+                  }
                 }
                 sendSummitEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $gamePlayer);
               }

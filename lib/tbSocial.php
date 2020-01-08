@@ -2,7 +2,7 @@
 use Imgix\UrlBuilder;
 
 function getChallengeShortDescription($gameType) {
-  $gameDescription = 'climb';
+  $gameDescription = '';
   if ($gameType != 'All') {
     $gameDescription = strtolower($gameType);
   }
@@ -71,7 +71,12 @@ function buildSocialGameProgressImage($paramaObj) {
   $builder->setUseHttps(true);
 
   // bottom left data
-  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed,Bold", "txtclr" => 'FFFFFF', "txtpad" => 0, "txtsize" => 56, "txt64" => $paramaObj->ascent . 'm');
+  $strComplete = $paramaObj->ascent . 'm';
+  if ($paramaObj->distance) {
+    $strComplete = round($paramaObj->distance / 1000) . 'km';
+  }
+
+  $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed,Bold", "txtclr" => 'FFFFFF', "txtpad" => 0, "txtsize" => 56, "txt64" => $strComplete);
   $txtMountain = $builder->createURL("~text", $params);
 
   $params = array("w" => 600, "txtfont64" => "Avenir Next Condensed,Medium", "txtclr" => 'FFFFFF', "txtpad" => 0, "txtsize" => 45, "txt64" => strtoupper($paramaObj->mountain . ' ' . $paramaObj->challenge));
@@ -156,6 +161,7 @@ function generateGameProgressSocialImage($gameID, $progress) {
         'mountain' => $arrResponse[0]['level_name'],
         'region' => strtolower($arrResponse[0]['region']),
         'ascent' => $arrResponse[0]['ascent'],
+        'distance' => $arrResponse[0]['distance'],
         'type' => $arrResponse[0]['type'],
         'challenge' => getChallengeShortDescription($arrResponse[0]['type']),
         'progress' => $progress
