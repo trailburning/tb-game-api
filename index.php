@@ -1063,7 +1063,7 @@ $app->post('/campaign/{campaignHashID}/player/{playerHashID}/paywall/payment', f
           "amount" => $fAmount,
           "currency" => $jsonCampaignResponse[0]['paywall_currency'],
           "source" => $data['token'],
-          "description" => "Test charge: " . $jsonPlayerResponse[0]['firstname'] . ' ' . $jsonPlayerResponse[0]['lastname'],
+          "description" => $jsonCampaignResponse[0]['name'] . " payment for " . $jsonPlayerResponse[0]['firstname'] . ' ' . $jsonPlayerResponse[0]['lastname'],
           "receipt_email"=> $jsonPlayerResponse[0]['email'],
           'metadata' => ['campaign_id' => $request->getAttribute('campaignHashID'), 'player_id' => $request->getAttribute('playerHashID')]
         ]);
