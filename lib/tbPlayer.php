@@ -123,7 +123,7 @@ function getPlayerFromDB($db, $playerID) {
 function getPlayerByIDFromDB($playerID) {
   $db = connect_db();
 
-  $result = $db->query('SELECT id, clientID, avatar, firstname, lastname, email, game_notifications, measurement, paywall_amount, last_activity, last_updated, providerAccessToken, providerRefreshToken, providerTokenExpires FROM players where id = ' . $playerID);
+  $result = $db->query('SELECT id, clientID, avatar, firstname, lastname, email, game_notifications, measurement, last_activity, last_updated, providerAccessToken, providerRefreshToken, providerTokenExpires FROM players where id = ' . $playerID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -254,13 +254,6 @@ function updatePlayerPreferencesInDB($playerID, $strEmail, $bReceiveEmail) {
     }
   }
   return $bRet;
-}
-
-function updatePlayerPaywallInDB($playerID, $fPaywallAmount, $paywallPaymentID) {
-  $db = connect_db();
-
-  $strSQL = 'update players set paywall_amount = ' . $fPaywallAmount . ', paywall_payment_id = "' . $paywallPaymentID . '" where id = ' . $playerID;
-  $result = $db->query($strSQL);
 }
 
 function updatePlayerDetailsWithoutEmailInDB($avatar, $firstname, $lastname, $city, $country, $token) {

@@ -441,6 +441,46 @@ function getGamesByPlayerFromDB($playerID) {
   return $rows;
 }
 
+function getGamesByCampaignPlayerFromDB($campaignID, $playerID) {
+  require_once 'lib/mysql.php';
+
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  // use UTC date
+  date_default_timezone_set("UTC");
+  $dtNow = new DateTime("now");
+
+  $db = mysqliSingleton::init();
+  $strSQL = 'SELECT gamePlayers.game, gamePlayers.last_seen, gamePlayers.fundraising_pageID, gamePlayers.fundraising_page, gamePlayers.fundraising_goal, games.ownerPlayerID, games.type, games.game_start, games.game_end, games.state, gameLevels.name, gameLevels.region, gameLevels.ascent, gameLevels.distance, gameLevels.image, gameLevels.levelType, gameLevels.multiplayer, gameLevels.content, gameLevels.sponsored, gameLevels.cause_sponsored, campaigns.name as campaign_name, campaigns.fundraising_page as campaign_fundraising_page FROM gamePlayers join games on gamePlayers.game = games.id join gameLevels on games.levelID = gameLevels.id join campaigns on games.campaignID = campaigns.id where games.campaignID = ' . $campaignID . ' and player = ' . $playerID . ' order by games.game_end desc';
+  $result = $db->query($strSQL);
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $hashID = $hashids->encode($row['game']);
+    $row['game'] = $hashID;
+
+    $row['ownerPlayerID'] = $hashids->encode($row['ownerPlayerID']);
+
+    // format dates as UTC
+    $dtStartDate = new DateTime($row['game_start']);
+    $row['game_start'] = $dtStartDate->format('Y-m-d\TH:i:s.000\Z');
+    $dtEndDate = new DateTime($row['game_end']);
+    $row['game_end'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
+
+    // calc last seen secs
+    $dtLastSeen = new DateTime($row['last_seen']);
+    $row['last_seen'] = $dtLastSeen->format('Y-m-d\TH:i:s.000\Z');
+    $row['last_seen_secs_ago'] = time() - $dtLastSeen->getTimestamp();
+
+    $row['game_state'] = getGameState($dtNow, $dtStartDate, $dtEndDate);
+
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
 function getGameFromDB($gameID) {
   require_once 'lib/mysql.php';
 
