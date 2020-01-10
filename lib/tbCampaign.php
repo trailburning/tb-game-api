@@ -189,3 +189,28 @@ function getCampaignEmailsFromDB($campaignID) {
 
   return $rows;
 }
+
+function getCampaignPlayersPaywallFromDB($campaignID, $playerID) {
+  $db = connect_db();
+
+  $result = $db->query('SELECT created, paywall_amount FROM campaignplayerspaywall where campaign = ' . $campaignID . ' and player = ' . $playerID);
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
+function setCampaignPlayerPaywallInDB($campaignID, $playerID, $fPaywallAmount, $paywallPaymentID) {
+  // use UTC date
+  date_default_timezone_set("UTC");
+  $dtNow = date('Y-m-d H:i:s', time());
+
+  $db = connect_db();
+
+  $strSQL = 'INSERT INTO campaignplayerspaywall (campaign, player, created, paywall_amount, paywall_payment_id) VALUES (' . $campaignID . ', ' . $playerID . ', "' . $dtNow . '", ' . $fPaywallAmount . ', "' . $paywallPaymentID . '")';
+  $db->query($strSQL);
+}
