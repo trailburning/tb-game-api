@@ -26,7 +26,7 @@ function buildSocialGameImage($paramaObj) {
 
   $params = array("w" => 600, "h" => 168, "markx" => 46, "marky" => 24, "mark64" => $txtMountain,
   "bx" => 46, "by" => 90, "bm" => 'normal', "blend64" => $txtCountry);
-  $leftData = $builder->createURL("clients/default/social/bg_text2.png", $params);
+  $leftData = $builder->createURL("clients/" . $paramaObj->client . "/social/bg_text2.png", $params);
 
   // bottom right data
   $strComplete = $paramaObj->ascent . 'm';
@@ -42,16 +42,16 @@ function buildSocialGameImage($paramaObj) {
 
   $params = array("w" => 600, "h" => 168, "markx" => -46, "marky" => 24, "mark64" => $txtAscent,
   "bx" => -46, "by" => 90, "bm" => 'normal', "blend64" => $txtDetail);
-  $rightData = $builder->createURL("clients/default/social/bg_text2.png", $params);
+  $rightData = $builder->createURL("clients/" . $paramaObj->client . "/social/bg_text2.png", $params);
 
   // bottom data
   $params = array("w" => 1200, "h" => 150, "markx" => 0, "marky" => 0, "mark64" => $leftData,
   "bx" => 600, "by" => 0, "bm" => 'normal', "blend64" => $rightData);
-  $bottomImg = $builder->createURL("clients/default/social/bg_blank2.png", $params);
+  $bottomImg = $builder->createURL("clients/" . $paramaObj->client . "/social/bg_blank2.png", $params);
 
   // overlay
   $params = array("w" => 1200, "h" => 630);
-  $overlayImg = $builder->createURL("clients/default/social/overlay.png", $params);
+  $overlayImg = $builder->createURL("clients/" . $paramaObj->client . "/social/overlay.png", $params);
 
   // do we want to add progress?
   if ($paramaObj->progress) {
@@ -60,7 +60,7 @@ function buildSocialGameImage($paramaObj) {
     $txtProgress = $builder->createURL("~text", $params);
 
     $params = array("w" => 1200, "h" => 630, "markx" => -46, "marky" => 46, "mark64" => $txtProgress);
-    $overlayImg = $builder->createURL("clients/default/social/overlay.png", $params);
+    $overlayImg = $builder->createURL("clients/" . $paramaObj->client . "/social/overlay.png", $params);
   }
 
   // final image
@@ -140,7 +140,15 @@ function generateGameSocialImage($gameID) {
 
   $arrResponse = getGameFromDB($gameID);
   if (count($arrResponse)) {
+    $strClientName = 'default';
+
+    $arrCampaign = getCampaignByGameFromDB($gameID);
+    if (count($arrCampaign)) {
+        $strClientName = $arrCampaign[0]['client_shortname'];
+    }
+
     $paramaObj = (object) [
+      'client' => $strClientName,
       'journeyID' => $arrResponse[0]['journeyID'],
       'mountain' => $arrResponse[0]['level_name'],
       'region' => strtolower($arrResponse[0]['region']),
