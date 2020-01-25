@@ -1082,6 +1082,47 @@ $app->post('/campaign/{campaignHashID}/player/{playerHashID}/paywall/payment', f
   return $response->withJSON($jsonResponse);
 });
 
+$app->post('/campaign/{campaignHashID}/payment', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $campaignID = $hashids->decode($request->getAttribute('campaignHashID'))[0];
+
+  $json = $request->getBody();
+  $data = json_decode($json, true);
+
+  $jsonResponse = array();
+
+  // get campaign
+  $jsonCampaignResponse = getCampaignSummaryFromDB($campaignID);
+  if (count($jsonCampaignResponse)) {
+    $fAmount = $data['amount'] * 100;
+    $strEmail = $data['email'];
+
+    \Stripe\Stripe::setApiKey(getenv('STRIPE_API_KEY'));
+
+    try {
+        $charge = \Stripe\Charge::create([
+          "amount" => $fAmount,
+          "currency" => $jsonCampaignResponse[0]['paywall_currency'],
+          "source" => $data['token'],
+          "description" => $jsonCampaignResponse[0]['name'] . " donation",
+          "receipt_email"=> $strEmail,
+          'metadata' => ['campaign_id' => $request->getAttribute('campaignHashID')]
+        ]);
+        $jsonResponse = $charge;
+
+        // insert donation data
+        setCampaignDonationInDB($campaignID, $fAmount, $charge['id']);
+      }
+      catch(Exception $e) {
+        $jsonResponse['error'] = $e;
+        error_log("unable to create charge, error:" . $e->getMessage());
+      }
+  }
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->get('/player/{playerHashID}/update', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
   

@@ -214,3 +214,14 @@ function setCampaignPlayerPaywallInDB($campaignID, $playerID, $fPaywallAmount, $
   $strSQL = 'INSERT INTO campaignplayerspaywall (campaign, player, created, paywall_amount, paywall_payment_id) VALUES (' . $campaignID . ', ' . $playerID . ', "' . $dtNow . '", ' . $fPaywallAmount . ', "' . $paywallPaymentID . '")';
   $db->query($strSQL);
 }
+
+function setCampaignDonationInDB($campaignID, $fPaywallAmount, $paywallPaymentID) {
+  // use UTC date
+  date_default_timezone_set("UTC");
+  $dtNow = date('Y-m-d H:i:s', time());
+
+  $db = connect_db();
+
+  $strSQL = 'INSERT INTO campaigndonation (campaign, created, paywall_amount, paywall_payment_id) VALUES (' . $campaignID . ', "' . $dtNow . '", ' . $fPaywallAmount . ', "' . $paywallPaymentID . '")';
+  $db->query($strSQL);
+}
