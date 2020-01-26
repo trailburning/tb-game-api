@@ -77,10 +77,10 @@ var_dump($id);
 //sendEmail('EDM - Mountain Rush', 'MR Test', 'mallbeury@mac.com', 'Matt', $strImage, 'Welcome', 'Player Activity', 'Your have progressed in the <a href="">challenge</a>.', '<a href="">change your preferences</a>');
 
 // MR
-$activePlayerID = 36;
-$gameID = 7701;
+$activePlayerID = 281;
+$gameID = 8092;
 //$gameID = 2114; // 2 player
-$LatestActivity = 2749451686;
+$LatestActivity = 3041551112;
 
 // CFYW
 //$activePlayerID = 164;
@@ -155,13 +155,15 @@ echo '<br/>';
 echo $tExpire - $tNow;
 
 // mla stop here
-exit;
+//exit;
 
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
-
+echo 't1';
 $jsonGamesResponse = getGameFromDB($gameID);
 if (count($jsonGamesResponse)) {
+echo 't2';
   foreach ($jsonGamesResponse as $game) {
+echo 't3';
     $campaignID = $hashids->decode($game['campaignID'])[0];
     $jsonCampaignResponse = getCampaignFromDB($db, $campaignID);
     if (count($jsonCampaignResponse)) {
