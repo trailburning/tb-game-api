@@ -36,13 +36,50 @@ function getCampaignFromDB($db, $campaignID) {
   return $rows;
 }
 
+function getCampaignPlayersPaywallSummaryFromDB($campaignID) {
+  require_once 'lib/mysql.php';
+
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $db = mysqliSingleton::init();
+  $strSQL = 'SELECT sum(paywall_amount) as total_paywall_amount from campaignplayerspaywall where campaign = ' . $campaignID;
+  $result = $db->query($strSQL);
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
+function getCampaignDonationsSummaryFromDB($campaignID) {
+  require_once 'lib/mysql.php';
+
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $db = mysqliSingleton::init();
+  $strSQL = 'SELECT sum(donation_amount) as total_donations from campaigndonation where campaign = ' . $campaignID;
+  $result = $db->query($strSQL);
+  $rows = array();
+  $index = 0;
+  while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
+    $rows[$index] = $row;
+    $index++;
+  }
+
+  return $rows;
+}
+
 function getCampaignSummaryFromDB($campaignID) {
   require_once 'lib/mysql.php';
 
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = mysqliSingleton::init();
-  $result = $db->query('SELECT campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.fundraising_currency, campaigns.paywall_amount, campaigns.paywall_currency, sum(ascent) as total_ascent, sum(distance) as total_distance, sum(fundraising_raised) as total_fundraising_raised FROM campaigns JOIN games ON campaigns.id = games.campaignID JOIN gamePlayers on games.id = gamePlayers.game WHERE campaigns.id = ' . $campaignID . ' GROUP BY campaigns.id'); 
+  $strSQL = 'SELECT campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.fundraising_currency, campaigns.paywall_amount, campaigns.paywall_currency, sum(ascent) as total_ascent, sum(distance) as total_distance, sum(fundraising_raised) as total_fundraising_raised FROM campaigns JOIN games ON campaigns.id = games.campaignID JOIN gamePlayers on games.id = gamePlayers.game WHERE campaigns.id = ' . $campaignID . ' GROUP BY campaigns.id';
+  $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
@@ -215,13 +252,13 @@ function setCampaignPlayerPaywallInDB($campaignID, $playerID, $fPaywallAmount, $
   $db->query($strSQL);
 }
 
-function setCampaignDonationInDB($campaignID, $fPaywallAmount, $paywallPaymentID) {
+function setCampaignDonationInDB($campaignID, $fDonationAmount, $donationPaymentID) {
   // use UTC date
   date_default_timezone_set("UTC");
   $dtNow = date('Y-m-d H:i:s', time());
 
   $db = connect_db();
 
-  $strSQL = 'INSERT INTO campaigndonation (campaign, created, paywall_amount, paywall_payment_id) VALUES (' . $campaignID . ', "' . $dtNow . '", ' . $fPaywallAmount . ', "' . $paywallPaymentID . '")';
+  $strSQL = 'INSERT INTO campaigndonation (campaign, created, donation_amount, donation_payment_id) VALUES (' . $campaignID . ', "' . $dtNow . '", ' . $fDonationAmount . ', "' . $donationPaymentID . '")';
   $db->query($strSQL);
 }

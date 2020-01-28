@@ -186,7 +186,7 @@ function processActivity($log) {
       // get campaign emails
       $jsonCampaignEmailsResponse = getCampaignEmailsFromDB($campaignID);
       if (count($jsonCampaignEmailsResponse)) {
-        // 190307 mla - currentl uses 1st emails but should use lang to pick correct ones.
+        // 190307 mla - currently  uses 1st emails but should use lang to pick correct ones.
         $campaignEmails = $jsonCampaignEmailsResponse[0];
 
         // get all campaign games
