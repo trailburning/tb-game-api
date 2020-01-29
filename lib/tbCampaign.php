@@ -42,7 +42,7 @@ function getCampaignPlayersPaywallSummaryFromDB($campaignID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT sum(paywall_amount) as total_paywall_amount from campaignplayerspaywall where campaign = ' . $campaignID;
+  $strSQL = 'SELECT campaigns.fundraising_currency, sum(campaignplayerspaywall.paywall_amount) as total_paywall_amount from campaignplayerspaywall JOIN campaigns on campaignplayerspaywall.campaign = campaigns.id where campaign = ' . $campaignID;
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
@@ -60,7 +60,7 @@ function getCampaignDonationsSummaryFromDB($campaignID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT sum(donation_amount) as total_donations from campaigndonation where campaign = ' . $campaignID;
+  $strSQL = 'SELECT campaigns.fundraising_currency, sum(donation_amount) as total_donations from campaigndonation JOIN campaigns on campaigndonation.campaign = campaigns.id where campaign = ' . $campaignID;
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
@@ -78,7 +78,7 @@ function getCampaignSummaryFromDB($campaignID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = mysqliSingleton::init();
-  $strSQL = 'SELECT campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.fundraising_currency, campaigns.paywall_amount, campaigns.paywall_currency, sum(ascent) as total_ascent, sum(distance) as total_distance, sum(fundraising_raised) as total_fundraising_raised FROM campaigns JOIN games ON campaigns.id = games.campaignID JOIN gamePlayers on games.id = gamePlayers.game WHERE campaigns.id = ' . $campaignID . ' GROUP BY campaigns.id';
+  $strSQL = 'SELECT campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.fundraising_currency, sum(ascent) as total_ascent, sum(distance) as total_distance, sum(fundraising_raised) as total_fundraising_raised FROM campaigns JOIN games ON campaigns.id = games.campaignID JOIN gamePlayers on games.id = gamePlayers.game WHERE campaigns.id = ' . $campaignID . ' GROUP BY campaigns.id';
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;

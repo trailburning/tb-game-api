@@ -987,6 +987,7 @@ $app->get('/campaign/{campaignHashID}/summary', function (Request $request, Resp
   $jsonResponse['campaign_players_paywall'] = [];
   $jsonCampaignPlayersPaywallResponse = getCampaignPlayersPaywallSummaryFromDB($campaignID);
   if (count($jsonCampaignPlayersPaywallResponse)) {
+    $jsonCampaignPlayersPaywallResponse[0]['fundraising_currency_symbol'] = getCurrencySymbol($jsonCampaignPlayersPaywallResponse[0]['fundraising_currency']);
     $jsonCampaignPlayersPaywallResponse[0]['total_paywall_amount'] = $jsonCampaignPlayersPaywallResponse[0]['total_paywall_amount'] / 100;
     $jsonResponse['campaign_players_paywall'] = $jsonCampaignPlayersPaywallResponse;
   }
@@ -994,6 +995,7 @@ $app->get('/campaign/{campaignHashID}/summary', function (Request $request, Resp
   $jsonResponse['campaign_donations'] = [];
   $jsonCampaignDonationsResponse = getCampaignDonationsSummaryFromDB($campaignID);
   if (count($jsonCampaignDonationsResponse)) {
+    $jsonCampaignDonationsResponse[0]['fundraising_currency_symbol'] = getCurrencySymbol($jsonCampaignDonationsResponse[0]['fundraising_currency']);
     $jsonCampaignDonationsResponse[0]['total_donations'] = $jsonCampaignDonationsResponse[0]['total_donations'] / 100;
     $jsonResponse['campaign_donations'] = $jsonCampaignDonationsResponse;
   }
