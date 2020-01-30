@@ -1069,8 +1069,10 @@ $app->post('/campaign/{campaignHashID}/player/{playerHashID}/paywall/payment', f
 
   $jsonResponse = array();
 
+  $db = connect_db();
+
   // get campaign
-  $jsonCampaignResponse = getCampaignSummaryFromDB($campaignID);
+  $jsonCampaignResponse = getCampaignFromDB($db, $campaignID);
   if (count($jsonCampaignResponse)) {
     // get player
     $jsonPlayerResponse = getPlayerFromDBByID($playerID);
@@ -1113,8 +1115,10 @@ $app->post('/campaign/{campaignHashID}/payment', function (Request $request, Res
 
   $jsonResponse = array();
 
+  $db = connect_db();
+
   // get campaign
-  $jsonCampaignResponse = getCampaignSummaryFromDB($campaignID);
+  $jsonCampaignResponse = getCampaignFromDB($db, $campaignID);
   if (count($jsonCampaignResponse)) {
     $fAmount = $data['amount'] * 100;
     $strEmail = $data['email'];
