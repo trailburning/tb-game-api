@@ -155,7 +155,7 @@ echo '<br/>';
 echo $tExpire - $tNow;
 
 // mla stop here
-//exit;
+exit;
 
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 echo 't1';
