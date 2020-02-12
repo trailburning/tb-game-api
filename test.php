@@ -18,8 +18,8 @@ require_once('vendor/autoload.php');
 require_once 'lib/mysqliSingleton.php';
 require_once 'lib/mysql.php';
 
-const DEBUG = false;
-//const DEBUG = true;
+//const DEBUG = false;
+const DEBUG = true;
 
 $GLOBALS['db_server'] = 'localhost';
 $GLOBALS['db_user'] = 'root';
@@ -78,7 +78,7 @@ var_dump($id);
 
 // MR
 $activePlayerID = 281;
-$gameID = 8092;
+$gameID = 8104;
 //$gameID = 2114; // 2 player
 $LatestActivity = 3041551112;
 
@@ -158,12 +158,10 @@ echo $tExpire - $tNow;
 exit;
 
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
-echo 't1';
+
 $jsonGamesResponse = getGameFromDB($gameID);
 if (count($jsonGamesResponse)) {
-echo 't2';
   foreach ($jsonGamesResponse as $game) {
-echo 't3';
     $campaignID = $hashids->decode($game['campaignID'])[0];
     $jsonCampaignResponse = getCampaignFromDB($db, $campaignID);
     if (count($jsonCampaignResponse)) {
