@@ -115,13 +115,22 @@ function processGamePlayer($log, $campaign, $campaignEmails, $gameID, $game, $ga
 
       // game start date
       $dtGameStartDate = new DateTime($game['game_start']);
+
+      if (DEBUG) echo $dtNowDate->format('Y-m-d\TH:i:s.000\Z') . ' : ' . $dtGameStartDate->format('Y-m-d\TH:i:s.000\Z') . '<br/>';
+
+      // has game started?
+      $bGameStarted = false;
+      if ($dtNowDate > $dtGameStartDate) {
+        $bGameStarted = true;
+      }
+
       $nDaysSinceGameStart = $dtNowDate->diff($dtGameStartDate, true)->format('%R%a');
-      if (DEBUG) echo 'days since game start:' . $nDaysSinceGameStart . '<br/>';
+      if (DEBUG) echo 'days since game start:' . $nDaysSinceGameStart . ' : game started:' . ($bGameStarted ? 'yes' : 'no') . '<br/>';
 
       // no activity for a few days?
-      if ($nDaysSinceLastActive >= DAYS_INACTIVE && $nDaysSinceGameStart >= DAYS_INACTIVE) {
+      if ($nDaysSinceLastActive >= DAYS_INACTIVE && $nDaysSinceGameStart >= DAYS_INACTIVE && $bGameStarted) {
         // set as not active and prompt player
-        setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_PLAYING_NOT_ACTIVE_STATE);        
+        setPlayerGameStateInDB($gameID, $gamePlayerID, GAME_PLAYER_PLAYING_NOT_ACTIVE_STATE);
         if (DEBUG) echo 'MOTIVATE EMAIL<br/>';      
         if ($gamePlayer['game_notifications']) {
           $jsonEmail = $campaignEmails['email_inactivity'];          
