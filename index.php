@@ -870,11 +870,21 @@ $app->get('/campaign/{campaignHashID}', function (Request $request, Response $re
   $hashCampaignID = $request->getAttribute('campaignHashID');
   $campaignID = $hashids->decode($hashCampaignID)[0];
 
+  // use UTC date
+  date_default_timezone_set("UTC");
+
   $db = connect_db();
 
   if ($campaignID) {
     $jsonResponse = getCampaignFromDB($db, $campaignID);
     if (count($jsonResponse)) {
+
+      // format dates as UTC
+      $dtStartDate = new DateTime($jsonResponse[0]['start_date']);
+      $jsonResponse[0]['start_date'] = $dtStartDate->format('Y-m-d\TH:i:s.000\Z');
+      $dtEndDate = new DateTime($jsonResponse[0]['end_date']);
+      $jsonResponse[0]['end_date'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
+
       $jsonResponse[0]['paywall_currency_symbol'] = getCurrencySymbol($jsonResponse[0]['paywall_currency']);
       $jsonResponse[0]['fundraising_currency_symbol'] = getCurrencySymbol($jsonResponse[0]['fundraising_currency']);
       // add language data
