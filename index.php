@@ -1089,7 +1089,11 @@ $app->post('/campaign/{campaignHashID}/player/{playerHashID}/paywall/payment', f
     if (count($jsonPlayerResponse)) {
       $fAmount = $jsonCampaignResponse[0]['paywall_amount'] * 100;
 
-      \Stripe\Stripe::setApiKey(getenv('STRIPE_API_KEY'));
+      $strStripeAPIKey = STRIPE_API_KEY_TEST;
+      if ($jsonCampaignResponse[0]['live_payments'] == 1) {
+        $strStripeAPIKey = STRIPE_API_KEY_LIVE;
+      }
+      \Stripe\Stripe::setApiKey(getenv($strStripeAPIKey));
 
       try {
         $charge = \Stripe\Charge::create([
@@ -1133,7 +1137,11 @@ $app->post('/campaign/{campaignHashID}/payment', function (Request $request, Res
     $fAmount = $data['amount'] * 100;
     $strEmail = $data['email'];
 
-    \Stripe\Stripe::setApiKey(getenv('STRIPE_API_KEY'));
+    $strStripeAPIKey = STRIPE_API_KEY_TEST;
+    if ($jsonCampaignResponse[0]['live_payments'] == 1) {
+      $strStripeAPIKey = STRIPE_API_KEY_LIVE;
+    }
+    \Stripe\Stripe::setApiKey(getenv($strStripeAPIKey));
 
     try {
         $charge = \Stripe\Charge::create([
