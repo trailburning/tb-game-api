@@ -51,7 +51,7 @@ function buildSocialGameImage($paramaObj) {
 
   // overlay
   $params = array("w" => 1200, "h" => 630);
-  $overlayImg = $builder->createURL("clients/" . $paramaObj->client . "/social/overlay.png", $params);
+  $overlayImg = $builder->createURL("clients/" . $paramaObj->client . "/social/image_overlay.png", $params);
 
   // do we want to add progress?
   if ($paramaObj->progress) {
