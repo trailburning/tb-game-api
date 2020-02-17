@@ -78,7 +78,7 @@ var_dump($id);
 
 // MR
 $activePlayerID = 281;
-$gameID = 8104;
+$gameID = 8231;
 //$gameID = 2114; // 2 player
 $LatestActivity = 3041551112;
 
@@ -155,7 +155,7 @@ echo '<br/>';
 echo $tExpire - $tNow;
 
 // mla stop here
-exit;
+//exit;
 
 $jsonPlayerResponse = getGamePlayersFromDB($gameID);
 
@@ -229,7 +229,7 @@ if (count($jsonGamesResponse)) {
 
               // welcome email
               $jsonEmail = $campaignEmails['email_welcome'];
-              sendWelcomeEmail($campaignEmails['email_template'], $jsonEmail, $game, $player);
+  //            sendWelcomeEmail($campaignEmails['email_template'], $jsonEmail, $game, $player);
 
               // completed email
               $jsonEmail = $campaignEmails['email_finished'];
@@ -243,8 +243,13 @@ if (count($jsonGamesResponse)) {
               $jsonEmail = $campaignEmails['email_summit_broadcast'];
               if ($player['id'] == $activePlayer['id']) {
                 $jsonEmail = $campaignEmails['email_summit'];
+
+                // distance based challenge so use distance email template
+                if ($game['distance'] > 0) {
+                  $jsonEmail = $campaignEmails['email_distance_complete'];
+                }
               }
-  //            sendSummitEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $activePlayer);
+              sendSummitEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $activePlayer);
             }
           }
         }

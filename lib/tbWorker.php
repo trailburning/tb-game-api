@@ -90,7 +90,7 @@ function processGamePlayer($log, $campaign, $campaignEmails, $gameID, $game, $ga
 
                   // distance based challenge so use distance email template
                   if ($game['distance'] > 0) {
-                    $jsonEmail = $campaignEmails['email_challenge_complete'];
+                    $jsonEmail = $campaignEmails['email_distance_complete'];
                   }
                 }
                 sendSummitEmail($campaignEmails['email_template'], $jsonEmail, $game, $player, $gamePlayer);
