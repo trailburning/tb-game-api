@@ -1068,6 +1068,117 @@ $app->post('/player/{playerHashID}', function (Request $request, Response $respo
   return $response->withJSON($jsonResponse);
 });
 
+$app->post('/campaign/{campaignHashID}/paymenttest', function (Request $request, Response $response) {
+  $hashids = new Hashids\Hashids('mountainrush', 10);
+
+  $campaignID = $hashids->decode($request->getAttribute('campaignHashID'))[0];
+
+  $json = $request->getBody();
+  $data = json_decode($json, true);
+
+  $jsonResponse = array();
+
+  $db = connect_db();
+
+  // get campaign
+  $jsonCampaignResponse = getCampaignFromDB($db, $campaignID);
+  if (count($jsonCampaignResponse)) {
+    $fAmount = $data['amount'] * 100;
+    $strEmail = $data['email'];
+
+      $strStripeAPIKey = STRIPE_API_KEY_TEST;
+      if ($jsonCampaignResponse[0]['live_payments'] == 1) {
+        $strStripeAPIKey = STRIPE_API_KEY_LIVE;
+      }
+
+      // Set your secret key: remember to switch to your live secret key in production
+      // See your keys here: https://dashboard.stripe.com/account/apikeys
+      \Stripe\Stripe::setApiKey(getenv($strStripeAPIKey));
+
+      $intent = \Stripe\PaymentIntent::create([
+        "amount" => $fAmount,
+        "currency" => $jsonCampaignResponse[0]['paywall_currency'],
+        "description" => $jsonCampaignResponse[0]['name'] . " donation",
+        "receipt_email"=> $strEmail,
+        'metadata' => ['campaign_id' => $request->getAttribute('campaignHashID')]
+      ]);
+
+      $jsonResponse = $intent;
+  }
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->get('/paymenttest/webhook', function (Request $request, Response $response) {
+  $jsonResponse = array();
+
+  $db = connect_db();
+
+  $strSQL = 'INSERT INTO campaigndonation (campaign, donation_payment_id) VALUES (1, "XXX")';
+  $db->query($strSQL);
+
+  return $response->withJSON($jsonResponse);
+});
+
+$app->post('/paymenttest/webhook', function (Request $request, Response $response) {
+  $jsonResponse = array();
+
+  $strStripeAPIKey = STRIPE_API_KEY_TEST;
+//  if ($jsonCampaignResponse[0]['live_payments'] == 1) {
+//    $strStripeAPIKey = STRIPE_API_KEY_LIVE;
+//  }
+
+    // Set your secret key: remember to switch to your live secret key in production
+    // See your keys here: https://dashboard.stripe.com/account/apikeys
+    \Stripe\Stripe::setApiKey(getenv($strStripeAPIKey));
+
+    // If you are testing your webhook locally with the Stripe CLI you
+    // can find the endpoint's secret by running `stripe listen`
+    // Otherwise, find your endpoint's secret in your webhook settings in the Developer Dashboard
+    $endpoint_secret = 'whsec_X5JB0WZE1ws7FlNA67sI6cWrqLfJyzRy';
+
+    $payload = @file_get_contents('php://input');
+    $sig_header = $_SERVER['HTTP_STRIPE_SIGNATURE'];
+    $event = null;
+
+    try {
+        $event = \Stripe\Webhook::constructEvent(
+            $payload, $sig_header, $endpoint_secret
+        );
+    } catch(\UnexpectedValueException $e) {
+        // Invalid payload
+        http_response_code(400);
+        exit();
+    } catch(\Stripe\Exception\SignatureVerificationException $e) {
+        // Invalid signature
+        http_response_code(400);
+        exit();
+    }
+
+    // Handle the event
+    switch ($event->type) {
+        case 'payment_intent.succeeded':
+            $paymentIntent = $event->data->object; // contains a StripePaymentIntent
+//            handlePaymentIntentSucceeded($paymentIntent);
+
+  $db = connect_db();
+
+  $strSQL = 'INSERT INTO campaigndonation (campaign, donation_payment_id) VALUES (1, "' . $paymentIntent->id . '")';
+  $db->query($strSQL);
+
+            break;
+        // ... handle other event types
+        default:
+            // Unexpected event type
+            http_response_code(400);
+            exit();
+    }
+
+    http_response_code(200);
+
+  return $response->withJSON($jsonResponse);
+});
+
 $app->post('/campaign/{campaignHashID}/player/{playerHashID}/paywall/payment', function (Request $request, Response $response) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
