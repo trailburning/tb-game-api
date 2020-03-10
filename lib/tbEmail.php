@@ -145,15 +145,15 @@ function BuildEmail($strEmailTemplate, $strSubject, $strToEmail, $strToName, $st
 }
 
 function sendEmail($strEmailTemplate, $strSubject, $strToEmail, $strToName, $strImage, $strMsgTitle, $strMsgContent, $strPreferences) {
-
   if (DEBUG) {
+    echo 'api:' . getenv('MANDRILL_API_KEY') . '<br/>';
     echo 'sendEmail:' . $strToEmail . ' : SEND OFF<br/>';
     echo 'msg:' . $strMsgContent . '<br/>';
     return;
   }
 
   try {
-    $mandrill = new Mandrill('kRr66_sxVLQJwehdLnakqg');
+    $mandrill = new Mandrill(getenv('MANDRILL_API_KEY'));
     $async = false;
     $ip_pool = '';
     $send_at = '';
