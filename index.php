@@ -97,7 +97,7 @@ $app->get('/worker', function (Request $request, Response $response) {
 });
 
 $app->get('/events', function (Request $request, Response $response) {
-  $authorization = "Authorization: Bearer IUADZGFNFJBKNV3QHYQT";
+  $authorization = "Authorization: Bearer " . getenv('EVENTBRITE_API_KEY');
 
   $url = 'https://www.eventbriteapi.com/v3/organizations/318563770275/events/';
 
