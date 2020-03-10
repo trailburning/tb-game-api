@@ -18,8 +18,8 @@ require_once('vendor/autoload.php');
 require_once 'lib/mysqliSingleton.php';
 require_once 'lib/mysql.php';
 
-//const DEBUG = false;
-const DEBUG = true;
+const DEBUG = false;
+//const DEBUG = true;
 
 $GLOBALS['db_server'] = 'localhost';
 $GLOBALS['db_user'] = 'root';
@@ -33,6 +33,10 @@ if (getenv("CLEARDB_DATABASE_URL")) {
   $GLOBALS['db_user'] = $url["user"];
   $GLOBALS['db_pass'] = $url["pass"];
   $GLOBALS['db_name'] = substr($url["path"], 1);
+}
+else {
+  $dotenv = Dotenv\Dotenv::create(__DIR__);
+  $dotenv->load();
 }
 
 /*
@@ -78,7 +82,7 @@ var_dump($id);
 
 // MR
 $activePlayerID = 281;
-$gameID = 8231;
+$gameID = 8644;
 //$gameID = 2114; // 2 player
 $LatestActivity = 3041551112;
 
@@ -135,24 +139,6 @@ if (count($jsonPlayerResponse)) {
   }
 }
 */
-
-// use UTC date
-date_default_timezone_set("UTC");
-
-//$epoch = 1567122299; // MLA old
-$epoch = 1567521750; // MLA new
-echo '<br/>';
-
-$dtExpire = new DateTime("@$epoch");
-echo 'expire : ' . $dtExpire->format('Y-m-d H:i:s') . '<br/>';
-$tExpire = strtotime($dtExpire->format('Y-m-d H:i:s'));
-
-$dtNow = new DateTime();
-echo 'now : ' . $dtNow->format('Y-m-d H:i:s') . '<br/>';
-$tNow = strtotime($dtNow->format('Y-m-d H:i:s'));
-
-echo '<br/>';
-echo $tExpire - $tNow;
 
 // mla stop here
 //exit;
