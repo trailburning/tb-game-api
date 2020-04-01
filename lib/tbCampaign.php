@@ -21,7 +21,7 @@ function getCampaignsFromDB() {
 function getCampaignFromDB($db, $campaignID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
-  $strSQL = 'SELECT clients.id as clientID, clients.name as client_name, clients.shortname as client_shortname, clients.description as client_description, campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.juicer_feed, campaigns.start_date, campaigns.end_date, campaigns.fundraising_currency, campaigns.fundraising_minimum, campaigns.fundraising_provider, campaigns.fundraising_donation, campaigns.fundraising_page, campaigns.fundraising_charity, campaigns.fundraising_event, campaigns.paywall_amount, campaigns.paywall_currency, campaigns.invitation_code, campaigns.live_payments FROM campaigns JOIN clients ON campaigns.clientID = clients.id WHERE campaigns.id = ' . $campaignID;
+  $strSQL = 'SELECT clients.id as clientID, clients.name as client_name, clients.shortname as client_shortname, clients.description as client_description, campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.juicer_feed, campaigns.override_route_color, campaigns.start_date, campaigns.end_date, campaigns.fundraising_currency, campaigns.fundraising_minimum, campaigns.fundraising_provider, campaigns.fundraising_donation, campaigns.fundraising_page, campaigns.fundraising_charity, campaigns.fundraising_event, campaigns.paywall_amount, campaigns.paywall_currency, campaigns.invitation_code, campaigns.live_payments FROM campaigns JOIN clients ON campaigns.clientID = clients.id WHERE campaigns.id = ' . $campaignID;
   $result = $db->query($strSQL);
   $rows = array();
   $index = 0;
@@ -98,7 +98,7 @@ function getCampaignByGameFromDB($gameID) {
   $hashids = new Hashids\Hashids('mountainrush', 10);
 
   $db = mysqliSingleton::init();
-  $result = $db->query('SELECT clients.id as clientID, clients.name as client_name, clients.shortname as client_shortname, clients.description as client_description, campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.juicer_feed, campaigns.fundraising_currency, campaigns.fundraising_minimum, campaigns.fundraising_provider, campaigns.fundraising_donation, campaigns.fundraising_page, campaigns.fundraising_charity, campaigns.fundraising_event, campaigns.invitation_code FROM games JOIN campaigns ON games.campaignID = campaigns.id JOIN clients ON campaigns.clientID = clients.id WHERE games.id = ' . $gameID);
+  $result = $db->query('SELECT clients.id as clientID, clients.name as client_name, clients.shortname as client_shortname, clients.description as client_description, campaigns.id, campaigns.name, campaigns.shortname, campaigns.description, campaigns.template, campaigns.juicer_feed, campaigns.override_route_color, campaigns.fundraising_currency, campaigns.fundraising_minimum, campaigns.fundraising_provider, campaigns.fundraising_donation, campaigns.fundraising_page, campaigns.fundraising_charity, campaigns.fundraising_event, campaigns.invitation_code FROM games JOIN campaigns ON games.campaignID = campaigns.id JOIN clients ON campaigns.clientID = clients.id WHERE games.id = ' . $gameID);
   $rows = array();
   $index = 0;
   while ( $row = $result->fetch_array(MYSQLI_ASSOC) ) {
