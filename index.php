@@ -878,12 +878,15 @@ $app->get('/campaign/{campaignHashID}', function (Request $request, Response $re
   if ($campaignID) {
     $jsonResponse = getCampaignFromDB($db, $campaignID);
     if (count($jsonResponse)) {
-
       // format dates as UTC
-      $dtStartDate = new DateTime($jsonResponse[0]['start_date']);
-      $jsonResponse[0]['start_date'] = $dtStartDate->format('Y-m-d\TH:i:s.000\Z');
-      $dtEndDate = new DateTime($jsonResponse[0]['end_date']);
-      $jsonResponse[0]['end_date'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
+      if ($jsonResponse[0]['start_date']) {
+        $dtStartDate = new DateTime($jsonResponse[0]['start_date']);
+        $jsonResponse[0]['start_date'] = $dtStartDate->format('Y-m-d\TH:i:s.000\Z');
+      }
+      if ($jsonResponse[0]['end_date']) {
+        $dtEndDate = new DateTime($jsonResponse[0]['end_date']);
+        $jsonResponse[0]['end_date'] = $dtEndDate->format('Y-m-d\TH:i:s.000\Z');
+      }
 
       $jsonResponse[0]['paywall_currency_symbol'] = getCurrencySymbol($jsonResponse[0]['paywall_currency']);
       $jsonResponse[0]['fundraising_currency_symbol'] = getCurrencySymbol($jsonResponse[0]['fundraising_currency']);
